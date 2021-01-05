@@ -4,27 +4,19 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/BurntSushi/toml"
+	"github.com/nile546/diplom/config"
 )
 
-// Config ...
-type Config struct {
-	Address string
-}
+func main() {
 
-func getConf() {
-	c := "./config/config.toml"
-	var conf Config
+	c := config.NewConfig()
 
-	d, err := toml.DecodeFile(c, &conf)
+	err := c.LoadConfig()
+
 	if err != nil {
-		fmt.Println("Cant loading config", err)
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	fmt.Println(d)
-}
-
-func main() {
-	getConf()
+	//fmt.Println(c)
 }
