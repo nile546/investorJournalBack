@@ -8,24 +8,21 @@ import (
 
 // Config ...
 type Config struct {
-	Address  string
-	Port     string
-	FilePath string
+	Address string
+	Port    string
 }
 
 // NewConfig ...
 func NewConfig() *Config {
 	return &Config{
-		Address:  "localhost",
-		Port:     "4000",
-		FilePath: "./config/config.json",
+		Address: "localhost",
+		Port:    "4000",
 	}
 }
 
 //LoadConfig ...
-func (c *Config) LoadConfig() error {
-
-	jsonFile, err := os.Open(c.FilePath)
+func (c *Config) LoadConfig(filePath string) error {
+	jsonFile, err := os.Open(filePath)
 	if err != nil {
 		return err
 	}
@@ -35,8 +32,6 @@ func (c *Config) LoadConfig() error {
 	if err != nil {
 		return err
 	}
-
-	//var conf Config
 
 	err = json.Unmarshal(byteValue, c)
 	if err != nil {

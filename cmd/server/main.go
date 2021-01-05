@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -8,15 +9,15 @@ import (
 )
 
 func main() {
-
+	filePath := "./config/config.json"
+	configfilePath := flag.String("config", filePath, "use config flag for set config json path")
+	flag.Parse()
 	c := config.NewConfig()
 
-	err := c.LoadConfig()
+	err := c.LoadConfig(*configfilePath)
 
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	//fmt.Println(c)
 }
