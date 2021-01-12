@@ -22,13 +22,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	api, err := apiserver.NewAPIServer(c)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	err = api.Start()
+	err = apiserver.Start(c)
 
+	fmt.Println("err")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

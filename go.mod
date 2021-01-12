@@ -2,4 +2,7 @@ module github.com/nile546/diplom
 
 go 1.14
 
-require github.com/BurntSushi/toml v0.3.1
+require (
+	github.com/BurntSushi/toml v0.3.1
+	github.com/gorilla/mux v1.8.0
+)

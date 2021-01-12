@@ -8,15 +8,19 @@ import (
 
 // Config ...
 type Config struct {
-	Address string
-	Port    string
+	Address          string
+	Port             string
+	ConnectionString string
+	DatabaseHost     string
 }
 
 // NewConfig ...
 func NewConfig() *Config {
 	return &Config{
-		Address: "localhost",
-		Port:    "4000",
+		Address:          "localhost",
+		Port:             "4000",
+		ConnectionString: "111",
+		DatabaseHost:     "localhost:5432",
 	}
 }
 
