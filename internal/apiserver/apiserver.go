@@ -1,7 +1,6 @@
 package apiserver
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -30,7 +29,6 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path, err := filepath.Abs(r.URL.Path)
-	fmt.Println("zzzz", r.URL.Path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -63,7 +61,6 @@ func (s *server) ConfugureRouter() {
 func Start(c *config.Config) error {
 
 	addr := c.Address + ":" + c.Port
-	fmt.Printf("Server start at %s\n", addr)
 
 	srv := newServer()
 
