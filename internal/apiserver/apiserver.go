@@ -1,12 +1,20 @@
 package apiserver
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/nile546/diplom/config"
+	"github.com/nile546/diplom/internal/models"
+)
+
+var (
+	production bool
 )
 
 //APIServer ...
@@ -47,22 +55,37 @@ func (s spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) ConfugureRouter() {
 
-	//s.router.HandleFunc("/test", test)
+	if !production {
+		cors := handlers.CORS(
+			handlers.AllowedHeaders([]string{"Content-Type"}),
+			handlers.AllowedOrigins([]string{"http://localhost:4200"}),
+			handlers.AllowedMethods([]string{http.MethodPost, http.MethodOptions}),
+			handlers.AllowCredentials(),
+		)
+
+		s.router.Use(cors)
+	}
+
+	api := s.router.PathPrefix(apiRoute).Subrouter()
+
+	users := api.PathPrefix(usersRoute).Subrouter()
+	users.HandleFunc(signupRoute, s.signup).Methods(http.MethodPost)
+
 	spa := spaHandler{staticPath: "web", indexPath: "index.html"}
 
 	s.router.PathPrefix("/").Handler(spa)
 }
 
-//func test(w http.ResponseWriter, r *http.Request) {
-//	fmt.Println("111")
-//}
-
 //Start ...
 func Start(c *config.Config) error {
+
+	production = c.Production
 
 	addr := c.Address + ":" + c.Port
 
 	srv := newServer()
+
+	fmt.Println("Started server at ", addr)
 
 	return http.ListenAndServe(addr, srv)
 
@@ -76,4 +99,14 @@ func newServer() *server {
 	srv.ConfugureRouter()
 	return srv
 
+}
+
+func (s *server) error(w http.ResponseWriter, errorMessage string) {
+	res := models.Result{
+		Status:       models.Error,
+		ErrorMessage: errorMessage,
+	}
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		//TODO: Добавить сохрание ошибки в логгер.
+	}
 }

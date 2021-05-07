@@ -8,6 +8,7 @@ import (
 
 // Config ...
 type Config struct {
+	Production       bool
 	Address          string
 	Port             string
 	ConnectionString string
@@ -17,6 +18,7 @@ type Config struct {
 // NewConfig ...
 func NewConfig() *Config {
 	return &Config{
+		Production:       true,
 		Address:          "localhost",
 		Port:             "4000",
 		ConnectionString: "111",

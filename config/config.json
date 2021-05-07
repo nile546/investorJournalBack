@@ -1,4 +1,6 @@
 {
+    "Production": false,
+
     "Address": "localhost",
     "Port":"4001",
     "ConnectionString":"111",
