@@ -6,6 +6,7 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"github.com/nile546/diplom/internal/models"
 )
 
 func (s *server) signup(w http.ResponseWriter, r *http.Request) {
@@ -29,6 +30,17 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 		validation.Field(&req.Email, validation.Required, is.Email, validation.Length(6, 100)),
 		validation.Field(&req.Password, validation.Required, validation.Length(5, 100)),
 	); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	u := &models.User{}
+	u.Login = req.Login
+	u.Email = req.Email
+	u.Password = req.Password
+	u.IsActive = false
+
+	if err := s.repository.User.Create(u); err != nil {
 		s.error(w, err.Error())
 		return
 	}

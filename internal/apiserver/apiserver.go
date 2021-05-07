@@ -23,7 +23,8 @@ type APIServer struct {
 }
 
 type server struct {
-	router *mux.Router
+	router     *mux.Router
+	repository *store.Repository
 }
 
 type spaHandler struct {
@@ -94,7 +95,8 @@ func Start(c *config.Config) error {
 func newServer() *server {
 
 	srv := &server{
-		router: mux.NewRouter(),
+		router:     mux.NewRouter(),
+		repository: ,
 	}
 	srv.ConfugureRouter()
 	return srv
