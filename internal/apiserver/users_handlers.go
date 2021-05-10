@@ -40,7 +40,7 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 	u.Password = req.Password
 	u.IsActive = false
 
-	if err := s.repository.User.Create(u); err != nil {
+	if err := s.repository.User().Create(u); err != nil {
 		s.error(w, err.Error())
 		return
 	}

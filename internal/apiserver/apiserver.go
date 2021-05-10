@@ -1,6 +1,7 @@
 package apiserver
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -11,6 +12,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nile546/diplom/config"
 	"github.com/nile546/diplom/internal/models"
+	"github.com/nile546/diplom/internal/pgstore"
+	"github.com/nile546/diplom/internal/store"
 )
 
 var (
@@ -84,7 +87,13 @@ func Start(c *config.Config) error {
 
 	addr := c.Address + ":" + c.Port
 
-	srv := newServer()
+	db, err := newDB(c.ConnectionString)
+	if err != nil {
+		return err
+	}
+
+	r := pgstore.New(db)
+	srv := newServer(r)
 
 	fmt.Println("Started server at ", addr)
 
@@ -92,11 +101,11 @@ func Start(c *config.Config) error {
 
 }
 
-func newServer() *server {
+func newServer(r *store.Repository) *server {
 
 	srv := &server{
 		router:     mux.NewRouter(),
-		repository: ,
+		repository: r,
 	}
 	srv.ConfugureRouter()
 	return srv
@@ -111,4 +120,17 @@ func (s *server) error(w http.ResponseWriter, errorMessage string) {
 	if err := json.NewEncoder(w).Encode(res); err != nil {
 		//TODO: Добавить сохрание ошибки в логгер.
 	}
+}
+
+func newDB(cs string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", cs)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.Ping(); err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }
