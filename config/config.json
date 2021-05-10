@@ -3,6 +3,6 @@
 
     "Address": "localhost",
     "Port":"4001",
-    "ConnectionString":"111",
+    "ConnectionString":"host=localhost user=invest dbname=invest password=fast",
     "DatabaseHost":"localhost:5432"
 } 

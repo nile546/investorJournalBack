@@ -7,4 +7,6 @@ require (
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
+	github.com/lib/pq v1.10.1
+	golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf
 )

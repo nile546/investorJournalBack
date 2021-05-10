@@ -10,6 +10,7 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 	"github.com/nile546/diplom/config"
 	"github.com/nile546/diplom/internal/models"
 	"github.com/nile546/diplom/internal/pgstore"
@@ -27,7 +28,7 @@ type APIServer struct {
 
 type server struct {
 	router     *mux.Router
-	repository *store.Repository
+	repository store.Repository
 }
 
 type spaHandler struct {
@@ -101,7 +102,7 @@ func Start(c *config.Config) error {
 
 }
 
-func newServer(r *store.Repository) *server {
+func newServer(r store.Repository) *server {
 
 	srv := &server{
 		router:     mux.NewRouter(),
