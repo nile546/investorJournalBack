@@ -45,5 +45,6 @@ func (u *User) EncryptPass() error {
 	}
 
 	u.EncryptedPassword = string(b)
+	u.Password = ""
 	return nil
 }

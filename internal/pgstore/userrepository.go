@@ -20,7 +20,7 @@ func (ur *UserRepository) Create(u *models.User) error {
 		return err
 	}
 
-	q := `INSERT INTO users (name, login, encrypted_password) VALUES ($1, $2, $3) RETURNING id`
+	q := `INSERT INTO users (login, email, encrypted_password) VALUES ($1, $2, $3) RETURNING id`
 
 	return ur.db.QueryRow(q, u.Login, u.Email, u.EncryptedPassword).Scan(&u.ID)
 }
