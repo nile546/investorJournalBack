@@ -19,6 +19,7 @@ import (
 
 var (
 	production bool
+	tokenKey   string
 )
 
 //APIServer ...
@@ -85,6 +86,7 @@ func (s *server) ConfugureRouter() {
 func Start(c *config.Config) error {
 
 	production = c.Production
+	tokenKey = c.TokenKey
 
 	addr := c.Address + ":" + c.Port
 

@@ -4,5 +4,6 @@
     "Address": "localhost",
     "Port":"4001",
     "ConnectionString":"host=localhost user=invest dbname=invest password=fast",
-    "DatabaseHost":"localhost:5432"
+    "DatabaseHost":"localhost:5432",
+    "TokenKey":"16befadf-1b96-470a-b0c0-e33ba8bb7562"
 } 

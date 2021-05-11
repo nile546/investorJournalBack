@@ -22,5 +22,14 @@ func (ur *UserRepository) Create(u *models.User) error {
 
 	q := `INSERT INTO users (login, email, encrypted_password) VALUES ($1, $2, $3) RETURNING id`
 
-	return ur.db.QueryRow(q, u.Login, u.Email, u.EncryptedPassword).Scan(&u.ID)
+	if err := ur.db.QueryRow(q, u.Login, u.Email, u.EncryptedPassword).Scan(&u.ID); err != nil {
+		return err
+	}
+
+	t := &models.Token{
+		int64(u.ID),
+	}
+
+	jwtToken, err := t.Generate()
+
 }

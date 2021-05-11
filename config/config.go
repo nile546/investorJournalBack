@@ -13,6 +13,7 @@ type Config struct {
 	Port             string
 	ConnectionString string
 	DatabaseHost     string
+	TokenKey         string
 }
 
 // NewConfig ...
@@ -23,6 +24,7 @@ func NewConfig() *Config {
 		Port:             "4000",
 		ConnectionString: "111",
 		DatabaseHost:     "localhost:5432",
+		TokenKey:         "tokenkey",
 	}
 }
 
