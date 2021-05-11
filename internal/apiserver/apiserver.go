@@ -95,7 +95,7 @@ func Start(c *config.Config) error {
 		return err
 	}
 
-	r := pgstore.New(db)
+	r := pgstore.New(db, c)
 	srv := newServer(r)
 
 	fmt.Println("Started server at ", addr)

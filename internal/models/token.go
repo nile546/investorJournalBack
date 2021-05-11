@@ -3,7 +3,7 @@ package models
 import "github.com/dgrijalva/jwt-go"
 
 type Token struct {
-	UserId int64 `json:"userId"`
+	UserID int64 `json:"userId"`
 	jwt.StandardClaims
 }
 
