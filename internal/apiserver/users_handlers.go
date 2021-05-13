@@ -55,10 +55,48 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jwtToken, err := t.Generate(tokenKey)
+	if err != nil {
+		return
+	}
+
 	u.RegistrationToken = jwtToken
 
 	err = s.repository.User().Update(u)
+	if err != nil {
+		s.error(w, err.Error())
+		return
+	}
 
-	s.error(w, err.Error())
+}
+
+func (s *server) signin(w http.ResponseWriter, r *http.Request) {
+
+	type request struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	req := &request{}
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	if err := validation.ValidateStruct(
+		req,
+		validation.Field(&req.Email, validation.Required, is.Email, validation.Length(6, 100)),
+		validation.Field(&req.Password, validation.Required, validation.Length(5, 100)),
+	); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	/*
+
+
+
+
+
+	 */
 
 }

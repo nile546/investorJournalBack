@@ -76,6 +76,7 @@ func (s *server) ConfugureRouter() {
 
 	users := api.PathPrefix(usersRoute).Subrouter()
 	users.HandleFunc(signupRoute, s.signup).Methods(http.MethodPost)
+	users.HandleFunc(signinRoute, s.signin).Methods(http.MethodPost)
 
 	spa := spaHandler{staticPath: "web", indexPath: "index.html"}
 

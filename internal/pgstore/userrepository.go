@@ -45,7 +45,32 @@ func (ur *UserRepository) Update(u *models.User) error {
 	}
 
 	if count < 1 {
+		//Add err consts
+		return nil
+	}
+
+	return nil
+}
+
+func (ur *UserRepository) Check(email string, password string) error {
+
+	//pass encrypt
+
+	q := `SELECT encrypted_password FROM users WHERE email = $1`
+
+	res, err := ur.db.Exec(q, email)
+	if err != nil {
 		return err
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if count < 1 {
+		//Add err consts
+		return nil
 	}
 
 	return nil

@@ -4,4 +4,5 @@ const (
 	apiRoute    = "/api"
 	usersRoute  = "/users"
 	signupRoute = "/signup"
+	signinRoute = "/signin"
 )
