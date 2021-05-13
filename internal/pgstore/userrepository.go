@@ -2,16 +2,12 @@ package pgstore
 
 import (
 	"database/sql"
-	"time"
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/nile546/diplom/config"
 	"github.com/nile546/diplom/internal/models"
 )
 
 type UserRepository struct {
 	db *sql.DB
-	c  *config.Config
 }
 
 func (ur *UserRepository) Create(u *models.User) error {
@@ -30,26 +26,27 @@ func (ur *UserRepository) Create(u *models.User) error {
 		return err
 	}
 
-	t := &models.Token{
-		UserID: int64(u.ID),
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * 60).Unix(),
-		},
-	}
+	return nil
 
-	jwtToken, err := t.Generate(ur.c.TokenKey)
+}
 
+func (ur *UserRepository) Update(u *models.User) error {
+
+	q := `UPDATE users SET (login, email, is_active, registration_token) = ($1, $2, $3, $4) WHERE id = $5`
+
+	res, err := ur.db.Exec(q, u.Login, u.Email, u.IsActive, u.RegistrationToken, u.ID)
 	if err != nil {
-		//TODO: Store to loger
 		return err
 	}
 
-	q = `INSERT INTO users (registration_token) VALUES ($1) WHERE id = $2`
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
 
-	if err = ur.db.QueryRow(q, jwtToken, u.ID).Err(); err != nil {
+	if count < 1 {
 		return err
 	}
 
 	return nil
-
 }

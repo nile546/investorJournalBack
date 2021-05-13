@@ -17,6 +17,7 @@ type User struct {
 	EncryptedPassword string
 	IsActive          bool      `json:"isActive"`
 	CreatedAt         time.Time `json:"createdAt"`
+	RegistrationToken string    `json:"registrationToken"`
 }
 
 func (u *User) Validate() error {

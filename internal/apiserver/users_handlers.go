@@ -3,7 +3,9 @@ package apiserver
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/nile546/diplom/internal/models"
@@ -44,4 +46,19 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 		s.error(w, err.Error())
 		return
 	}
+
+	t := &models.Token{
+		UserID: u.ID,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Minute * 60).Unix(),
+		},
+	}
+
+	jwtToken, err := t.Generate(tokenKey)
+	u.RegistrationToken = jwtToken
+
+	err = s.repository.User().Update(u)
+
+	s.error(w, err.Error())
+
 }
