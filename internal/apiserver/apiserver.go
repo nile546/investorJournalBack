@@ -12,14 +12,17 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/nile546/diplom/config"
+	"github.com/nile546/diplom/internal/mailer"
+	"github.com/nile546/diplom/internal/mailer/emailer"
 	"github.com/nile546/diplom/internal/models"
-	"github.com/nile546/diplom/internal/pgstore"
 	"github.com/nile546/diplom/internal/store"
+	"github.com/nile546/diplom/internal/store/pgstore"
 )
 
 var (
 	production bool
 	tokenKey   string
+	addr       string
 )
 
 //APIServer ...
@@ -30,6 +33,7 @@ type APIServer struct {
 type server struct {
 	router     *mux.Router
 	repository store.Repository
+	mailer     mailer.Mailer
 }
 
 type spaHandler struct {
@@ -89,7 +93,7 @@ func Start(c *config.Config) error {
 	production = c.Production
 	tokenKey = c.TokenKey
 
-	addr := c.Address + ":" + c.Port
+	addr := c.Host + ":" + c.Port
 
 	db, err := newDB(c.ConnectionString)
 	if err != nil {
@@ -97,7 +101,10 @@ func Start(c *config.Config) error {
 	}
 
 	r := pgstore.New(db)
-	srv := newServer(r)
+
+	m := emailer.New()
+
+	srv := newServer(r, m)
 
 	fmt.Println("Started server at ", addr)
 
@@ -105,7 +112,7 @@ func Start(c *config.Config) error {
 
 }
 
-func newServer(r store.Repository) *server {
+func newServer(r store.Repository, m mailer.Mailer) *server {
 
 	srv := &server{
 		router:     mux.NewRouter(),

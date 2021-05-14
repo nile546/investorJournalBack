@@ -9,7 +9,7 @@ import (
 // Config ...
 type Config struct {
 	Production       bool
-	Address          string
+	Host             string
 	Port             string
 	ConnectionString string
 	DatabaseHost     string
@@ -20,7 +20,7 @@ type Config struct {
 func NewConfig() *Config {
 	return &Config{
 		Production:       true,
-		Address:          "localhost",
+		Host:             "http://localhost",
 		Port:             "4000",
 		ConnectionString: "111",
 		DatabaseHost:     "localhost:5432",

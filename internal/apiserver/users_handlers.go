@@ -1,8 +1,10 @@
 package apiserver
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"html/template"
 	"net/http"
 	"time"
 
@@ -37,11 +39,12 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := &models.User{}
-	u.Login = req.Login
-	u.Email = req.Email
-	u.Password = req.Password
-	u.IsActive = false
+	u := &models.User{
+		Login:    req.Login,
+		Email:    req.Email,
+		Password: req.Password,
+		IsActive: false,
+	}
 
 	if err := u.EncryptPass(); err != nil {
 		s.error(w, err.Error())
@@ -52,14 +55,22 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t := &models.Token{
+	t := template.New("signup-email.html")
+
+	t, err := t.ParseFiles("tmpl/registration-email.html")
+	if err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	rt := &models.Token{
 		UserID: u.ID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Minute * 60).Unix(),
 		},
 	}
 
-	jwtToken, err := t.Generate(tokenKey)
+	jwtToken, err := rt.Generate(tokenKey)
 	if err != nil {
 		return
 	}
@@ -71,6 +82,31 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 		s.error(w, err.Error())
 		return
 	}
+
+	buf := new(bytes.Buffer)
+	data := struct {
+		Login    string
+		RegToken string
+		URLPath  string
+		Address  string
+	}{
+		Login:    u.Login,
+		RegToken: u.RegistrationToken,
+		URLPath:  confirmRegistrationRoute,
+		Address:  addr,
+	}
+
+	if err = t.Execute(buf, data); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	if err := s.mailer.Send([]string{u.Email}, buf.String()); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, nil)
 
 }
 

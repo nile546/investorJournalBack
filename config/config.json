@@ -1,7 +1,7 @@
 {
     "Production": false,
 
-    "Address": "localhost",
+    "Host": "localhost",
     "Port":"4001",
     "ConnectionString":"host=localhost user=invest dbname=invest password=fast",
     "DatabaseHost":"localhost:5432",

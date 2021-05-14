@@ -1,0 +1,30 @@
+Subject: Регистрация на сайте "Дневник инвестора"
+MIME-version: 1.0;
+Content-Type: text/html; charset="UTF-8";
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+</head>
+<body>
+    <p>
+        Здравствуйте, {{.Name}}!
+    </p>
+    <p>
+        Спасибо что выбрали <strong>SaleApp.ru</strong>!
+    </p>
+    <p>
+        Чтобы начать пользоваться приложением, Вам необходимо активировать аккаунт.<br>
+        Для активации и подтвеждения адреса электронной почты перейдите по ссылке:
+    </p>
+    <p>
+        <a href="{{.SiteURL}}{{.URLPath}}?token={{.RegToken}}">Активация аккаунта</a>
+    </p>
+    <p>
+        Всегда на связи,<br>
+        Команда <a href="{{.SiteURL}}">SaleApp.ru</a>
+    </p>
+    
+</body>
+</html>
