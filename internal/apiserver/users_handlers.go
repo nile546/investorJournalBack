@@ -122,6 +122,12 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if u.IsActive == false {
+		err = errors.New("Account not verified!")
+		s.error(w, err.Error())
+		return
+	}
+
 	s.respond(w, nil)
 
 }
