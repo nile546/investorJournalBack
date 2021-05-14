@@ -57,7 +57,7 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 
 	t := template.New("signup-email.html")
 
-	t, err := t.ParseFiles("tmpl/registration-email.html")
+	t, err := t.ParseFiles("tmpl/signup-email.html")
 	if err != nil {
 		s.error(w, err.Error())
 		return

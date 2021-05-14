@@ -14,6 +14,11 @@ type Config struct {
 	ConnectionString string
 	DatabaseHost     string
 	TokenKey         string
+	MailerLogin      string
+	MailerPass       string
+	MailerSender     string
+	MailerHost       string
+	MailerPort       string
 }
 
 // NewConfig ...

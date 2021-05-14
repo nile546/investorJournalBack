@@ -102,7 +102,15 @@ func Start(c *config.Config) error {
 
 	r := pgstore.New(db)
 
-	m := emailer.New()
+	mConf := &emailer.Config{
+		Login:  c.MailerLogin,
+		Pass:   c.MailerPass,
+		Host:   c.MailerHost,
+		Port:   c.MailerPort,
+		Sender: c.MailerSender,
+	}
+
+	m := emailer.New(mConf)
 
 	srv := newServer(r, m)
 
@@ -117,6 +125,7 @@ func newServer(r store.Repository, m mailer.Mailer) *server {
 	srv := &server{
 		router:     mux.NewRouter(),
 		repository: r,
+		mailer:     m,
 	}
 	srv.ConfugureRouter()
 	return srv

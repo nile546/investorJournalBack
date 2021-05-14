@@ -1,5 +1,5 @@
 package mailer
 
 type Mailer interface {
-	Send(string) error
+	Send(recipients []string, msg string) error
 }

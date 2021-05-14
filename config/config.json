@@ -1,9 +1,13 @@
 {
     "Production": false,
-
     "Host": "localhost",
     "Port":"4001",
     "ConnectionString":"host=localhost user=invest dbname=invest password=fast",
     "DatabaseHost":"localhost:5432",
-    "TokenKey":"16befadf-1b96-470a-b0c0-e33ba8bb7562"
+    "TokenKey":"16befadf-1b96-470a-b0c0-e33ba8bb7562",
+    "MailerLogin": "ghasher45@gmail.com",
+    "MailerPass": "KQ3PSAPewDtT)psjXO(mbuV1",
+    "MailerSender": "ghasher45@gmail.com",
+    "MailerHost": "smtp.gmail.com",
+    "MailerPort": "587"
 } 

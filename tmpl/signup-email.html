@@ -9,21 +9,21 @@ Content-Type: text/html; charset="UTF-8";
 </head>
 <body>
     <p>
-        Здравствуйте, {{.Name}}!
+        Здравствуйте, {{.Login}}!
     </p>
     <p>
-        Спасибо что выбрали <strong>SaleApp.ru</strong>!
+        Спасибо что выбрали <strong>"Дневник инвестора"!</strong>!
     </p>
     <p>
         Чтобы начать пользоваться приложением, Вам необходимо активировать аккаунт.<br>
         Для активации и подтвеждения адреса электронной почты перейдите по ссылке:
     </p>
     <p>
-        <a href="{{.SiteURL}}{{.URLPath}}?token={{.RegToken}}">Активация аккаунта</a>
+        <a href="{{.Address}}{{.URLPath}}?token={{.RegToken}}">Активация аккаунта</a>
     </p>
     <p>
         Всегда на связи,<br>
-        Команда <a href="{{.SiteURL}}">SaleApp.ru</a>
+        Команда <a href="{{.Address}}">Dnevnik.ru</a>
     </p>
     
 </body>
