@@ -2,6 +2,7 @@ package apiserver
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
@@ -42,6 +43,10 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 	u.Password = req.Password
 	u.IsActive = false
 
+	if err := u.EncryptPass(); err != nil {
+		s.error(w, err.Error())
+	}
+
 	if err := s.repository.User().Create(u); err != nil {
 		s.error(w, err.Error())
 		return
@@ -77,26 +82,46 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req := &request{}
-	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+
+	err := json.NewDecoder(r.Body).Decode(req)
+	if err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	if err := validation.ValidateStruct(
+	err = validation.ValidateStruct(
 		req,
 		validation.Field(&req.Email, validation.Required, is.Email, validation.Length(6, 100)),
 		validation.Field(&req.Password, validation.Required, validation.Length(5, 100)),
-	); err != nil {
+	)
+	if err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	/*
+	c := &models.Creditials{
+		Email:    req.Email,
+		Password: req.Password,
+	}
 
+	err = c.EncryptPass()
+	if err != nil {
+		s.error(w, err.Error())
+		return
+	}
 
+	u, err := s.repository.User().GetUserByEmail(c.Email)
+	if err != nil {
+		s.error(w, err.Error())
+		return
+	}
 
+	if u.EncryptedPassword != c.EncryptedPassword {
+		err = errors.New("Invalid password!")
+		s.error(w, err.Error())
+		return
+	}
 
-
-	 */
+	s.respond(w, nil)
 
 }

@@ -4,8 +4,6 @@ import (
 	"errors"
 	"time"
 
-	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/go-ozzo/ozzo-validation/is"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,20 +16,6 @@ type User struct {
 	IsActive          bool      `json:"isActive"`
 	CreatedAt         time.Time `json:"createdAt"`
 	RegistrationToken string    `json:"registrationToken"`
-}
-
-func (u *User) Validate() error {
-
-	if err := validation.ValidateStruct(
-		u,
-		validation.Field(&u.Login, validation.Required, validation.Length(3, 100)),
-		validation.Field(&u.Email, validation.Required, is.Email, validation.Length(6, 100)),
-		validation.Field(&u.Password, validation.Required, validation.Length(5, 100)),
-	); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (u *User) EncryptPass() error {

@@ -126,6 +126,18 @@ func (s *server) error(w http.ResponseWriter, errorMessage string) {
 	}
 }
 
+func (s *server) respond(w http.ResponseWriter, payload interface{}) {
+	res := models.Result{
+		Status:       models.Ok,
+		ErrorMessage: "",
+		Payload:      payload,
+	}
+
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		//TODO: Добавить сохрание ошибки в логгер.
+	}
+}
+
 func newDB(cs string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", cs)
 	if err != nil {

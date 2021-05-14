@@ -12,14 +12,6 @@ type UserRepository struct {
 
 func (ur *UserRepository) Create(u *models.User) error {
 
-	if err := u.Validate(); err != nil {
-		return err
-	}
-
-	if err := u.EncryptPass(); err != nil {
-		return err
-	}
-
 	q := `INSERT INTO users (login, email, encrypted_password) VALUES ($1, $2, $3) RETURNING id`
 
 	if err := ur.db.QueryRow(q, u.Login, u.Email, u.EncryptedPassword).Scan(&u.ID); err != nil {
@@ -52,26 +44,25 @@ func (ur *UserRepository) Update(u *models.User) error {
 	return nil
 }
 
-func (ur *UserRepository) Check(email string, password string) error {
+func (ur *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 
-	//pass encrypt
+	q := `SELECT id, login, encrypted_password, is_active, created_at FROM users where email=$1`
 
-	q := `SELECT encrypted_password FROM users WHERE email = $1`
-
-	res, err := ur.db.Exec(q, email)
+	res, err := ur.db.Query(q, email)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	count, err := res.RowsAffected()
-	if err != nil {
-		return err
+	u := &models.User{}
+
+	for res.Next() {
+
+		err = res.Scan(&u.ID, &u.Login, &u.EncryptedPassword, &u.IsActive, &u.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
 	}
 
-	if count < 1 {
-		//Add err consts
-		return nil
-	}
-
-	return nil
+	return u, nil
 }
