@@ -1,9 +1,9 @@
 package apiserver
 
 const (
-	apiRoute                 = "/api"
-	usersRoute               = "/users"
-	signupRoute              = "/signup"
-	signinRoute              = "/signin"
-	confirmRegistrationRoute = "/confirm-Registration"
+	apiRoute           = "/api"
+	usersRoute         = "/users"
+	signupRoute        = "/signup"
+	signinRoute        = "/signin"
+	confirmSignupRoute = "/confirmSignup"
 )

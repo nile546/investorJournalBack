@@ -92,7 +92,7 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 	}{
 		Login:    u.Login,
 		RegToken: u.RegistrationToken,
-		URLPath:  confirmRegistrationRoute,
+		URLPath:  "/landing/" + confirmSignupRoute,
 		Address:  addr,
 	}
 
@@ -107,6 +107,31 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.respond(w, nil)
+
+}
+
+func (s *server) confirmSignup(w http.ResponseWriter, r *http.Request) {
+
+	type request struct {
+		token string
+	}
+
+	req := &request{}
+
+	err := json.NewDecoder(r.Body).Decode(req)
+	if err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	err = validation.ValidateStruct(
+		req,
+		validation.Field(&req.token, validation.Required),
+	)
+	if err != nil {
+		s.error(w, err.Error())
+		return
+	}
 
 }
 
