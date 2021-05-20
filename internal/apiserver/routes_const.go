@@ -5,5 +5,5 @@ const (
 	usersRoute         = "/users"
 	signupRoute        = "/signup"
 	signinRoute        = "/signin"
-	confirmSignupRoute = "/confirmSignup"
+	confirmSignupRoute = "/confirm-signup"
 )

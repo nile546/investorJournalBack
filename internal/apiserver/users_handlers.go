@@ -146,6 +146,7 @@ func (s *server) confirmSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	s.respond(w, nil)
 }
 
 func (s *server) signin(w http.ResponseWriter, r *http.Request) {
