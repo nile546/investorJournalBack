@@ -95,7 +95,7 @@ func Start(c *config.Config) error {
 	production = c.Production
 	tokenKey = c.TokenKey
 
-	addr := c.Host + ":" + c.Port
+	addr = c.Host + ":" + c.Port
 
 	db, err := newDB(c.ConnectionString)
 	if err != nil {

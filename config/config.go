@@ -25,7 +25,7 @@ type Config struct {
 func NewConfig() *Config {
 	return &Config{
 		Production:       true,
-		Host:             "http://localhost",
+		Host:             "localhost",
 		Port:             "4000",
 		ConnectionString: "111",
 		DatabaseHost:     "localhost:5432",

@@ -92,7 +92,7 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 	}{
 		Login:    u.Login,
 		RegToken: u.RegistrationToken,
-		URLPath:  "/landing/" + confirmSignupRoute,
+		URLPath:  "/landing" + confirmSignupRoute,
 		Address:  addr,
 	}
 
