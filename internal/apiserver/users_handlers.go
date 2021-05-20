@@ -133,6 +133,19 @@ func (s *server) confirmSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	tkn := &models.Token{}
+	err = tkn.GetClaims(req.token, tokenKey)
+	if err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	if tkn.StandardClaims.ExpiresAt < time.Now().Unix() {
+		err = errors.New("Время действия токена истекло")
+		s.error(w, err.Error())
+		return
+	}
+
 }
 
 func (s *server) signin(w http.ResponseWriter, r *http.Request) {
