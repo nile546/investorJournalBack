@@ -66,3 +66,26 @@ func (ur *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 
 	return u, nil
 }
+
+func (ur *UserRepository) GetUserByID(ID int) (*models.User, error) {
+
+	q := `SELECT email, login, encrypted_password, is_active, created_at FROM users where id=$1`
+
+	res, err := ur.db.Query(q, ID)
+	if err != nil {
+		return nil, err
+	}
+
+	u := &models.User{}
+
+	for res.Next() {
+
+		err = res.Scan(&u.Email, &u.Login, &u.EncryptedPassword, &u.IsActive, &u.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	return u, nil
+}

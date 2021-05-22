@@ -138,6 +138,19 @@ func (s *server) confirmSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	u, err := s.repository.User().GetUserByID(tkn.UserID)
+	if err != nil {
+		s.error(w, err.Error())
+		return
+	}
+	u.IsActive = true
+
+	err = s.repository.User().Update(u)
+	if err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
 	s.respond(w, nil)
 }
 
