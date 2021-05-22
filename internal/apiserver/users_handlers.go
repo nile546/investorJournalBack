@@ -75,25 +75,17 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u.RegistrationToken = jwtToken
-
-	err = s.repository.User().Update(u)
-	if err != nil {
-		s.error(w, err.Error())
-		return
-	}
-
 	buf := new(bytes.Buffer)
 	data := struct {
 		Login    string
 		RegToken string
 		URLPath  string
-		Address  string
+		Address  template.URL
 	}{
 		Login:    u.Login,
-		RegToken: u.RegistrationToken,
+		RegToken: jwtToken,
 		URLPath:  "/landing" + confirmSignupRoute,
-		Address:  addr,
+		Address:  template.URL(addr),
 	}
 
 	if err = t.Execute(buf, data); err != nil {
@@ -203,6 +195,6 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.respond(w, nil)
+	s.respond(w, u)
 
 }

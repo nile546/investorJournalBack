@@ -24,9 +24,9 @@ func (ur *UserRepository) Create(u *models.User) error {
 
 func (ur *UserRepository) Update(u *models.User) error {
 
-	q := `UPDATE users SET (login, email, is_active, registration_token) = ($1, $2, $3, $4) WHERE id = $5`
+	q := `UPDATE users SET (login, email, is_active) = ($1, $2, $3, $4) WHERE id = $5`
 
-	res, err := ur.db.Exec(q, u.Login, u.Email, u.IsActive, u.RegistrationToken, u.ID)
+	res, err := ur.db.Exec(q, u.Login, u.Email, u.IsActive, u.ID)
 	if err != nil {
 		return err
 	}
