@@ -9,6 +9,7 @@ import (
 // Config ...
 type Config struct {
 	Production       bool
+	Protocol         string
 	Host             string
 	Port             string
 	ConnectionString string
@@ -19,17 +20,20 @@ type Config struct {
 	MailerSender     string
 	MailerHost       string
 	MailerPort       string
+	LandingAddress   string
 }
 
 // NewConfig ...
 func NewConfig() *Config {
 	return &Config{
 		Production:       true,
+		Protocol:         "http://",
 		Host:             "localhost",
 		Port:             "4000",
 		ConnectionString: "111",
 		DatabaseHost:     "localhost:5432",
 		TokenKey:         "tokenkey",
+		LandingAddress:   "localhost:4200",
 	}
 }
 

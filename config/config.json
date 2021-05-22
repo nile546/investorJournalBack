@@ -1,5 +1,7 @@
 {
     "Production": false,
+    "Protocol": "http://",
+    "LandingAddress":"localhost:4200",
     "Host": "localhost",
     "Port":"4001",
     "ConnectionString":"host=localhost user=invest dbname=invest password=fast",

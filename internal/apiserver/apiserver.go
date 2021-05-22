@@ -23,6 +23,8 @@ var (
 	production bool
 	tokenKey   string
 	addr       string
+	protocol   string
+	addrLand   string
 )
 
 //APIServer ...
@@ -95,7 +97,9 @@ func Start(c *config.Config) error {
 	production = c.Production
 	tokenKey = c.TokenKey
 
+	protocol = c.Protocol
 	addr = c.Host + ":" + c.Port
+	addrLand = c.LandingAddress
 
 	db, err := newDB(c.ConnectionString)
 	if err != nil {

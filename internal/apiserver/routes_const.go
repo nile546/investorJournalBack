@@ -6,4 +6,5 @@ const (
 	signupRoute        = "/signup"
 	signinRoute        = "/signin"
 	confirmSignupRoute = "/confirm-signup"
+	landingRoute       = "/landing"
 )

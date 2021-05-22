@@ -80,12 +80,12 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 		Login    string
 		RegToken string
 		URLPath  string
-		Address  template.URL
+		Address  string
 	}{
 		Login:    u.Login,
 		RegToken: jwtToken,
-		URLPath:  "/landing" + confirmSignupRoute,
-		Address:  template.URL(addr),
+		URLPath:  landingRoute + confirmSignupRoute,
+		Address:  protocol + addrLand,
 	}
 
 	if err = t.Execute(buf, data); err != nil {
@@ -183,7 +183,7 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if u.EncryptedPassword != c.EncryptedPassword {
+	if !u.ComparePassword(c.EncryptedPassword) {
 		err = errors.New("Invalid password!")
 		s.error(w, err.Error())
 		return
