@@ -67,7 +67,7 @@ func (ur *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 	return u, nil
 }
 
-func (ur *UserRepository) GetUserByID(ID int) (*models.User, error) {
+func (ur *UserRepository) GetUserByID(ID int64) (*models.User, error) {
 
 	q := `SELECT email, login, encrypted_password, is_active, created_at FROM users where id=$1`
 

@@ -10,5 +10,5 @@ type UserRepository interface {
 	Create(*models.User) error
 	Update(*models.User) error
 	GetUserByEmail(email string) (*models.User, error)
-	GetUserByID(ID int) (*models.User, error)
+	GetUserByID(ID int64) (*models.User, error)
 }
