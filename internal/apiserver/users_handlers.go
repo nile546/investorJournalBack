@@ -105,7 +105,7 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 func (s *server) confirmSignup(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		token string
+		Token string `json:"token"`
 	}
 
 	req := &request{}
@@ -118,7 +118,7 @@ func (s *server) confirmSignup(w http.ResponseWriter, r *http.Request) {
 
 	err = validation.ValidateStruct(
 		req,
-		validation.Field(&req.token, validation.Required),
+		validation.Field(&req.Token, validation.Required),
 	)
 	if err != nil {
 		s.error(w, err.Error())
@@ -126,7 +126,7 @@ func (s *server) confirmSignup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tkn := &models.Token{}
-	err = tkn.GetClaims(req.token, tokenKey)
+	err = tkn.GetClaims(req.Token, tokenKey)
 	if err != nil {
 		s.error(w, err.Error())
 		return
