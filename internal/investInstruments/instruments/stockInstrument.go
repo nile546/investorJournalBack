@@ -3,6 +3,6 @@ package instruments
 type StockInstrument struct {
 }
 
-func (stk *StockInstrument) grab() error {
+func (stk *StockInstrument) Grab() error {
 	return nil
 }
