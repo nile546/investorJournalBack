@@ -3,7 +3,7 @@ package investInstruments
 type Instruments interface {
 	Stocks() StockInstrument
 	Cryptos() CryptoInstrument
-	Banks() BankInstrument
+	Deposits() DepositInstruments
 }
 
 type StockInstrument interface {
@@ -13,5 +13,5 @@ type StockInstrument interface {
 type CryptoInstrument interface {
 }
 
-type BankInstrument interface {
+type DepositInstruments interface {
 }
