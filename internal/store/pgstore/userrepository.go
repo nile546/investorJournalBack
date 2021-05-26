@@ -53,7 +53,9 @@ func (ur *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 		return nil, err
 	}
 
-	u := &models.User{}
+	u := &models.User{
+		Email: email,
+	}
 
 	for res.Next() {
 
