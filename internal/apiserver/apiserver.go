@@ -93,7 +93,6 @@ func (s *server) ConfugureRouter() {
 
 //Start ...
 func Start(c *config.Config) error {
-
 	production = c.Production
 	tokenKey = c.TokenKey
 

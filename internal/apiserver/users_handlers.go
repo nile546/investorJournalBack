@@ -184,19 +184,13 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 		Password: req.Password,
 	}
 
-	err = c.EncryptPass()
-	if err != nil {
-		s.error(w, err.Error())
-		return
-	}
-
 	u, err := s.repository.User().GetUserByEmail(c.Email)
 	if err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	if !u.ComparePassword(c.EncryptedPassword) {
+	if !u.ComparePassword(c.Password) {
 		err = errors.New("Invalid password!")
 		s.error(w, err.Error())
 		return
