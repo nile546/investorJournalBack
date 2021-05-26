@@ -1,5 +1,7 @@
 package investInstruments
 
+import "github.com/nile546/diplom/internal/models"
+
 type Instruments interface {
 	Stocks() StockInstrument
 	Cryptos() CryptoInstrument
@@ -7,7 +9,7 @@ type Instruments interface {
 }
 
 type StockInstrument interface {
-	GrabPage() error
+	GrabPage() ([]*models.Stock, error)
 }
 
 type CryptoInstrument interface {

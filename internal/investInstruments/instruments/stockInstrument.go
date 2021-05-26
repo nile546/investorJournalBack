@@ -2,36 +2,66 @@ package instruments
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	"github.com/nile546/diplom/internal/models"
 )
 
 type StockInstrument struct {
 }
 
-type payload struct {
-	headers  map[string]string
-	formData map[string]string
-	//instruments []*model.Instrument
-	client *http.Client
-}
-
-func (r *StockInstrument) GrabPage() error {
+func (r *StockInstrument) GrabPage() ([]*models.Stock, error) {
 	u := "https://spbexchange.ru/ru/listing/securities/list/"
 	var resp *http.Response
 	var req *http.Request
 	var err error
 
-	req, err = http.NewRequest(http.MethodPost, u, nil)
+	req, err = http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	pl := &payload{}
-	pl = new(payload)
+	type payload struct {
+		headers  map[string]string
+		formData map[string]string
+	}
 
-	pl.client = &http.Client{}
+	client := &http.Client{}
+
+	resp, err = client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, errors.New("SPBExchange not respond")
+	}
+
+	pl := new(payload)
+
+	pl.headers["Cookie"] = resp.Cookies()[0].Name + "=" + resp.Cookies()[0].Value
+
+	// Parse and store
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	doc.Find("input").Each(func(index int, input *goquery.Selection) {
+		switch name, _ := input.Attr("name"); name {
+
+		case "__VIEWSTATE":
+			pl.formData[name], _ = input.Attr("value")
+		case "bxValidationToken":
+			pl.formData[name], _ = input.Attr("value")
+		}
+	})
 
 	pl.headers = make(map[string]string)
 	pl.headers["Host"] = "spbexchange.ru"
@@ -53,7 +83,7 @@ func (r *StockInstrument) GrabPage() error {
 	pl.formData = make(map[string]string)
 	pl.formData["__EVENTARGUMENT"] = ""
 	pl.formData["ctl00$ctl00$ctl02"] = "ctl00$ctl00$BXContentOuter$BXContent$up|ctl00$ctl00$BXContentOuter$BXContent$pager$ctl02$ctl00"
-	pl.formData["__EVENTTARGET"] = "ctl00$ctl00$BXContentOuter$BXContent$pager$ctl02$ctl00"
+	pl.formData["__EVENTTARGET"] = "ctl00$BXContent$list$LinkButton1"
 	pl.formData["bitrix_include_areas"] = "N"
 	pl.formData["__LASTFOCUS"] = ""
 	pl.formData["ctl00$ctl00$BXContentOuter$BXContent$rbl"] = "1"
@@ -70,30 +100,29 @@ func (r *StockInstrument) GrabPage() error {
 	pl.formData["__ASYNCPOST"] = "true"
 
 	data := url.Values{}
-	if pl.formData != nil {
-		for k, v := range pl.formData {
-			data.Set(k, v)
-		}
+
+	for k, v := range pl.formData {
+		data.Set(k, v)
 	}
 
 	req, err = http.NewRequest(http.MethodPost, u, strings.NewReader(data.Encode()))
 
-	if pl.headers != nil {
-		for k, v := range pl.headers {
-			req.Header.Add(k, v)
-		}
+	for k, v := range pl.headers {
+		req.Header.Add(k, v)
 	}
 
-	resp, err = pl.client.Do(req)
+	resp, err = client.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return errors.New("NOOK")
+		return nil, errors.New("SPBExchange not respond")
 	}
 
-	return nil
+	fmt.Println("zzzzzzzzzzzzzzzz", resp.Body)
+
+	return nil, nil
 }
