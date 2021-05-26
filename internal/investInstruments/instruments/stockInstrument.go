@@ -3,6 +3,7 @@ package instruments
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -44,14 +45,21 @@ func (r *StockInstrument) GrabPage() ([]*models.Stock, error) {
 	}
 
 	pl := new(payload)
+	pl.headers = make(map[string]string)
 
 	pl.headers["Cookie"] = resp.Cookies()[0].Name + "=" + resp.Cookies()[0].Value
+
+	fmt.Println(resp.Body)
 
 	// Parse and store
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		return nil, err
 	}
+
+	t, _ := ioutil.ReadAll(resp.Body)
+
+	fmt.Println(t)
 
 	doc.Find("input").Each(func(index int, input *goquery.Selection) {
 		switch name, _ := input.Attr("name"); name {
@@ -63,7 +71,6 @@ func (r *StockInstrument) GrabPage() ([]*models.Stock, error) {
 		}
 	})
 
-	pl.headers = make(map[string]string)
 	pl.headers["Host"] = "spbexchange.ru"
 	pl.headers["Content-type"] = "application/x-www-form-urlencoded; charset=UTF-8"
 	pl.headers["Origin"] = "https://spbexchange.ru"
