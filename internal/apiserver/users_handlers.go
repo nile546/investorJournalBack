@@ -179,7 +179,7 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := &models.Creditials{
+	c := &models.Credentials{
 		Email:    req.Email,
 		Password: req.Password,
 	}
