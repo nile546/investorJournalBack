@@ -76,7 +76,9 @@ func (ur *UserRepository) GetUserByID(ID int64) (*models.User, error) {
 		return nil, err
 	}
 
-	u := &models.User{}
+	u := &models.User{
+		ID: ID,
+	}
 
 	for res.Next() {
 

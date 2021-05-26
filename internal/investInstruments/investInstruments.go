@@ -7,7 +7,7 @@ type Instruments interface {
 }
 
 type StockInstrument interface {
-	Grab() error
+	GrabPage() error
 }
 
 type CryptoInstrument interface {
