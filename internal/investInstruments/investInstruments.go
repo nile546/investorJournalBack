@@ -9,7 +9,7 @@ type Instruments interface {
 }
 
 type StockInstrument interface {
-	GrabPage() ([]*models.Stock, error)
+	GrabPage() (*[]models.Stock, error)
 }
 
 type CryptoInstrument interface {

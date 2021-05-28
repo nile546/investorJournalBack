@@ -1,9 +1,9 @@
 package instruments
 
 import (
+	"encoding/csv"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -15,7 +15,7 @@ import (
 type StockInstrument struct {
 }
 
-func (r *StockInstrument) GrabPage() ([]*models.Stock, error) {
+func (r *StockInstrument) GrabPage() (*[]models.Stock, error) {
 	u := "https://spbexchange.ru/ru/listing/securities/list/"
 	var resp *http.Response
 	var req *http.Request
@@ -46,6 +46,7 @@ func (r *StockInstrument) GrabPage() ([]*models.Stock, error) {
 
 	pl := new(payload)
 	pl.headers = make(map[string]string)
+	pl.formData = make(map[string]string)
 
 	pl.headers["Cookie"] = resp.Cookies()[0].Name + "=" + resp.Cookies()[0].Value
 
@@ -57,10 +58,6 @@ func (r *StockInstrument) GrabPage() ([]*models.Stock, error) {
 		return nil, err
 	}
 
-	t, _ := ioutil.ReadAll(resp.Body)
-
-	fmt.Println(t)
-
 	doc.Find("input").Each(func(index int, input *goquery.Selection) {
 		switch name, _ := input.Attr("name"); name {
 
@@ -68,11 +65,13 @@ func (r *StockInstrument) GrabPage() ([]*models.Stock, error) {
 			pl.formData[name], _ = input.Attr("value")
 		case "bxValidationToken":
 			pl.formData[name], _ = input.Attr("value")
+		case "__EVENTVALIDATION":
+			pl.formData[name], _ = input.Attr("value")
 		}
 	})
 
 	pl.headers["Host"] = "spbexchange.ru"
-	pl.headers["Content-type"] = "application/x-www-form-urlencoded; charset=UTF-8"
+	pl.headers["Content-type"] = "application/x-www-form-urlencoded"
 	pl.headers["Origin"] = "https://spbexchange.ru"
 	pl.headers["Connection"] = "keep-alive"
 	pl.headers["Pragma"] = "no-cache"
@@ -87,38 +86,28 @@ func (r *StockInstrument) GrabPage() ([]*models.Stock, error) {
 	pl.headers["Referer"] = "https://spbexchange.ru/ru/listing/securities/list/"
 	pl.headers["Accept-Language"] = "ru,ru-RU;q=0.9,en-US;q=0.8,en;q=0.7,de;q=0.6"
 
-	pl.formData = make(map[string]string)
-	pl.formData["__EVENTARGUMENT"] = ""
-	pl.formData["ctl00$ctl00$ctl02"] = "ctl00$ctl00$BXContentOuter$BXContent$up|ctl00$ctl00$BXContentOuter$BXContent$pager$ctl02$ctl00"
-	pl.formData["__EVENTTARGET"] = "ctl00$BXContent$list$LinkButton1"
 	pl.formData["bitrix_include_areas"] = "N"
+	pl.formData["__EVENTTARGET"] = "ctl00$BXContent$list$LinkButton1"
+	pl.formData["__EVENTARGUMENT"] = ""
 	pl.formData["__LASTFOCUS"] = ""
-	pl.formData["ctl00$ctl00$BXContentOuter$BXContent$rbl"] = "1"
-	pl.formData["ctl00$ctl00$BXContentOuter$BXContent$tbInstrument"] = ""
-	pl.formData["ctl00$ctl00$BXContentOuter$BXContent$ddlRecom"] = ""
-	pl.formData["ctl00$ctl00$BXContentOuter$BXContent$ddlSector"] = ""
-	pl.formData["ctl00$ctl00$BXContentOuter$BXContent$ddlSubSektor"] = ""
-	pl.formData["ctl00$ctl00$tbName"] = ""
-	pl.formData["ctl00$ctl00$tbEmail"] = ""
-	pl.formData["ctl00$ctl00$tbPhone"] = ""
-	pl.formData["ctl00$ctl00$TextBox1"] = ""
-	pl.formData["ctl00$ctl00$TextBox2"] = ""
-	pl.formData["__VIEWSTATEGENERATOR"] = "65598315"
-	pl.formData["__ASYNCPOST"] = "true"
+	pl.formData["ctl00$searchform1$searchform1$searchform1$query"] = "Поиск..."
+	pl.formData["ctl00$BXContent$list$tbSearch"] = ""
+	pl.formData["ctl00$BXContent$list$ddlCBView"] = ""
+	pl.formData["ctl00$BXContent$list$ddlCBCat"] = ""
+	pl.formData["__VIEWSTATEGENERATOR"] = "8882E091"
 
 	data := url.Values{}
 
 	for k, v := range pl.formData {
 		data.Set(k, v)
 	}
-
-	req, err = http.NewRequest(http.MethodPost, u, strings.NewReader(data.Encode()))
+	req2, err := http.NewRequest(http.MethodPost, u, strings.NewReader(data.Encode()))
 
 	for k, v := range pl.headers {
-		req.Header.Add(k, v)
+		req2.Header.Add(k, v)
 	}
 
-	resp, err = client.Do(req)
+	resp, err = client.Do(req2)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +118,29 @@ func (r *StockInstrument) GrabPage() ([]*models.Stock, error) {
 		return nil, errors.New("SPBExchange not respond")
 	}
 
-	fmt.Println("zzzzzzzzzzzzzzzz", resp.Body)
+	stocks := &[]models.Stock{}
+	var ID int64 = 0
 
-	return nil, nil
+	cs := csv.NewReader(resp.Body)
+	cs.FieldsPerRecord = -1
+	cs.LazyQuotes = true
+	cs.Comma = ';'
+	for {
+		record, e := cs.Read()
+		if e != nil {
+			fmt.Println(e)
+			break
+		}
+		if ID != 0 {
+			stock := models.Stock{
+				ID:     ID,
+				Title:  record[2],
+				Ticket: record[6],
+			}
+			*stocks = append(*stocks, stock)
+		}
+		ID++
+	}
+
+	return stocks, nil
 }
