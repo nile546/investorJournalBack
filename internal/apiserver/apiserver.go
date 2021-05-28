@@ -12,8 +12,8 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/nile546/diplom/config"
-	"github.com/nile546/diplom/internal/investInstruments"
-	"github.com/nile546/diplom/internal/investInstruments/instruments"
+	"github.com/nile546/diplom/internal/investinstruments"
+	"github.com/nile546/diplom/internal/investinstruments/instruments"
 	"github.com/nile546/diplom/internal/mailer"
 	"github.com/nile546/diplom/internal/mailer/emailer"
 	"github.com/nile546/diplom/internal/models"
@@ -27,6 +27,7 @@ var (
 	addr       string
 	protocol   string
 	addrLand   string
+	spbAddr    string
 )
 
 //APIServer ...
@@ -38,7 +39,7 @@ type server struct {
 	router      *mux.Router
 	repository  store.Repository
 	mailer      mailer.Mailer
-	instruments investInstruments.Instruments
+	instruments investinstruments.Instruments
 }
 
 type spaHandler struct {
@@ -99,7 +100,7 @@ func Start(c *config.Config) error {
 
 	inst := instruments.New()
 
-	inst.Stocks().GrabPage()
+	inst.Stocks().MSKGrab(c.MskexchangeAddress)
 
 	production = c.Production
 	tokenKey = c.TokenKey
@@ -136,9 +137,9 @@ func Start(c *config.Config) error {
 func newServer(r store.Repository, m mailer.Mailer) *server {
 
 	srv := &server{
-		router:      mux.NewRouter(),
-		repository:  r,
-		mailer:      m,
+		router:     mux.NewRouter(),
+		repository: r,
+		mailer:     m,
 	}
 	srv.ConfugureRouter()
 	return srv

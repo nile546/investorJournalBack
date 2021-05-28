@@ -11,4 +11,5 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.1
 	golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf
+	golang.org/x/text v0.3.6
 )

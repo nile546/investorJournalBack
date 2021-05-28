@@ -4,19 +4,21 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/nile546/diplom/internal/models"
+	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/text/transform"
 )
 
-type StockInstrument struct {
+type Stockinstrument struct {
 }
 
-func (r *StockInstrument) GrabPage() (*[]models.Stock, error) {
-	u := "https://spbexchange.ru/ru/listing/securities/list/"
+func (r *Stockinstrument) SPBGrab(u string) (*[]models.Stock, error) {
 	var resp *http.Response
 	var req *http.Request
 	var err error
@@ -143,4 +145,49 @@ func (r *StockInstrument) GrabPage() (*[]models.Stock, error) {
 	}
 
 	return stocks, nil
+}
+
+func (r *Stockinstrument) MSKGrab(u string) (*[]models.Stock, error) {
+	var resp *http.Response
+	var req *http.Request
+	var err error
+
+	req, err = http.NewRequest(http.MethodGet, u, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	client := &http.Client{}
+
+	resp, err = client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, errors.New("MSKExchange not respond")
+	}
+
+	defer resp.Body.Close()
+
+	cs := csv.NewReader(resp.Body)
+	cs.FieldsPerRecord = -1
+	cs.LazyQuotes = true
+	cs.Comma = ';'
+	for {
+		record, e := cs.Read()
+		if e != nil {
+			fmt.Println(e)
+			break
+		}
+		sr := strings.NewReader(record[2])
+		tr := transform.NewReader(sr, charmap.Windows1251.NewDecoder())
+		buf, err := ioutil.ReadAll(tr)
+		if err != err {
+			fmt.Println(err)
+		}
+		fmt.Println(string(buf))
+	}
+
+	return nil, nil
 }

@@ -11,5 +11,7 @@
     "MailerPass": "KQ3PSAPewDtT)psjXO(mbuV1",
     "MailerSender": "ghasher45@gmail.com",
     "MailerHost": "smtp.gmail.com",
-    "MailerPort": "587"
+    "MailerPort": "587",
+    "SpbexchangeAddress": "https://spbexchange.ru/ru/listing/securities/list/",
+    "MskexchangeAddress": "https://www.moex.com/ru/listing/securities-list-csv.aspx?type=2"
 } 
