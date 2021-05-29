@@ -23,6 +23,7 @@ type Config struct {
 	LandingAddress     string
 	SpbexchangeAddress string
 	MskexchangeAddress string
+	BanksUrl           string
 }
 
 // NewConfig ...
@@ -38,6 +39,7 @@ func NewConfig() *Config {
 		LandingAddress:     "localhost:4200",
 		SpbexchangeAddress: "https://spbexchange.ru/ru/listing/securities/list/",
 		MskexchangeAddress: "https://www.moex.com/ru/listing/securities-list-csv.aspx?type=2",
+		BanksUrl:           "https://www.banki.ru/banks/ratings/export.php",
 	}
 }
 

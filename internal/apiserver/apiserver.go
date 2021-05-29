@@ -27,7 +27,6 @@ var (
 	addr       string
 	protocol   string
 	addrLand   string
-	spbAddr    string
 )
 
 //APIServer ...
@@ -98,9 +97,9 @@ func (s *server) ConfugureRouter() {
 //Start ...
 func Start(c *config.Config) error {
 
-	inst := instruments.New()
+	//inst := instruments.New()
 
-	inst.Stocks().MSKGrab(c.MskexchangeAddress)
+	//inst.Stocks().GrabAll(c.SpbexchangeAddress, c.MskexchangeAddress)
 
 	production = c.Production
 	tokenKey = c.TokenKey
@@ -126,7 +125,10 @@ func Start(c *config.Config) error {
 
 	m := emailer.New(mConf)
 
-	srv := newServer(r, m)
+	i := instruments.New()
+	i.Cryptos().GrabCrypto()
+
+	srv := newServer(r, m, i)
 
 	fmt.Println("Started server at ", addr)
 
@@ -134,12 +136,13 @@ func Start(c *config.Config) error {
 
 }
 
-func newServer(r store.Repository, m mailer.Mailer) *server {
+func newServer(r store.Repository, m mailer.Mailer, i investinstruments.Instruments) *server {
 
 	srv := &server{
-		router:     mux.NewRouter(),
-		repository: r,
-		mailer:     m,
+		router:      mux.NewRouter(),
+		repository:  r,
+		mailer:      m,
+		instruments: i,
 	}
 	srv.ConfugureRouter()
 	return srv

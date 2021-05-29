@@ -13,5 +13,6 @@
     "MailerHost": "smtp.gmail.com",
     "MailerPort": "587",
     "SpbexchangeAddress": "https://spbexchange.ru/ru/listing/securities/list/",
-    "MskexchangeAddress": "https://www.moex.com/ru/listing/securities-list-csv.aspx?type=2"
+    "MskexchangeAddress": "https://www.moex.com/ru/listing/securities-list-csv.aspx?type=2",
+    "BanksUrl": "https://www.banki.ru/banks/ratings/export.php"
 } 

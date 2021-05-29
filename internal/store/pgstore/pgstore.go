@@ -7,8 +7,10 @@ import (
 )
 
 type Repository struct {
-	db             *sql.DB
-	userRepository *UserRepository
+	db                *sql.DB
+	userRepository    *UserRepository
+	stockRepository   *StockRepository
+	depositRepository *DepositRepository
 }
 
 func New(db *sql.DB) *Repository {
@@ -28,4 +30,28 @@ func (r *Repository) User() store.UserRepository {
 	}
 
 	return r.userRepository
+}
+
+func (r *Repository) Stock() store.StockRepository {
+	if r.stockRepository != nil {
+		return r.stockRepository
+	}
+
+	r.stockRepository = &StockRepository{
+		db: r.db,
+	}
+
+	return r.stockRepository
+}
+
+func (r *Repository) Bank() store.DepositRepository {
+	if r.depositRepository != nil {
+		return r.depositRepository
+	}
+
+	r.depositRepository = &DepositRepository{
+		db: r.db,
+	}
+
+	return r.depositRepository
 }

@@ -1,7 +1,12 @@
 package instruments
 
 import (
+	"io/ioutil"
+	"strings"
+
 	"github.com/nile546/diplom/internal/investinstruments"
+	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/text/transform"
 )
 
 type Instruments struct {
@@ -45,4 +50,14 @@ func (i *Instruments) Deposits() investinstruments.Depositinstruments {
 	i.depositinstruments = &Depositinstruments{}
 
 	return i.depositinstruments
+}
+
+func convert(cs string) (string, error) {
+	sr := strings.NewReader(cs)
+	tr := transform.NewReader(sr, charmap.Windows1251.NewDecoder())
+	buf, err := ioutil.ReadAll(tr)
+	if err != err {
+		return "", err
+	}
+	return string(buf), nil
 }

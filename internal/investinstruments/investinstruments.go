@@ -1,6 +1,8 @@
 package investinstruments
 
-import "github.com/nile546/diplom/internal/models"
+import (
+	"github.com/nile546/diplom/internal/models"
+)
 
 type Instruments interface {
 	Stocks() Stockinstrument
@@ -9,11 +11,12 @@ type Instruments interface {
 }
 
 type Stockinstrument interface {
-	SPBGrab(u string) (*[]models.Stock, error)
-	MSKGrab(u string) (*[]models.Stock, error)
+	GrabAll(spburl string, mskurl string) (*[]models.Stock, error)
 }
 
 type Cryptoinstrument interface {
+	GrabCrypto() error
 }
 type Depositinstruments interface {
+	GrabBanks(banksUrl string) (*[]models.Bank, error)
 }

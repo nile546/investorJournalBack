@@ -3,22 +3,37 @@ package instruments
 import (
 	"encoding/csv"
 	"errors"
-	"fmt"
-	"io/ioutil"
+
 	"net/http"
 	"net/url"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/nile546/diplom/internal/models"
-	"golang.org/x/text/encoding/charmap"
-	"golang.org/x/text/transform"
 )
 
 type Stockinstrument struct {
 }
 
-func (r *Stockinstrument) SPBGrab(u string) (*[]models.Stock, error) {
+func (r *Stockinstrument) GrabAll(spburl string, mskurl string) (*[]models.Stock, error) {
+	stocksSPB, err := r.spbgrab(spburl)
+	if err != nil {
+		return nil, err
+	}
+
+	stocksMSK, err := r.mskgrab(mskurl)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, stock := range *stocksMSK {
+		*stocksSPB = append(*stocksSPB, stock)
+	}
+
+	return stocksSPB, nil
+}
+
+func (r *Stockinstrument) spbgrab(u string) (*[]models.Stock, error) {
 	var resp *http.Response
 	var req *http.Request
 	var err error
@@ -51,8 +66,6 @@ func (r *Stockinstrument) SPBGrab(u string) (*[]models.Stock, error) {
 	pl.formData = make(map[string]string)
 
 	pl.headers["Cookie"] = resp.Cookies()[0].Name + "=" + resp.Cookies()[0].Value
-
-	fmt.Println(resp.Body)
 
 	// Parse and store
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
@@ -130,24 +143,47 @@ func (r *Stockinstrument) SPBGrab(u string) (*[]models.Stock, error) {
 	for {
 		record, e := cs.Read()
 		if e != nil {
-			fmt.Println(e)
+			//TODO: ADD TO LOGER
 			break
 		}
-		if ID != 0 {
-			stock := models.Stock{
-				ID:     ID,
-				Title:  record[2],
-				Ticket: record[6],
-			}
-			*stocks = append(*stocks, stock)
+		if ID == 0 {
+			ID++
+			continue
 		}
+		title, err := convert(record[2])
+		if err != nil {
+			//TODO: ADD TO LOGER
+			ID++
+			continue
+		}
+
+		ticket, err := convert(record[6])
+		if err != nil {
+			//TODO: ADD TO LOGER
+			ID++
+			continue
+		}
+
+		tp, err := convert(record[5])
+		if err != nil {
+			//TODO: ADD TO LOGER
+			ID++
+			continue
+		}
+		stock := models.Stock{
+			ID:     ID,
+			Title:  title,
+			Ticket: ticket,
+			Type:   tp,
+		}
+		*stocks = append(*stocks, stock)
 		ID++
 	}
 
 	return stocks, nil
 }
 
-func (r *Stockinstrument) MSKGrab(u string) (*[]models.Stock, error) {
+func (r *Stockinstrument) mskgrab(u string) (*[]models.Stock, error) {
 	var resp *http.Response
 	var req *http.Request
 	var err error
@@ -170,24 +206,52 @@ func (r *Stockinstrument) MSKGrab(u string) (*[]models.Stock, error) {
 
 	defer resp.Body.Close()
 
+	stocks := &[]models.Stock{}
+	var ID int64 = 0
+
 	cs := csv.NewReader(resp.Body)
 	cs.FieldsPerRecord = -1
 	cs.LazyQuotes = true
 	cs.Comma = ';'
 	for {
-		record, e := cs.Read()
-		if e != nil {
-			fmt.Println(e)
+		record, err := cs.Read()
+		if err != nil {
+			//TODO: ADD TO LOGER
 			break
 		}
-		sr := strings.NewReader(record[2])
-		tr := transform.NewReader(sr, charmap.Windows1251.NewDecoder())
-		buf, err := ioutil.ReadAll(tr)
-		if err != err {
-			fmt.Println(err)
+		if ID == 0 {
+			ID++
+			continue
 		}
-		fmt.Println(string(buf))
+		title, err := convert(record[11])
+		if err != nil {
+			//TODO: ADD TO LOGER
+			ID++
+			continue
+		}
+
+		ticket, err := convert(record[7])
+		if err != nil {
+			//TODO: ADD TO LOGER
+			ID++
+			continue
+		}
+
+		tp, err := convert(record[4])
+		if err != nil {
+			//TODO: ADD TO LOGER
+			ID++
+			continue
+		}
+		stock := models.Stock{
+			ID:     ID,
+			Title:  title,
+			Ticket: ticket,
+			Type:   tp,
+		}
+		*stocks = append(*stocks, stock)
+		ID++
 	}
 
-	return nil, nil
+	return stocks, nil
 }
