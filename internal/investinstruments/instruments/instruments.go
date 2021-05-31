@@ -10,9 +10,9 @@ import (
 )
 
 type Instruments struct {
-	stockinstrumnet    *Stockinstrument
-	depositinstruments *Depositinstruments
-	cryptoinstrumnet   *Cryptoinstrument
+	stockinstrumnet  *Stockinstrument
+	bankinstruments  *Bankinstruments
+	cryptoinstrumnet *Cryptoinstrument
 }
 
 func New() *Instruments {
@@ -41,15 +41,15 @@ func (i *Instruments) Cryptos() investinstruments.Cryptoinstrument {
 	return i.cryptoinstrumnet
 }
 
-func (i *Instruments) Deposits() investinstruments.Depositinstruments {
+func (i *Instruments) Banks() investinstruments.Bankinstruments {
 
-	if i.depositinstruments != nil {
-		return i.depositinstruments
+	if i.bankinstruments != nil {
+		return i.bankinstruments
 	}
 
-	i.depositinstruments = &Depositinstruments{}
+	i.bankinstruments = &Bankinstruments{}
 
-	return i.depositinstruments
+	return i.bankinstruments
 }
 
 func convert(cs string) (string, error) {

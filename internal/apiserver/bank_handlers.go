@@ -2,7 +2,7 @@ package apiserver
 
 func (s *server) renovBanks(banksUrl string) {
 
-	banks, err := s.instruments.Deposits().GrabBanks(banksUrl)
+	banks, err := s.instruments.Banks().GrabBanks(banksUrl)
 	if err != nil {
 		//TODO: Add to loger
 		return

@@ -24,6 +24,7 @@ type Config struct {
 	SpbexchangeAddress string
 	MskexchangeAddress string
 	BanksUrl           string
+	CryptoUrl          string
 }
 
 // NewConfig ...
@@ -40,6 +41,7 @@ func NewConfig() *Config {
 		SpbexchangeAddress: "https://spbexchange.ru/ru/listing/securities/list/",
 		MskexchangeAddress: "https://www.moex.com/ru/listing/securities-list-csv.aspx?type=2",
 		BanksUrl:           "https://www.banki.ru/banks/ratings/export.php",
+		CryptoUrl:          "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
 	}
 }
 

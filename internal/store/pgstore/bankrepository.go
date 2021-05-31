@@ -6,11 +6,11 @@ import (
 	"github.com/nile546/diplom/internal/models"
 )
 
-type DepositRepository struct {
+type BankRepository struct {
 	db *sql.DB
 }
 
-func (s *DepositRepository) InsertBanks(*[]models.Bank) error {
+func (s *BankRepository) InsertBanks(*[]models.Bank) error {
 
 	return nil
 }

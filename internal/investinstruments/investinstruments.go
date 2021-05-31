@@ -7,7 +7,7 @@ import (
 type Instruments interface {
 	Stocks() Stockinstrument
 	Cryptos() Cryptoinstrument
-	Deposits() Depositinstruments
+	Banks() Bankinstruments
 }
 
 type Stockinstrument interface {
@@ -15,8 +15,8 @@ type Stockinstrument interface {
 }
 
 type Cryptoinstrument interface {
-	GrabCrypto() error
+	GrabCrypto(cryptoUrl string) (*[]models.Crypto, error)
 }
-type Depositinstruments interface {
+type Bankinstruments interface {
 	GrabBanks(banksUrl string) (*[]models.Bank, error)
 }

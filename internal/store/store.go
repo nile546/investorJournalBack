@@ -5,7 +5,8 @@ import "github.com/nile546/diplom/internal/models"
 type Repository interface {
 	User() UserRepository
 	Stock() StockRepository
-	Bank() DepositRepository
+	Bank() BankRepository
+	Crypto() CryptoRepository
 }
 
 type UserRepository interface {
@@ -19,6 +20,10 @@ type StockRepository interface {
 	InsertStocks(*[]models.Stock) error
 }
 
-type DepositRepository interface {
+type BankRepository interface {
 	InsertBanks(*[]models.Bank) error
+}
+
+type CryptoRepository interface {
+	InsertCrypto(*[]models.Crypto) error
 }

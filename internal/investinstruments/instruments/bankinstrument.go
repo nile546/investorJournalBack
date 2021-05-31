@@ -8,10 +8,10 @@ import (
 	"github.com/nile546/diplom/internal/models"
 )
 
-type Depositinstruments struct {
+type Bankinstruments struct {
 }
 
-func (d *Depositinstruments) GrabBanks(banksUrl string) (*[]models.Bank, error) {
+func (d *Bankinstruments) GrabBanks(banksUrl string) (*[]models.Bank, error) {
 	var resp *http.Response
 	var req *http.Request
 	var err error
