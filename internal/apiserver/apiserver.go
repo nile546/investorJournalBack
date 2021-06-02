@@ -126,9 +126,11 @@ func Start(c *config.Config) error {
 	m := emailer.New(mConf)
 
 	i := instruments.New()
-	i.Cryptos().GrabCrypto(c.CryptoUrl) // Сделать конфиг + добавить токен крипты
+
+	// Сделать конфиг + добавить токен крипты
 
 	srv := newServer(r, m, i)
+	srv.insertCryptos(c.CryptoUrl, c.CryptoKey)
 
 	fmt.Println("Started server at ", addr)
 

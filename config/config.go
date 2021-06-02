@@ -23,8 +23,9 @@ type Config struct {
 	LandingAddress     string
 	SpbexchangeAddress string
 	MskexchangeAddress string
-	BanksUrl           string
+	BankiUrl           string
 	CryptoUrl          string
+	CryptoKey          string
 }
 
 // NewConfig ...
@@ -40,8 +41,9 @@ func NewConfig() *Config {
 		LandingAddress:     "localhost:4200",
 		SpbexchangeAddress: "https://spbexchange.ru/ru/listing/securities/list/",
 		MskexchangeAddress: "https://www.moex.com/ru/listing/securities-list-csv.aspx?type=2",
-		BanksUrl:           "https://www.banki.ru/banks/ratings/export.php",
+		BankiUrl:           "https://www.banki.ru/banks/ratings/export.php",
 		CryptoUrl:          "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
+		CryptoKey:          "75416f37-656b-4dd1-8cf5-9e5a382d3e88",
 	}
 }
 

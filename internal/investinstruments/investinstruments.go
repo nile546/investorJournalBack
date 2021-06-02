@@ -15,8 +15,8 @@ type Stockinstrument interface {
 }
 
 type Cryptoinstrument interface {
-	GrabCrypto(cryptoUrl string) (*[]models.Crypto, error)
+	GrabAll(cryptoUrl string, cryptoKey string) (*[]models.Crypto, error)
 }
 type Bankinstruments interface {
-	GrabBanks(banksUrl string) (*[]models.Bank, error)
+	GrabAll(bankiUrl string) (*[]models.Bank, error)
 }

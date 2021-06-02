@@ -5,7 +5,7 @@ import "time"
 type Stock struct {
 	ID        int64     `json:"id"`
 	Title     string    `json:"title"`
-	Ticket    string    `json:"ticket"`
-	CreatedAt time.Time `json:"createdAt"`
+	Ticker    string    `json:"ticker"`
 	Type      string    `json:"type"`
+	CreatedAt time.Time `json:"createdAt"`
 }

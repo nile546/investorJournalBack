@@ -1,11 +1,16 @@
 package apiserver
 
-func (s *server) renovBanks(banksUrl string) {
+func (s *server) insertBanks(bankiUrl string) {
 
-	banks, err := s.instruments.Banks().GrabBanks(banksUrl)
+	banks, err := s.instruments.Banks().GrabAll(bankiUrl)
 	if err != nil {
 		//TODO: Add to loger
 		return
 	}
-	s.repository.Bank().InsertBanks(banks)
+
+	err = s.repository.Bank().InsertBanks(banks)
+	if err != nil {
+		//TODO: Add to loger
+		return
+	}
 }

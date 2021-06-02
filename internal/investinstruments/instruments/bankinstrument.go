@@ -11,12 +11,22 @@ import (
 type Bankinstruments struct {
 }
 
-func (d *Bankinstruments) GrabBanks(banksUrl string) (*[]models.Bank, error) {
+func (d *Bankinstruments) GrabAll(bankiUrl string) (*[]models.Bank, error) {
+
+	banks, err := grabBanki(bankiUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	return banks, nil
+}
+
+func grabBanki(bankiUrl string) (*[]models.Bank, error) {
 	var resp *http.Response
 	var req *http.Request
 	var err error
 
-	req, err = http.NewRequest(http.MethodGet, banksUrl, nil)
+	req, err = http.NewRequest(http.MethodGet, bankiUrl, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +61,7 @@ func (d *Bankinstruments) GrabBanks(banksUrl string) (*[]models.Bank, error) {
 			ID++
 			continue
 		}
-		title, err := convert(record[2])
+		title, err := convertWin1251toUTF8(record[2])
 		if err != nil {
 			//TODO: ADD TO LOGER
 			ID++

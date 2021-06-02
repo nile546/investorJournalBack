@@ -52,7 +52,7 @@ func (i *Instruments) Banks() investinstruments.Bankinstruments {
 	return i.bankinstruments
 }
 
-func convert(cs string) (string, error) {
+func convertWin1251toUTF8(cs string) (string, error) {
 	sr := strings.NewReader(cs)
 	tr := transform.NewReader(sr, charmap.Windows1251.NewDecoder())
 	buf, err := ioutil.ReadAll(tr)

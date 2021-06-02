@@ -150,21 +150,21 @@ func (r *Stockinstrument) spbgrab(u string) (*[]models.Stock, error) {
 			ID++
 			continue
 		}
-		title, err := convert(record[2])
+		title, err := convertWin1251toUTF8(record[2])
 		if err != nil {
 			//TODO: ADD TO LOGER
 			ID++
 			continue
 		}
 
-		ticket, err := convert(record[6])
+		ticker, err := convertWin1251toUTF8(record[6])
 		if err != nil {
 			//TODO: ADD TO LOGER
 			ID++
 			continue
 		}
 
-		tp, err := convert(record[5])
+		tp, err := convertWin1251toUTF8(record[5])
 		if err != nil {
 			//TODO: ADD TO LOGER
 			ID++
@@ -173,7 +173,7 @@ func (r *Stockinstrument) spbgrab(u string) (*[]models.Stock, error) {
 		stock := models.Stock{
 			ID:     ID,
 			Title:  title,
-			Ticket: ticket,
+			Ticker: ticker,
 			Type:   tp,
 		}
 		*stocks = append(*stocks, stock)
@@ -223,21 +223,21 @@ func (r *Stockinstrument) mskgrab(u string) (*[]models.Stock, error) {
 			ID++
 			continue
 		}
-		title, err := convert(record[11])
+		title, err := convertWin1251toUTF8(record[11])
 		if err != nil {
 			//TODO: ADD TO LOGER
 			ID++
 			continue
 		}
 
-		ticket, err := convert(record[7])
+		ticker, err := convertWin1251toUTF8(record[7])
 		if err != nil {
 			//TODO: ADD TO LOGER
 			ID++
 			continue
 		}
 
-		tp, err := convert(record[4])
+		tp, err := convertWin1251toUTF8(record[4])
 		if err != nil {
 			//TODO: ADD TO LOGER
 			ID++
@@ -246,7 +246,7 @@ func (r *Stockinstrument) mskgrab(u string) (*[]models.Stock, error) {
 		stock := models.Stock{
 			ID:     ID,
 			Title:  title,
-			Ticket: ticket,
+			Ticker: ticker,
 			Type:   tp,
 		}
 		*stocks = append(*stocks, stock)

@@ -1,11 +1,16 @@
 package apiserver
 
-func (s *server) renovCryptos(cryptoUrl string) {
+func (s *server) insertCryptos(cryptoUrl string, cryptoKey string) {
 
-	cryptos, err := s.instruments.Cryptos().GrabCrypto(cryptoUrl)
+	cryptos, err := s.instruments.Cryptos().GrabAll(cryptoUrl, cryptoKey)
 	if err != nil {
 		//TODO: Add to loger
 		return
 	}
-	s.repository.Crypto().InsertCrypto(cryptos)
+
+	err = s.repository.Crypto().InsertCrypto(cryptos)
+	if err != nil {
+		//TODO: Add to loger
+		return
+	}
 }

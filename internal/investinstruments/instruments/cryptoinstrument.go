@@ -2,7 +2,6 @@ package instruments
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -12,7 +11,20 @@ import (
 type Cryptoinstrument struct {
 }
 
-func (c *Cryptoinstrument) GrabCrypto(cryptoUrl string) (*[]models.Crypto, error) {
+type extoCrypto struct {
+	Name   string `json:"name"`
+	Symbol string `json:"symbol"`
+}
+
+func (c *Cryptoinstrument) GrabAll(cryptoUrl string, cryptoKey string) (*[]models.Crypto, error) {
+	cryptos, err := grabCrypto(cryptoUrl, cryptoKey)
+	if err != nil {
+		return nil, err
+	}
+	return cryptos, nil
+}
+
+func grabCrypto(cryptoUrl string, cryptoKey string) (*[]models.Crypto, error) {
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", cryptoUrl, nil)
@@ -21,7 +33,7 @@ func (c *Cryptoinstrument) GrabCrypto(cryptoUrl string) (*[]models.Crypto, error
 	}
 
 	req.Header.Set("Accepts", "application/json")
-	req.Header.Add("X-CMC_PRO_API_KEY", "75416f37-656b-4dd1-8cf5-9e5a382d3e88")
+	req.Header.Add("X-CMC_PRO_API_KEY", cryptoKey)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -29,16 +41,38 @@ func (c *Cryptoinstrument) GrabCrypto(cryptoUrl string) (*[]models.Crypto, error
 	}
 
 	type data struct {
-		Data []models.Crypto `json:"data"`
+		Data []extoCrypto `json:"data"`
 	}
 
-	crypt := &data{}
+	extoCryptoList := &data{}
 
 	respBody, _ := ioutil.ReadAll(resp.Body)
 
-	json.Unmarshal(respBody, crypt)
+	json.Unmarshal(respBody, extoCryptoList)
 
-	fmt.Println(crypt)
-	return &crypt.Data, nil
+	resultCrypto := &[]models.Crypto{}
+
+	for _, extoCrypto := range extoCryptoList.Data {
+		crypto, err := convertExtoCryptoToCrypto(&extoCrypto)
+		if err != nil {
+			//TODO: ADD TO LOGER
+			continue
+		}
+
+		*resultCrypto = append(*resultCrypto, *crypto)
+	}
+
+	return resultCrypto, nil
+}
+
+func convertExtoCryptoToCrypto(c *extoCrypto) (*models.Crypto, error) {
+	if c == nil {
+		return nil, nil
+	}
+
+	return &models.Crypto{
+		Title:  c.Name,
+		Ticker: c.Symbol,
+	}, nil
 
 }

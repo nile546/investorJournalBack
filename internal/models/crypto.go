@@ -3,8 +3,8 @@ package models
 import "time"
 
 type Crypto struct {
-	id        int64     `json:"id"`
-	Name      string    `json:"name"`
-	Symbol    string    `json:"symbol"`
-	createdAt time.Time `json:"createdAt"`
+	ID        int64     `json:"id"`
+	Title     string    `json:"title"`
+	Ticker    string    `json:"ticker"`
+	CreatedAt time.Time `json:"createdAt"`
 }

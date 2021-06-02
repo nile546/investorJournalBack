@@ -44,6 +44,28 @@ func (ur *UserRepository) Update(u *models.User) error {
 	return nil
 }
 
+func (ur *UserRepository) UpdateIsActiveByUserID(ID int64) error {
+
+	q := `UPDATE users SET (is_active) = ($1) WHERE id = $2`
+
+	res, err := ur.db.Exec(q, true, ID)
+	if err != nil {
+		return err
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if count < 1 {
+		//Add err consts
+		return nil
+	}
+
+	return nil
+}
+
 func (ur *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 
 	q := `SELECT id, login, encrypted_password, is_active, created_at FROM users where email=$1`
