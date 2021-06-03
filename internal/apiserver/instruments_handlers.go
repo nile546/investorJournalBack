@@ -1,8 +1,14 @@
 package apiserver
 
-import "time"
+type instrumentsConfig struct {
+	spbExchangeUrl string
+	mskStocksUrl   string
+	bankiUrl       string
+	cryptoUrl      string
+	cryptoKey      string
+}
 
-func updateAt(hour, min, sec int, f func()) error {
+/*func updateInstruments(hour, min, sec int, f func()) error {
 	loc, err := time.LoadLocation("Local")
 	if err != nil {
 		return err
@@ -26,8 +32,8 @@ func updateAt(hour, min, sec int, f func()) error {
 	}()
 
 	return nil
-}
+}*/
 
-func updateInstruments() {
-	//Как подгружать конфиг?
+func updateInstruments(c *instrumentsConfig) {
+
 }

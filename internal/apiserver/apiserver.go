@@ -17,6 +17,7 @@ import (
 	"github.com/nile546/diplom/internal/mailer"
 	"github.com/nile546/diplom/internal/mailer/emailer"
 	"github.com/nile546/diplom/internal/models"
+	"github.com/nile546/diplom/internal/scheduler"
 	"github.com/nile546/diplom/internal/store"
 	"github.com/nile546/diplom/internal/store/pgstore"
 )
@@ -31,7 +32,8 @@ var (
 
 //APIServer ...
 type APIServer struct {
-	config *config.Config
+	config    *config.Config
+	scheduler *scheduler.Scheduler
 }
 
 type server struct {
@@ -96,6 +98,19 @@ func (s *server) ConfugureRouter() {
 
 //Start ...
 func Start(c *config.Config) error {
+
+	cI := &instrumentsConfig{
+		spbExchangeUrl: c.SpbexchangeAddress,
+		mskStocksUrl:   c.MskexchangeAddress,
+		bankiUrl:       c.BankiUrl,
+		cryptoUrl:      c.CryptoUrl,
+		cryptoKey:      c.CryptoKey,
+	}
+
+	job := &scheduler.Job{
+		Name: "updateInstruments",
+		F:    updateInstruments(cI),
+	}
 
 	//inst := instruments.New()
 
