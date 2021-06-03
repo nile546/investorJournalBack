@@ -8,6 +8,12 @@ func (s *server) insertStocks(spburl string, mskurl string) {
 		return
 	}
 
+	err = s.repository.Stock().TruncateStocks()
+	if err != nil {
+		//TODO: Add to loger
+		return
+	}
+
 	err = s.repository.Stock().InsertStocks(stocks)
 	if err != nil {
 		//TODO: Add to loger

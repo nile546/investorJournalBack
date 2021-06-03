@@ -2,7 +2,6 @@ package pgstore
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/nile546/diplom/internal/models"
 )
@@ -11,18 +10,49 @@ type CryptoRepository struct {
 	db *sql.DB
 }
 
-func (s *CryptoRepository) InsertCrypto(cryptos *[]models.Crypto) (err error) {
+func (c *CryptoRepository) InsertCrypto(cryptos *[]models.Crypto) (err error) {
 
-	q := `INSERT INTO crypto (title, ticker) VALUES ($1, $2)`
+	q := `INSERT INTO crypto (title, ticker) VALUES `
+
+	var res sql.Result
+	var buf string
+
+	for i, crypto := range *cryptos {
+		if i == len(*cryptos)-1 {
+			buf = "('"
+			buf += crypto.Title + "', '" + crypto.Ticker
+			buf += "')"
+			q += buf
+			break
+		}
+		buf = "('"
+		buf += crypto.Title + "', '" + crypto.Ticker
+		buf += "'), "
+		q += buf
+	}
+
+	res, err = c.db.Exec(q)
+	if err != nil {
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *CryptoRepository) TruncateCrypto() (err error) {
+
+	q := `TRUNCATE TABLE crypto RESTART IDENTITY`
 
 	var res sql.Result
 
-	for _, crypto := range *cryptos {
-		if res, err = s.db.Exec(q, crypto.Title, crypto.Ticker); err != nil {
-			//TODO: ADD TO LOGER
-			fmt.Println(err)
-			continue
-		}
+	res, err = c.db.Exec(q)
+	if err != nil {
+		return err
 	}
 
 	_, err = res.RowsAffected()

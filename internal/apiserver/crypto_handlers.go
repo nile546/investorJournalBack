@@ -8,6 +8,12 @@ func (s *server) insertCryptos(cryptoUrl string, cryptoKey string) {
 		return
 	}
 
+	err = s.repository.Crypto().TruncateCrypto()
+	if err != nil {
+		//TODO: Add to loger
+		return
+	}
+
 	err = s.repository.Crypto().InsertCrypto(cryptos)
 	if err != nil {
 		//TODO: Add to loger

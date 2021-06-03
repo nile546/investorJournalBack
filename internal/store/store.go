@@ -19,12 +19,15 @@ type UserRepository interface {
 
 type StockRepository interface {
 	InsertStocks(*[]models.Stock) error
+	TruncateStocks() error
 }
 
 type BankRepository interface {
 	InsertBanks(*[]models.Bank) error
+	TruncateBanks() error
 }
 
 type CryptoRepository interface {
 	InsertCrypto(*[]models.Crypto) error
+	TruncateCrypto() error
 }

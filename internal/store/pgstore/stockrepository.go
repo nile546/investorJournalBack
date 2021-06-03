@@ -2,6 +2,7 @@ package pgstore
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/nile546/diplom/internal/models"
 )
@@ -12,15 +13,47 @@ type StockRepository struct {
 
 func (s *StockRepository) InsertStocks(stocks *[]models.Stock) (err error) {
 
-	q := `INSERT INTO stocks (title, ticker, type) VALUES ($1, $2, $3)`
+	q := `INSERT INTO stocks (title, ticker, type) VALUES `
+
+	var res sql.Result
+	var buf string
+
+	for i, stock := range *stocks {
+		if i == len(*stocks)-1 {
+			buf = "('"
+			buf += strings.Replace(stock.Title, "'", "''", -1) + "', '" + strings.Replace(stock.Ticker, "'", "''", -1) + "', '" + strings.Replace(stock.Type, "'", "''", -1)
+			buf += "')"
+			q += buf
+			break
+		}
+		buf = "('"
+		buf += strings.Replace(stock.Title, "'", "''", -1) + "', '" + strings.Replace(stock.Ticker, "'", "''", -1) + "', '" + strings.Replace(stock.Type, "'", "''", -1)
+		buf += "'), "
+		q += buf
+	}
+
+	res, err = s.db.Exec(q)
+	if err != nil {
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *StockRepository) TruncateStocks() (err error) {
+
+	q := `TRUNCATE TABLE stocks RESTART IDENTITY`
 
 	var res sql.Result
 
-	for _, stock := range *stocks {
-		if res, err = s.db.Exec(q, stock.Title, stock.Ticker, stock.Type); err != nil {
-			//TODO: ADD TO LOGER
-			continue
-		}
+	res, err = s.db.Exec(q)
+	if err != nil {
+		return err
 	}
 
 	_, err = res.RowsAffected()

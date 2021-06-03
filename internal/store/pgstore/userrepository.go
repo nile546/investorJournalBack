@@ -46,7 +46,7 @@ func (ur *UserRepository) Update(u *models.User) error {
 
 func (ur *UserRepository) UpdateIsActiveByUserID(ID int64) error {
 
-	q := `UPDATE users SET (is_active) = ($1) WHERE id = $2`
+	q := `UPDATE users SET is_active = $1 WHERE id = $2`
 
 	res, err := ur.db.Exec(q, true, ID)
 	if err != nil {

@@ -130,8 +130,6 @@ func Start(c *config.Config) error {
 	// Сделать конфиг + добавить токен крипты
 
 	srv := newServer(r, m, i)
-	srv.insertCryptos(c.CryptoUrl, c.CryptoKey)
-
 	fmt.Println("Started server at ", addr)
 
 	return http.ListenAndServe(addr, srv)
