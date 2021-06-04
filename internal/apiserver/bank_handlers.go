@@ -1,6 +1,6 @@
 package apiserver
 
-func (s *server) insertBanks(bankiUrl string) {
+func (s *server) updateBanks(bankiUrl string) {
 
 	banks, err := s.instruments.Banks().GrabAll(bankiUrl)
 	if err != nil {

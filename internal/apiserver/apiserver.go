@@ -17,7 +17,6 @@ import (
 	"github.com/nile546/diplom/internal/mailer"
 	"github.com/nile546/diplom/internal/mailer/emailer"
 	"github.com/nile546/diplom/internal/models"
-	"github.com/nile546/diplom/internal/scheduler"
 	"github.com/nile546/diplom/internal/store"
 	"github.com/nile546/diplom/internal/store/pgstore"
 )
@@ -32,8 +31,7 @@ var (
 
 //APIServer ...
 type APIServer struct {
-	config    *config.Config
-	scheduler *scheduler.Scheduler
+	config *config.Config
 }
 
 type server struct {
@@ -99,23 +97,6 @@ func (s *server) ConfugureRouter() {
 //Start ...
 func Start(c *config.Config) error {
 
-	cI := &instrumentsConfig{
-		spbExchangeUrl: c.SpbexchangeAddress,
-		mskStocksUrl:   c.MskexchangeAddress,
-		bankiUrl:       c.BankiUrl,
-		cryptoUrl:      c.CryptoUrl,
-		cryptoKey:      c.CryptoKey,
-	}
-
-	job := &scheduler.Job{
-		Name: "updateInstruments",
-		F:    updateInstruments(cI),
-	}
-
-	//inst := instruments.New()
-
-	//inst.Stocks().GrabAll(c.SpbexchangeAddress, c.MskexchangeAddress)
-
 	production = c.Production
 	tokenKey = c.TokenKey
 
@@ -142,9 +123,21 @@ func Start(c *config.Config) error {
 
 	i := instruments.New()
 
-	// Сделать конфиг + добавить токен крипты
+	cI := &instrumentsConfig{
+		spbExchangeUrl: c.SpbexchangeAddress,
+		mskStocksUrl:   c.MskexchangeAddress,
+		bankiUrl:       c.BankiUrl,
+		cryptoUrl:      c.CryptoUrl,
+		cryptoKey:      c.CryptoKey,
+	}
 
 	srv := newServer(r, m, i)
+
+	err = srv.updateInstruments(c.HoursUpdateInstruments, c.MinutesUpdateInstruments, c.SecondsUpdateInstruments, srv.callUpdateHandlers, cI)
+	if err != nil {
+		//ADD ERR TO LOGER
+	}
+
 	fmt.Println("Started server at ", addr)
 
 	return http.ListenAndServe(addr, srv)

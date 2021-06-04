@@ -1,6 +1,6 @@
 package apiserver
 
-func (s *server) insertCryptos(cryptoUrl string, cryptoKey string) {
+func (s *server) updateCryptos(cryptoUrl string, cryptoKey string) {
 
 	cryptos, err := s.instruments.Cryptos().GrabAll(cryptoUrl, cryptoKey)
 	if err != nil {

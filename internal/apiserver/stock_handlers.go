@@ -1,6 +1,6 @@
 package apiserver
 
-func (s *server) insertStocks(spburl string, mskurl string) {
+func (s *server) updateStocks(spburl string, mskurl string) {
 
 	stocks, err := s.instruments.Stocks().GrabAll(spburl, mskurl)
 	if err != nil {

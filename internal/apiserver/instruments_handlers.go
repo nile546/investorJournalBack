@@ -1,5 +1,9 @@
 package apiserver
 
+import (
+	"time"
+)
+
 type instrumentsConfig struct {
 	spbExchangeUrl string
 	mskStocksUrl   string
@@ -8,7 +12,7 @@ type instrumentsConfig struct {
 	cryptoKey      string
 }
 
-/*func updateInstruments(hour, min, sec int, f func()) error {
+func (s *server) updateInstruments(hour, min, sec int, callHandlers func(c *instrumentsConfig), iC *instrumentsConfig) error {
 	loc, err := time.LoadLocation("Local")
 	if err != nil {
 		return err
@@ -26,14 +30,16 @@ type instrumentsConfig struct {
 	go func() {
 		time.Sleep(duration)
 		for {
-			f()
+			callHandlers(iC)
 			time.Sleep(time.Hour * 24)
 		}
 	}()
 
 	return nil
-}*/
+}
 
-func updateInstruments(c *instrumentsConfig) {
-
+func (s *server) callUpdateHandlers(c *instrumentsConfig) {
+	s.updateStocks(c.spbExchangeUrl, c.mskStocksUrl)
+	s.updateCryptos(c.cryptoUrl, c.cryptoKey)
+	s.updateBanks(c.bankiUrl)
 }
