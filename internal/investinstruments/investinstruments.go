@@ -11,12 +11,12 @@ type Instruments interface {
 }
 
 type Stockinstrument interface {
-	GrabAll(spburl string, mskurl string) (*[]models.Stock, error)
+	GrabAll(spburl string, mskurl string) (*[]models.StockInstrument, error)
 }
 
 type Cryptoinstrument interface {
-	GrabAll(cryptoUrl string, cryptoKey string) (*[]models.Crypto, error)
+	GrabAll(cryptoUrl string, cryptoKey string) (*[]models.CryptoInstrument, error)
 }
 type Bankinstruments interface {
-	GrabAll(bankiUrl string) (*[]models.Bank, error)
+	GrabAll(bankiUrl string) (*[]models.BankInstrument, error)
 }

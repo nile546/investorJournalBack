@@ -6,13 +6,13 @@ import (
 	"github.com/nile546/diplom/internal/models"
 )
 
-type CryptoRepository struct {
+type CryptoInstrumentsRepository struct {
 	db *sql.DB
 }
 
-func (c *CryptoRepository) InsertCrypto(cryptos *[]models.Crypto) (err error) {
+func (c *CryptoInstrumentsRepository) InsertCryptoInstruments(cryptos *[]models.CryptoInstrument) (err error) {
 
-	q := `INSERT INTO crypto (title, ticker) VALUES `
+	q := `INSERT INTO crypto_instruments (title, ticker) VALUES `
 
 	var res sql.Result
 	var buf string
@@ -44,9 +44,9 @@ func (c *CryptoRepository) InsertCrypto(cryptos *[]models.Crypto) (err error) {
 	return nil
 }
 
-func (c *CryptoRepository) TruncateCrypto() (err error) {
+func (c *CryptoInstrumentsRepository) TruncateCryptoInstruments() (err error) {
 
-	q := `TRUNCATE TABLE crypto RESTART IDENTITY`
+	q := `TRUNCATE TABLE crypto_instruments RESTART IDENTITY`
 
 	var res sql.Result
 

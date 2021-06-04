@@ -39,7 +39,7 @@ func (s *server) updateInstruments(hour, min, sec int, callHandlers func(c *inst
 }
 
 func (s *server) callUpdateHandlers(c *instrumentsConfig) {
-	s.updateStocks(c.spbExchangeUrl, c.mskStocksUrl)
-	s.updateCryptos(c.cryptoUrl, c.cryptoKey)
-	s.updateBanks(c.bankiUrl)
+	s.updateStocksInstruments(c.spbExchangeUrl, c.mskStocksUrl)
+	s.updateCryptoInstruments(c.cryptoUrl, c.cryptoKey)
+	s.updateBanksInstruments(c.bankiUrl)
 }

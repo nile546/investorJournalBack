@@ -7,13 +7,13 @@ import (
 	"github.com/nile546/diplom/internal/models"
 )
 
-type StockRepository struct {
+type StockInstrumentRepository struct {
 	db *sql.DB
 }
 
-func (s *StockRepository) InsertStocks(stocks *[]models.Stock) (err error) {
+func (s *StockInstrumentRepository) InsertStocksInstruments(stocks *[]models.StockInstrument) (err error) {
 
-	q := `INSERT INTO stocks (title, ticker, type) VALUES `
+	q := `INSERT INTO stocks_instruments (title, ticker, type) VALUES `
 
 	var res sql.Result
 	var buf string
@@ -45,9 +45,9 @@ func (s *StockRepository) InsertStocks(stocks *[]models.Stock) (err error) {
 	return nil
 }
 
-func (s *StockRepository) TruncateStocks() (err error) {
+func (s *StockInstrumentRepository) TruncateStocksInstruments() (err error) {
 
-	q := `TRUNCATE TABLE stocks RESTART IDENTITY`
+	q := `TRUNCATE TABLE stocks_instruments RESTART IDENTITY`
 
 	var res sql.Result
 

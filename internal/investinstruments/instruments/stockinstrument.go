@@ -15,7 +15,7 @@ import (
 type Stockinstrument struct {
 }
 
-func (r *Stockinstrument) GrabAll(spburl string, mskurl string) (*[]models.Stock, error) {
+func (r *Stockinstrument) GrabAll(spburl string, mskurl string) (*[]models.StockInstrument, error) {
 	stocksSPB, err := r.spbgrab(spburl)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (r *Stockinstrument) GrabAll(spburl string, mskurl string) (*[]models.Stock
 	return stocksSPB, nil
 }
 
-func (r *Stockinstrument) spbgrab(u string) (*[]models.Stock, error) {
+func (r *Stockinstrument) spbgrab(u string) (*[]models.StockInstrument, error) {
 	var resp *http.Response
 	var req *http.Request
 	var err error
@@ -133,7 +133,7 @@ func (r *Stockinstrument) spbgrab(u string) (*[]models.Stock, error) {
 		return nil, errors.New("SPBExchange not respond")
 	}
 
-	stocks := &[]models.Stock{}
+	stocks := &[]models.StockInstrument{}
 	var ID int64 = 0
 
 	cs := csv.NewReader(resp.Body)
@@ -170,7 +170,7 @@ func (r *Stockinstrument) spbgrab(u string) (*[]models.Stock, error) {
 			ID++
 			continue
 		}
-		stock := models.Stock{
+		stock := models.StockInstrument{
 			ID:     ID,
 			Title:  title,
 			Ticker: ticker,
@@ -183,7 +183,7 @@ func (r *Stockinstrument) spbgrab(u string) (*[]models.Stock, error) {
 	return stocks, nil
 }
 
-func (r *Stockinstrument) mskgrab(u string) (*[]models.Stock, error) {
+func (r *Stockinstrument) mskgrab(u string) (*[]models.StockInstrument, error) {
 	var resp *http.Response
 	var req *http.Request
 	var err error
@@ -206,7 +206,7 @@ func (r *Stockinstrument) mskgrab(u string) (*[]models.Stock, error) {
 
 	defer resp.Body.Close()
 
-	stocks := &[]models.Stock{}
+	stocks := &[]models.StockInstrument{}
 	var ID int64 = 0
 
 	cs := csv.NewReader(resp.Body)
@@ -243,7 +243,7 @@ func (r *Stockinstrument) mskgrab(u string) (*[]models.Stock, error) {
 			ID++
 			continue
 		}
-		stock := models.Stock{
+		stock := models.StockInstrument{
 			ID:     ID,
 			Title:  title,
 			Ticker: ticker,

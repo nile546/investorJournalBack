@@ -2,9 +2,8 @@ package models
 
 import "time"
 
-type Crypto struct {
+type BankInstrument struct {
 	ID        int64     `json:"id"`
 	Title     string    `json:"title"`
-	Ticker    string    `json:"ticker"`
 	CreatedAt time.Time `json:"createdAt"`
 }

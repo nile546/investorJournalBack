@@ -7,11 +7,12 @@ import (
 )
 
 type Repository struct {
-	db               *sql.DB
-	userRepository   *UserRepository
-	stockRepository  *StockRepository
-	bankRepository   *BankRepository
-	cryptoRepository *CryptoRepository
+	db                         *sql.DB
+	userRepository             *UserRepository
+	stockInstrumentRepository  *StockInstrumentRepository
+	bankInstrumentRepository   *BankInstrumentRepository
+	cryptoInstrumentRepository *CryptoInstrumentRepository
+	stockStockDealRepository   *StockDealRepository
 }
 
 func New(db *sql.DB) *Repository {
@@ -33,38 +34,50 @@ func (r *Repository) User() store.UserRepository {
 	return r.userRepository
 }
 
-func (r *Repository) Stock() store.StockRepository {
-	if r.stockRepository != nil {
-		return r.stockRepository
+func (r *Repository) StockInstrument() store.StockInstrumentRepository {
+	if r.stockInstrumentRepository != nil {
+		return r.stockInstrumentRepository
 	}
 
-	r.stockRepository = &StockRepository{
+	r.stockInstrumentRepository = &StockInstrumentRepository{
 		db: r.db,
 	}
 
-	return r.stockRepository
+	return r.stockInstrumentRepository
 }
 
-func (r *Repository) Bank() store.BankRepository {
-	if r.bankRepository != nil {
-		return r.bankRepository
+func (r *Repository) BankInstrument() store.BankInstrumentRepository {
+	if r.bankInstrumentRepository != nil {
+		return r.bankInstrumentRepository
 	}
 
-	r.bankRepository = &BankRepository{
+	r.bankInstrumentRepository = &BankInstrumentRepository{
 		db: r.db,
 	}
 
-	return r.bankRepository
+	return r.bankInstrumentRepository
 }
 
-func (r *Repository) Crypto() store.CryptoRepository {
-	if r.cryptoRepository != nil {
-		return r.cryptoRepository
+func (r *Repository) CryptoInstrument() store.CryptoInstrumentRepository {
+	if r.cryptoInstrumentRepository != nil {
+		return r.cryptoInstrumentRepository
 	}
 
-	r.cryptoRepository = &CryptoRepository{
+	r.cryptoInstrumentRepository = &CryptoInstrumentRepository{
 		db: r.db,
 	}
 
-	return r.cryptoRepository
+	return r.cryptoInstrumentRepository
+}
+
+func (r *Repository) StockDeal() store.StockDealRepository {
+	if r.stockStockDealRepository != nil {
+		return r.stockStockDealRepository
+	}
+
+	r.stockStockDealRepository = &StockDealRepository{
+		db: r.db,
+	}
+
+	return r.stockStockDealRepository
 }

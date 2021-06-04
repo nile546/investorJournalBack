@@ -1,4 +1,4 @@
-CREATE TABLE stocks(
+CREATE TABLE stocks_instruments(
     id BIGSERIAL NOT NULL PRIMARY KEY,
     title VARCHAR NOT NULL,
     ticker VARCHAR NOT NULL,

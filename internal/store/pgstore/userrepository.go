@@ -10,7 +10,7 @@ type UserRepository struct {
 	db *sql.DB
 }
 
-func (ur *UserRepository) Create(u *models.User) error {
+func (ur *UserRepository) CreateUser(u *models.User) error {
 
 	q := `INSERT INTO users (login, email, encrypted_password) VALUES ($1, $2, $3) RETURNING id`
 
@@ -22,7 +22,7 @@ func (ur *UserRepository) Create(u *models.User) error {
 
 }
 
-func (ur *UserRepository) Update(u *models.User) error {
+func (ur *UserRepository) UpdateUser(u *models.User) error {
 
 	q := `UPDATE users SET (login, email, is_active) = ($1, $2, $3) WHERE id = $4`
 

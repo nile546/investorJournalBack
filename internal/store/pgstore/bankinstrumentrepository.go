@@ -6,13 +6,13 @@ import (
 	"github.com/nile546/diplom/internal/models"
 )
 
-type BankRepository struct {
+type BankInstrumentRepository struct {
 	db *sql.DB
 }
 
-func (b *BankRepository) InsertBanks(banks *[]models.Bank) (err error) {
+func (b *BankInstrumentRepository) InsertBanksInstruments(banks *[]models.BankInstrument) (err error) {
 
-	q := `INSERT INTO banks (title) VALUES `
+	q := `INSERT INTO banks_instruments (title) VALUES `
 
 	var res sql.Result
 	var buf string
@@ -44,7 +44,7 @@ func (b *BankRepository) InsertBanks(banks *[]models.Bank) (err error) {
 	return nil
 }
 
-func (b *BankRepository) TruncateBanks() (err error) {
+func (b *BankInstrumentRepository) TruncateBanksInstruments() (err error) {
 
 	q := `TRUNCATE TABLE banks RESTART IDENTITY`
 

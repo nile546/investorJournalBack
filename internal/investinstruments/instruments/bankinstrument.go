@@ -11,7 +11,7 @@ import (
 type Bankinstruments struct {
 }
 
-func (d *Bankinstruments) GrabAll(bankiUrl string) (*[]models.Bank, error) {
+func (d *Bankinstruments) GrabAll(bankiUrl string) (*[]models.BankInstrument, error) {
 
 	banks, err := grabBanki(bankiUrl)
 	if err != nil {
@@ -21,7 +21,7 @@ func (d *Bankinstruments) GrabAll(bankiUrl string) (*[]models.Bank, error) {
 	return banks, nil
 }
 
-func grabBanki(bankiUrl string) (*[]models.Bank, error) {
+func grabBanki(bankiUrl string) (*[]models.BankInstrument, error) {
 	var resp *http.Response
 	var req *http.Request
 	var err error
@@ -44,7 +44,7 @@ func grabBanki(bankiUrl string) (*[]models.Bank, error) {
 
 	defer resp.Body.Close()
 
-	banks := &[]models.Bank{}
+	banks := &[]models.BankInstrument{}
 	var ID int64 = 0
 
 	cs := csv.NewReader(resp.Body)
@@ -68,7 +68,7 @@ func grabBanki(bankiUrl string) (*[]models.Bank, error) {
 			continue
 		}
 
-		bank := models.Bank{
+		bank := models.BankInstrument{
 			ID:    ID,
 			Title: title,
 		}

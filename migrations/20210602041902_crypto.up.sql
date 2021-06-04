@@ -1,4 +1,4 @@
-CREATE TABLE crypto(
+CREATE TABLE crypto_instruments(
     id BIGSERIAL NOT NULL PRIMARY KEY,
     title VARCHAR NOT NULL,
     ticker VARCHAR NOT NULL,

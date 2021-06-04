@@ -1,1 +1,1 @@
-DROP TABLE crypto
+DROP TABLE crypto_instruments

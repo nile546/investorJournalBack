@@ -1,2 +1,4 @@
 ALTER TABLE users
-DROP CONSTRAINT UC_users;
+DROP CONSTRAINT UC_users_login;
+ALTER TABLE users
+DROP CONSTRAINT UC_users_email;

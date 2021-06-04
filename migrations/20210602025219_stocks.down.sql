@@ -1,1 +1,1 @@
-DROP TABLE stocks
+DROP TABLE stocks_instruments

@@ -7,4 +7,5 @@ const (
 	signinRoute        = "/signin"
 	confirmSignupRoute = "/confirm-signup"
 	landingRoute       = "/landing"
+	authRoute          = "/auth"
 )

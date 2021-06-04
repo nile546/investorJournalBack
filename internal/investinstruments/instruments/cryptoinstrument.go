@@ -16,7 +16,7 @@ type extoCrypto struct {
 	Symbol string `json:"symbol"`
 }
 
-func (c *Cryptoinstrument) GrabAll(cryptoUrl string, cryptoKey string) (*[]models.Crypto, error) {
+func (c *Cryptoinstrument) GrabAll(cryptoUrl string, cryptoKey string) (*[]models.CryptoInstrument, error) {
 	cryptos, err := grabCrypto(cryptoUrl, cryptoKey)
 	if err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func (c *Cryptoinstrument) GrabAll(cryptoUrl string, cryptoKey string) (*[]model
 	return cryptos, nil
 }
 
-func grabCrypto(cryptoUrl string, cryptoKey string) (*[]models.Crypto, error) {
+func grabCrypto(cryptoUrl string, cryptoKey string) (*[]models.CryptoInstrument, error) {
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", cryptoUrl, nil)
@@ -50,7 +50,7 @@ func grabCrypto(cryptoUrl string, cryptoKey string) (*[]models.Crypto, error) {
 
 	json.Unmarshal(respBody, extoCryptoList)
 
-	resultCrypto := &[]models.Crypto{}
+	resultCrypto := &[]models.CryptoInstrument{}
 
 	for _, extoCrypto := range extoCryptoList.Data {
 		crypto, err := convertExtoCryptoToCrypto(&extoCrypto)
@@ -65,12 +65,12 @@ func grabCrypto(cryptoUrl string, cryptoKey string) (*[]models.Crypto, error) {
 	return resultCrypto, nil
 }
 
-func convertExtoCryptoToCrypto(c *extoCrypto) (*models.Crypto, error) {
+func convertExtoCryptoToCrypto(c *extoCrypto) (*models.CryptoInstrument, error) {
 	if c == nil {
 		return nil, nil
 	}
 
-	return &models.Crypto{
+	return &models.CryptoInstrument{
 		Title:  c.Name,
 		Ticker: c.Symbol,
 	}, nil

@@ -50,7 +50,7 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 		s.error(w, err.Error())
 	}
 
-	if err := s.repository.User().Create(u); err != nil {
+	if err := s.repository.User().CreateUser(u); err != nil {
 		s.error(w, err.Error())
 		return
 	}

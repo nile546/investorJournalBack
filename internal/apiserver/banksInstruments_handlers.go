@@ -1,6 +1,6 @@
 package apiserver
 
-func (s *server) updateBanks(bankiUrl string) {
+func (s *server) updateBanksInstruments(bankiUrl string) {
 
 	banks, err := s.instruments.Banks().GrabAll(bankiUrl)
 	if err != nil {
@@ -8,13 +8,13 @@ func (s *server) updateBanks(bankiUrl string) {
 		return
 	}
 
-	err = s.repository.Bank().TruncateBanks()
+	err = s.repository.BankInstrument().TruncateBanksInstruments()
 	if err != nil {
 		//TODO: Add to loger
 		return
 	}
 
-	err = s.repository.Bank().InsertBanks(banks)
+	err = s.repository.BankInstrument().InsertBanksInstruments(banks)
 	if err != nil {
 		//TODO: Add to loger
 		return

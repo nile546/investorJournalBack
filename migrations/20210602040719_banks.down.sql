@@ -1,1 +1,1 @@
-DROP TABLE banks
+DROP TABLE banks_instruments

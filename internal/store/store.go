@@ -4,30 +4,34 @@ import "github.com/nile546/diplom/internal/models"
 
 type Repository interface {
 	User() UserRepository
-	Stock() StockRepository
-	Bank() BankRepository
-	Crypto() CryptoRepository
+	StockInstrument() StockInstrumentRepository
+	BankInstrument() BankInstrumentRepository
+	CryptoInstrument() CryptoInstrumentRepository
+	StockDeal() StockDealRepository
 }
 
 type UserRepository interface {
-	Create(*models.User) error
-	Update(*models.User) error
+	CreateUser(*models.User) error
+	UpdateUser(*models.User) error
 	UpdateIsActiveByUserID(ID int64) error
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserByID(ID int64) (*models.User, error)
 }
 
-type StockRepository interface {
-	InsertStocks(*[]models.Stock) error
-	TruncateStocks() error
+type StockInstrumentRepository interface {
+	InsertStocksInstruments(*[]models.StockInstrument) error
+	TruncateStocksInstruments() error
 }
 
-type BankRepository interface {
-	InsertBanks(*[]models.Bank) error
-	TruncateBanks() error
+type BankInstrumentRepository interface {
+	InsertBanksInstruments(*[]models.BankInstrument) error
+	TruncateBanksInstruments() error
 }
 
-type CryptoRepository interface {
-	InsertCrypto(*[]models.Crypto) error
-	TruncateCrypto() error
+type CryptoInstrumentRepository interface {
+	InsertCryptoInstruments(*[]models.CryptoInstrument) error
+	TruncateCryptoInstruments() error
+}
+
+type StockDealRepository interface {
 }
