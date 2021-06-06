@@ -83,7 +83,7 @@ func (s *server) ConfugureRouter() {
 
 	api := s.router.PathPrefix(apiRoute).Subrouter()
 
-	users := api.PathPrefix(usersRoute).Subrouter()
+	users := api.PathPrefix(authRoute).Subrouter()
 	users.HandleFunc(signupRoute, s.signup).Methods(http.MethodPost)
 	users.HandleFunc(confirmSignupRoute, s.confirmSignup).Methods(http.MethodPost)
 
