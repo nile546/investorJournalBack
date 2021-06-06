@@ -13,7 +13,7 @@ type StockDeal struct {
 	EnterPoint      int64     `json:"enter_point"`
 	StopLoss        int64     `json:"stoploss"`
 	Count           int64     `json:"count"`
-	ExitDateTime    int64     `json:"exit_datetime"`
+	ExitDateTime    time.Time `json:"exit_datetime"`
 	ExitPoint       int64     `json:"exit_point"`
 	RiskRatio       float64   `json:"risk_ratio"`
 	Result          int64     `json:"result"`
