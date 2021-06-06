@@ -83,11 +83,12 @@ func (s *server) ConfugureRouter() {
 
 	api := s.router.PathPrefix(apiRoute).Subrouter()
 
-	users := api.PathPrefix(authRoute).Subrouter()
-	users.HandleFunc(signupRoute, s.signup).Methods(http.MethodPost)
-	users.HandleFunc(confirmSignupRoute, s.confirmSignup).Methods(http.MethodPost)
+	// Open routes, use without session
 
-	users.HandleFunc(signinRoute, s.signin).Methods(http.MethodPost)
+	auth := api.PathPrefix(authRoute).Subrouter()
+	auth.HandleFunc(signupRoute, s.signup).Methods(http.MethodPost)
+	auth.HandleFunc(confirmSignupRoute, s.confirmSignup).Methods(http.MethodPost)
+	auth.HandleFunc(signinRoute, s.signin).Methods(http.MethodPost)
 
 	spa := spaHandler{staticPath: "web", indexPath: "index.html"}
 
