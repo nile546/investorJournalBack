@@ -90,6 +90,11 @@ func (s *server) ConfugureRouter() {
 	auth.HandleFunc(confirmSignupRoute, s.confirmSignup).Methods(http.MethodPost)
 	auth.HandleFunc(signinRoute, s.signin).Methods(http.MethodPost)
 
+	// Closed routes, with use session
+
+	stockDeals := api.PathPrefix(stockDealsRoute).Subrouter()
+	stockDeals.HandleFunc(getAllRoute, s.getAllStockDeals).Methods(http.MethodPost)
+
 	spa := spaHandler{staticPath: "web", indexPath: "index.html"}
 
 	s.router.PathPrefix("/").Handler(spa)

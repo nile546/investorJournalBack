@@ -1,11 +1,23 @@
 package apiserver
 
 const (
-	apiRoute           = "/api"
-	usersRoute         = "/users"
+	apiRoute = "/api"
+
+	// auth
+	authRoute          = "/auth"
 	signupRoute        = "/signup"
 	signinRoute        = "/signin"
 	confirmSignupRoute = "/confirm-signup"
-	landingRoute       = "/landing"
-	authRoute          = "/auth"
+
+	// landing
+	landingRoute = "/landing"
+
+	// users
+	usersRoute = "/users"
+
+	// stocks
+	stockDealsRoute = "/stock-deals"
+
+	// common
+	getAllRoute = "/getAll"
 )
