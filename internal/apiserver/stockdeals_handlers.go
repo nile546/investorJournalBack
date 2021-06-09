@@ -29,4 +29,11 @@ func (s *server) getAllStockDeals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := s.repository.StockDeal().GetAll(&req.TableParams); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, req.TableParams)
+
 }

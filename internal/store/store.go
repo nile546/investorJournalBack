@@ -34,4 +34,5 @@ type CryptoInstrumentRepository interface {
 }
 
 type StockDealRepository interface {
+	GetAll(*models.TableParams) error
 }

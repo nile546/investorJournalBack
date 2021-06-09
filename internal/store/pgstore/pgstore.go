@@ -12,7 +12,7 @@ type Repository struct {
 	stockInstrumentRepository  *StockInstrumentRepository
 	bankInstrumentRepository   *BankInstrumentRepository
 	cryptoInstrumentRepository *CryptoInstrumentRepository
-	stockStockDealRepository   *StockDealRepository
+	stockDealRepository        *StockDealRepository
 }
 
 func New(db *sql.DB) *Repository {
@@ -71,13 +71,13 @@ func (r *Repository) CryptoInstrument() store.CryptoInstrumentRepository {
 }
 
 func (r *Repository) StockDeal() store.StockDealRepository {
-	if r.stockStockDealRepository != nil {
-		return r.stockStockDealRepository
+	if r.stockDealRepository != nil {
+		return r.stockDealRepository
 	}
 
-	r.stockStockDealRepository = &StockDealRepository{
+	r.stockDealRepository = &StockDealRepository{
 		db: r.db,
 	}
 
-	return r.stockStockDealRepository
+	return r.stockDealRepository
 }
