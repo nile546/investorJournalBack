@@ -1,1 +1,1 @@
-DROP TABLE stocks_instruments
+DROP TABLE IF EXISTS stocks_instruments

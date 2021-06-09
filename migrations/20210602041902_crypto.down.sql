@@ -1,1 +1,1 @@
-DROP TABLE crypto_instruments
+DROP TABLE IF EXISTS crypto_instruments

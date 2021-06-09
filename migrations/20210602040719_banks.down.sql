@@ -1,1 +1,1 @@
-DROP TABLE banks_instruments
+DROP TABLE IF EXISTS banks_instruments
