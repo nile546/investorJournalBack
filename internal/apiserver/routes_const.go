@@ -20,4 +20,8 @@ const (
 
 	// common
 	getAllRoute = "/getAll"
+	get         = "/get"
+	create      = "/create"
+	delete      = "/delete"
+	update      = "/update"
 )
