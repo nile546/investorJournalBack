@@ -8,15 +8,15 @@ build:
 
 .PHONY: migrateup
 migrateup:
-			migrate -path migrations -database "postgres://localhost/invest?user=raduga&password=faster123" up
+			migrate -path migrations -database "postgres://localhost/invest?user=invest&password=fast" up
 			
 .PHONY: migratedown
 migratedown:
-			migrate -path migrations -database "postgres://localhost/invest?user=raduga&password=faster123" down
+			migrate -path migrations -database "postgres://localhost/invest?user=invest&password=fast" down
 
 .PHONY: migrateforce
 migrateforce:
-			migrate -path migrations -database "postgres://localhost/invest?user=raduga&password=faster123" force $(version)
+			migrate -path migrations -database "postgres://localhost/invest?user=invest&password=fast" force $(version)
 
 .PHONY: migratecreate
 migratecreate:
