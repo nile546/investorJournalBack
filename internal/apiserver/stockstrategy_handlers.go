@@ -38,7 +38,7 @@ func (s *server) CreateStockStrategy(w http.ResponseWriter, r *http.Request) {
 	err = s.repository.StockStrategy().CreateStockStrategy(&models.StockStrategy{
 		Name:        req.Name,
 		Description: req.Description,
-		UserID:      req.UserID, //Проверка на существование пользователя?
+		UserID:      req.UserID,
 	})
 	if err != nil {
 		s.error(w, err.Error())

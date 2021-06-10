@@ -144,8 +144,6 @@ func Start(c *config.Config) error {
 		//ADD ERR TO LOGER
 	}
 
-	srv.DeleteStockStrategy()
-
 	fmt.Println("Started server at ", addr)
 
 	return http.ListenAndServe(addr, srv)

@@ -38,7 +38,7 @@ func (s *server) CreateStockPattern(w http.ResponseWriter, r *http.Request) {
 	err = s.repository.StockPattern().CreateStockPattern(&models.StockPattern{
 		Name:        req.Name,
 		Description: req.Description,
-		UserID:      req.UserID, //Проверка на существование пользователя?
+		UserID:      req.UserID,
 	})
 	if err != nil {
 		s.error(w, err.Error())
