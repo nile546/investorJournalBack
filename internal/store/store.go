@@ -8,6 +8,7 @@ type Repository interface {
 	BankInstrument() BankInstrumentRepository
 	CryptoInstrument() CryptoInstrumentRepository
 	StockDeal() StockDealRepository
+	StockStrategy() StockStrategyRepository
 }
 
 type UserRepository interface {
@@ -34,4 +35,11 @@ type CryptoInstrumentRepository interface {
 }
 
 type StockDealRepository interface {
+}
+
+type StockStrategyRepository interface {
+	CreateStockStrategy(*models.StockStrategy) error
+	UpdateStockStrategy(*models.StockStrategy) error
+	GetAllStockStrategy(*int64) (*[]models.StockStrategy, error)
+	DeleteStockStrategy(*int64) error
 }

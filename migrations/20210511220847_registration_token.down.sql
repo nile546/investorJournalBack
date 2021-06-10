@@ -1,1 +1,1 @@
-ALTER TABLE users DROP COLUMN registration_token RESTRICT
+ALTER TABLE users DROP COLUMN IF EXISTS registration_token RESTRICT
