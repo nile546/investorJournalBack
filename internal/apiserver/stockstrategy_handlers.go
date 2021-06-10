@@ -98,9 +98,7 @@ func (s *server) GetAllStockStrategy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	strgs := &[]models.StockStrategy{}
-
-	strgs, err = s.repository.StockStrategy().GetAllStockStrategy(&userID)
+	strgs, err := s.repository.StockStrategy().GetAllStockStrategy(userID)
 	if err != nil {
 		s.error(w, err.Error())
 		return
@@ -111,16 +109,15 @@ func (s *server) GetAllStockStrategy(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) DeleteStockStrategy(w http.ResponseWriter, r *http.Request) {
+	var id int64
 
-	var ID int64
-
-	err := json.NewDecoder(r.Body).Decode(&ID)
+	err := json.NewDecoder(r.Body).Decode(&id)
 	if err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err = s.repository.StockStrategy().DeleteStockStrategy(&ID)
+	err = s.repository.StockStrategy().DeleteStockStrategy(id)
 	if err != nil {
 		s.error(w, err.Error())
 		return

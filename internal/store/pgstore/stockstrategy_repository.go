@@ -44,7 +44,7 @@ func (s *StockStrategyRepository) UpdateStockStrategy(strategy *models.StockStra
 	return nil
 }
 
-func (s *StockStrategyRepository) GetAllStockStrategy(userId *int64) (strgs *[]models.StockStrategy, err error) {
+func (s *StockStrategyRepository) GetAllStockStrategy(userId int64) (*[]models.StockStrategy, error) {
 
 	q := `SELECT * FROM stock_strategy where user_id=$1`
 
@@ -52,6 +52,8 @@ func (s *StockStrategyRepository) GetAllStockStrategy(userId *int64) (strgs *[]m
 	if err != nil {
 		return nil, err
 	}
+
+	strgs := &[]models.StockStrategy{}
 
 	for res.Next() {
 		strg := models.StockStrategy{}
@@ -65,7 +67,7 @@ func (s *StockStrategyRepository) GetAllStockStrategy(userId *int64) (strgs *[]m
 	return strgs, nil
 }
 
-func (s *StockStrategyRepository) DeleteStockStrategy(id *int64) error {
+func (s *StockStrategyRepository) DeleteStockStrategy(id int64) error {
 
 	q := "DELETE FROM stock_strategy WHERE id=$1"
 
