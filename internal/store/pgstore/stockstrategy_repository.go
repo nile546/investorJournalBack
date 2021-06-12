@@ -12,7 +12,7 @@ type StockStrategyRepository struct {
 
 func (s *StockStrategyRepository) CreateStockStrategy(strategy *models.StockStrategy) error {
 
-	q := "INSERT INTO stock_strategy (name, description, user_id) VALUES ($1, $2, $3)"
+	q := "INSERT INTO stock_strategies (name, description, user_id) VALUES ($1, $2, $3)"
 
 	res, err := s.db.Exec(q, strategy.Name, strategy.Description, strategy.UserID)
 	if err != nil {
@@ -29,7 +29,7 @@ func (s *StockStrategyRepository) CreateStockStrategy(strategy *models.StockStra
 
 func (s *StockStrategyRepository) UpdateStockStrategy(strategy *models.StockStrategy) error {
 
-	q := "UPDATE stock_strategy SET (name, description) = ($1, $2) WHERE id = $3"
+	q := "UPDATE stock_strategies SET (name, description) = ($1, $2) WHERE id = $3"
 
 	res, err := s.db.Exec(q, strategy.Name, strategy.Description, strategy.ID)
 	if err != nil {
@@ -46,7 +46,7 @@ func (s *StockStrategyRepository) UpdateStockStrategy(strategy *models.StockStra
 
 func (s *StockStrategyRepository) GetAllStockStrategy(userId int64) (*[]models.StockStrategy, error) {
 
-	q := `SELECT * FROM stock_strategy where user_id=$1`
+	q := `SELECT * FROM stock_strategies where user_id=$1`
 
 	res, err := s.db.Query(q, userId)
 	if err != nil {
@@ -69,7 +69,7 @@ func (s *StockStrategyRepository) GetAllStockStrategy(userId int64) (*[]models.S
 
 func (s *StockStrategyRepository) DeleteStockStrategy(id int64) error {
 
-	q := "DELETE FROM stock_strategy WHERE id=$1"
+	q := "DELETE FROM stock_strategies WHERE id=$1"
 
 	res, err := s.db.Exec(q, id)
 	if err != nil {

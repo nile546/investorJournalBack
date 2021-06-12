@@ -24,4 +24,7 @@ const (
 	create      = "/create"
 	delete      = "/delete"
 	update      = "/update"
+
+	//Any routes
+	refreshRoute = "/refresh"
 )

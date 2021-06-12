@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS stock_pattern;
+DROP TABLE IF EXISTS stock_patterns;

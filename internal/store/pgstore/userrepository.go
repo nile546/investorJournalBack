@@ -115,3 +115,16 @@ func (ur *UserRepository) GetUserByID(ID int64) (*models.User, error) {
 
 	return u, nil
 }
+
+func (ur *UserRepository) SetRefreshToken(userID int64) (string, error) {
+
+	q := `INSERT INTO refresh_tokens (user_id) VALUES ($1) RETURNING token`
+
+	var token string
+
+	if err := ur.db.QueryRow(q, userID).Scan(&token); err != nil {
+		return "", err
+	}
+
+	return token, nil
+}

@@ -1,7 +1,9 @@
-CREATE TABLE stock_pattern (
+CREATE TABLE stock_patterns (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     name VARCHAR,
     description TEXT,
-    user_id BIGINT REFERENCES users (id),
+    icon TEXT,
+    user_id BIGINT REFERENCES users (id) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+
 )

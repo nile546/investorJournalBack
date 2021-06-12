@@ -195,6 +195,41 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	at := &models.Token{
+		UserID: u.ID,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Minute * 30).Unix(),
+		},
+	}
+
+	accessToken, err := at.Generate(tokenKey)
+	if err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	atc := &http.Cookie{
+		Name:     "at",
+		Value:    accessToken,
+		Path:     apiRoute,
+		HttpOnly: true,
+		Expires:  time.Now().Add(time.Minute * 35), //Зачем?
+	}
+
+	http.SetCookie(w, atc)
+
+	refreshToken, err := s.repository.User().SetRefreshToken(u.ID)
+
+	rtc := &http.Cookie{
+		Name:     "rt",
+		Value:    refreshToken,
+		HttpOnly: true,
+		Path:     apiRoute + refreshRoute,
+		Expires:  time.Now().Add(24 * time.Hour),
+	}
+
+	http.SetCookie(w, rtc)
+
 	s.respond(w, u)
 
 }

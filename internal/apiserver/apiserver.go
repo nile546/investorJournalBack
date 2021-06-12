@@ -137,6 +137,8 @@ func Start(c *config.Config) error {
 		cryptoKey:      c.CryptoKey,
 	}
 
+	i.Stocks().GrabAll(c.SpbexchangeAddress, c.MskexchangeAddress)
+
 	srv := newServer(r, m, i)
 
 	err = srv.updateInstruments(c.HoursUpdateInstruments, c.MinutesUpdateInstruments, c.SecondsUpdateInstruments, srv.callUpdateHandlers, cI)

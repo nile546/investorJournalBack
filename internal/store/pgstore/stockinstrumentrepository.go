@@ -21,13 +21,13 @@ func (s *StockInstrumentRepository) InsertStocksInstruments(stocks *[]models.Sto
 	for i, stock := range *stocks {
 		if i == len(*stocks)-1 {
 			buf = "('"
-			buf += strings.Replace(stock.Title, "'", "''", -1) + "', '" + strings.Replace(stock.Ticker, "'", "''", -1) + "', '" + strings.Replace(stock.Type, "'", "''", -1)
+			buf += strings.Replace(stock.Title, "'", "''", -1) + "', '" + strings.Replace(*stock.Ticker, "'", "''", -1) + "', '" + strings.Replace(*stock.Type, "'", "''", -1)
 			buf += "')"
 			q += buf
 			break
 		}
 		buf = "('"
-		buf += strings.Replace(stock.Title, "'", "''", -1) + "', '" + strings.Replace(stock.Ticker, "'", "''", -1) + "', '" + strings.Replace(stock.Type, "'", "''", -1)
+		buf += strings.Replace(stock.Title, "'", "''", -1) + "', '" + strings.Replace(*stock.Ticker, "'", "''", -1) + "', '" + strings.Replace(*stock.Type, "'", "''", -1)
 		buf += "'), "
 		q += buf
 	}

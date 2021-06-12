@@ -37,7 +37,7 @@ func (s *server) CreateStockPattern(w http.ResponseWriter, r *http.Request) {
 
 	err = s.repository.StockPattern().CreateStockPattern(&models.StockPattern{
 		Name:        req.Name,
-		Description: req.Description,
+		Description: &req.Description,
 		UserID:      req.UserID,
 	})
 	if err != nil {
@@ -78,8 +78,8 @@ func (s *server) UpdateStockPattern(w http.ResponseWriter, r *http.Request) {
 	err = s.repository.StockPattern().UpdateStockPattern(&models.StockPattern{
 		ID:          req.ID,
 		Name:        req.Name,
-		Description: req.Description,
-	}) //Обновлять время?
+		Description: &req.Description,
+	})
 	if err != nil {
 		s.error(w, err.Error())
 		return
@@ -89,7 +89,6 @@ func (s *server) UpdateStockPattern(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) GetAllStockPattern(w http.ResponseWriter, r *http.Request) {
-
 	var userID int64
 
 	err := json.NewDecoder(r.Body).Decode(&userID)
@@ -98,7 +97,7 @@ func (s *server) GetAllStockPattern(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ptrns, err := s.repository.StockPattern().GetAllStockPattern(userID)
+	ptrns, err := s.repository.StockPattern().GetAllStockPattern(1)
 	if err != nil {
 		s.error(w, err.Error())
 		return

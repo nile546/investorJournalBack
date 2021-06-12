@@ -37,7 +37,7 @@ func (s *server) CreateStockStrategy(w http.ResponseWriter, r *http.Request) {
 
 	err = s.repository.StockStrategy().CreateStockStrategy(&models.StockStrategy{
 		Name:        req.Name,
-		Description: req.Description,
+		Description: &req.Description,
 		UserID:      req.UserID,
 	})
 	if err != nil {
@@ -78,8 +78,8 @@ func (s *server) UpdateStockStrategy(w http.ResponseWriter, r *http.Request) {
 	err = s.repository.StockStrategy().UpdateStockStrategy(&models.StockStrategy{
 		ID:          req.ID,
 		Name:        req.Name,
-		Description: req.Description,
-	}) //Обновлять время?
+		Description: &req.Description,
+	})
 	if err != nil {
 		s.error(w, err.Error())
 		return

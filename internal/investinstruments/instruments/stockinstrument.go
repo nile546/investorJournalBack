@@ -173,8 +173,8 @@ func (r *Stockinstrument) spbgrab(u string) (*[]models.StockInstrument, error) {
 		stock := models.StockInstrument{
 			ID:     ID,
 			Title:  title,
-			Ticker: ticker,
-			Type:   tp,
+			Ticker: &ticker,
+			Type:   &tp,
 		}
 		*stocks = append(*stocks, stock)
 		ID++
@@ -246,8 +246,8 @@ func (r *Stockinstrument) mskgrab(u string) (*[]models.StockInstrument, error) {
 		stock := models.StockInstrument{
 			ID:     ID,
 			Title:  title,
-			Ticker: ticker,
-			Type:   tp,
+			Ticker: &ticker,
+			Type:   &tp,
 		}
 		*stocks = append(*stocks, stock)
 		ID++
