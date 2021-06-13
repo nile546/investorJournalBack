@@ -54,7 +54,7 @@ func grabBanki(bankiUrl string) (*[]models.BankInstrument, error) {
 	for {
 		record, err := cs.Read()
 		if err != nil {
-			//TODO: ADD TO LOGER
+			log.Errorf("Read error: Bank with id = %d : %+v", ID, err)
 			break
 		}
 		if ID < 3 {
@@ -63,7 +63,7 @@ func grabBanki(bankiUrl string) (*[]models.BankInstrument, error) {
 		}
 		title, err := convertWin1251toUTF8(record[2])
 		if err != nil {
-			//TODO: ADD TO LOGER
+			log.Errorf("Convert error: Bank with id = %d:%+v", ID, err)
 			ID++
 			continue
 		}

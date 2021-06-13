@@ -19,6 +19,8 @@ type UserRepository interface {
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserByID(ID int64) (*models.User, error)
 	SetRefreshToken(int64) (string, error)
+	UpdateRefreshToken(string) (string, int64, error)
+	DeleteRefreshTokenByUser(*models.User) error
 }
 
 type StockInstrumentRepository interface {

@@ -128,3 +128,37 @@ func (ur *UserRepository) SetRefreshToken(userID int64) (string, error) {
 
 	return token, nil
 }
+
+func (ur *UserRepository) UpdateRefreshToken(rt string) (string, int64, error) {
+
+	q := "UPDATE refresh_tokens SET token = UUID_GENERATE_V4() WHERE token = $1 RETURNING token, user_id;"
+
+	var newRt string
+	var userID int64
+
+	if err := ur.db.QueryRow(q, rt).Scan(&newRt, &userID); err != nil {
+		return "", 0, err
+	}
+
+	return newRt, userID, nil
+}
+
+func (ur *UserRepository) DeleteRefreshTokenByUser(u *models.User) error {
+	q := "DELETE FROM refresh_tokens WHERE user_id = $1;"
+
+	res, err := ur.db.Exec(q, u.ID)
+	if err != nil {
+		return err
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if count < 1 {
+		//Add ERR
+	}
+
+	return nil
+}

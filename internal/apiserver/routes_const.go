@@ -25,6 +25,10 @@ const (
 	delete      = "/delete"
 	update      = "/update"
 
+	// session routes
+	updateSessionRoute = "/refresh"
+	clearSessionRoute  = "/delete"
+
 	//Any routes
-	refreshRoute = "/refresh"
+	privateRoute = "/private"
 )

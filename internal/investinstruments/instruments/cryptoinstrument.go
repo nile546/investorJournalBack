@@ -55,7 +55,7 @@ func grabCrypto(cryptoUrl string, cryptoKey string) (*[]models.CryptoInstrument,
 	for _, extoCrypto := range extoCryptoList.Data {
 		crypto, err := convertExtoCryptoToCrypto(&extoCrypto)
 		if err != nil {
-			//TODO: ADD TO LOGER
+			log.Errorf("Convert error crypto : %+v", err)
 			continue
 		}
 

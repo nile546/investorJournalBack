@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/nile546/diplom/internal/investinstruments"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/text/encoding/charmap"
 	"golang.org/x/text/transform"
 )
@@ -15,7 +16,10 @@ type Instruments struct {
 	cryptoinstrumnet *Cryptoinstrument
 }
 
-func New() *Instruments {
+var log *logrus.Logger
+
+func New(l *logrus.Logger) *Instruments {
+	log = l
 	return &Instruments{}
 }
 

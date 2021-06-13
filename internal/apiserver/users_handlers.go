@@ -211,9 +211,14 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 	atc := &http.Cookie{
 		Name:     "at",
 		Value:    accessToken,
-		Path:     apiRoute,
+		Path:     apiRoute + privateRoute,
 		HttpOnly: true,
-		Expires:  time.Now().Add(time.Minute * 35), //Зачем?
+		Expires:  time.Now().Add(time.Minute * 35),
+	}
+
+	if production {
+		atc.Secure = true
+		atc.SameSite = http.SameSiteStrictMode
 	}
 
 	http.SetCookie(w, atc)
@@ -224,8 +229,13 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 		Name:     "rt",
 		Value:    refreshToken,
 		HttpOnly: true,
-		Path:     apiRoute + refreshRoute,
+		Path:     apiRoute + updateSessionRoute,
 		Expires:  time.Now().Add(24 * time.Hour),
+	}
+
+	if production {
+		rtc.Secure = true
+		rtc.SameSite = http.SameSiteStrictMode
 	}
 
 	http.SetCookie(w, rtc)

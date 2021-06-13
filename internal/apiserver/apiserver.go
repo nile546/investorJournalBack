@@ -19,7 +19,14 @@ import (
 	"github.com/nile546/diplom/internal/models"
 	"github.com/nile546/diplom/internal/store"
 	"github.com/nile546/diplom/internal/store/pgstore"
+	"github.com/sirupsen/logrus"
 )
+
+const (
+	ctxKeyRequestID ctxKey = iota
+)
+
+type ctxKey int8
 
 var (
 	production bool
@@ -27,6 +34,7 @@ var (
 	addr       string
 	protocol   string
 	addrLand   string
+	logLevel   string
 )
 
 //APIServer ...
@@ -39,11 +47,16 @@ type server struct {
 	repository  store.Repository
 	mailer      mailer.Mailer
 	instruments investinstruments.Instruments
+	session     session
+	logger      *logrus.Logger
 }
 
 type spaHandler struct {
 	staticPath string
 	indexPath  string
+}
+type session struct {
+	User *models.User
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -70,6 +83,9 @@ func (s spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) ConfugureRouter() {
 
+	s.router.Use(requestIDMiddleware)
+	s.router.Use(s.loggerMiddleware)
+
 	if !production {
 		cors := handlers.CORS(
 			handlers.AllowedHeaders([]string{"Content-Type"}),
@@ -85,6 +101,8 @@ func (s *server) ConfugureRouter() {
 
 	// Open routes, use without session
 
+	api.HandleFunc(updateSessionRoute, s.updateSession)
+
 	auth := api.PathPrefix(authRoute).Subrouter()
 	auth.HandleFunc(signupRoute, s.signup).Methods(http.MethodPost)
 	auth.HandleFunc(confirmSignupRoute, s.confirmSignup).Methods(http.MethodPost)
@@ -92,7 +110,11 @@ func (s *server) ConfugureRouter() {
 
 	// Closed routes, with use session
 
-	stockDeals := api.PathPrefix(stockDealsRoute).Subrouter()
+	private := api.PathPrefix(privateRoute).Subrouter()
+	private.HandleFunc(clearSessionRoute, s.clearSession)
+	private.Use(s.GetUserSession)
+
+	stockDeals := private.PathPrefix(stockDealsRoute).Subrouter()
 	stockDeals.HandleFunc(getAllRoute, s.getAllStockDeals).Methods(http.MethodPost)
 
 	spa := spaHandler{staticPath: "web", indexPath: "index.html"}
@@ -105,6 +127,7 @@ func Start(c *config.Config) error {
 
 	production = c.Production
 	tokenKey = c.TokenKey
+	logLevel = c.LogLevel
 
 	protocol = c.Protocol
 	addr = c.Host + ":" + c.Port
@@ -127,7 +150,9 @@ func Start(c *config.Config) error {
 
 	m := emailer.New(mConf)
 
-	i := instruments.New()
+	l := logrus.New()
+
+	i := instruments.New(l)
 
 	cI := &instrumentsConfig{
 		spbExchangeUrl: c.SpbexchangeAddress,
@@ -139,11 +164,15 @@ func Start(c *config.Config) error {
 
 	i.Stocks().GrabAll(c.SpbexchangeAddress, c.MskexchangeAddress)
 
-	srv := newServer(r, m, i)
+	srv := newServer(r, m, i, l)
+
+	if err = srv.configureLogger(); err != nil {
+		return err
+	}
 
 	err = srv.updateInstruments(c.HoursUpdateInstruments, c.MinutesUpdateInstruments, c.SecondsUpdateInstruments, srv.callUpdateHandlers, cI)
 	if err != nil {
-		//ADD ERR TO LOGER
+		srv.logger.Errorf("Error update instruments: %+v", err)
 	}
 
 	fmt.Println("Started server at ", addr)
@@ -152,15 +181,21 @@ func Start(c *config.Config) error {
 
 }
 
-func newServer(r store.Repository, m mailer.Mailer, i investinstruments.Instruments) *server {
+func newServer(r store.Repository, m mailer.Mailer, i investinstruments.Instruments, l *logrus.Logger) *server {
 
 	srv := &server{
 		router:      mux.NewRouter(),
 		repository:  r,
 		mailer:      m,
+		logger:      l,
 		instruments: i,
 	}
 	srv.ConfugureRouter()
+
+	if err := srv.configureLogger(); err != nil {
+		srv.logger.Errorf("Error configure logger: %+v", err)
+	}
+
 	return srv
 
 }
@@ -171,7 +206,7 @@ func (s *server) error(w http.ResponseWriter, errorMessage string) {
 		ErrorMessage: errorMessage,
 	}
 	if err := json.NewEncoder(w).Encode(res); err != nil {
-		//TODO: Добавить сохрание ошибки в логгер.
+		s.logger.Errorf("error encode data %+v to json: %+v", res, err)
 	}
 }
 
@@ -183,7 +218,7 @@ func (s *server) respond(w http.ResponseWriter, payload interface{}) {
 	}
 
 	if err := json.NewEncoder(w).Encode(res); err != nil {
-		//TODO: Добавить сохрание ошибки в логгер.
+		s.logger.Errorf("error encode data %+v to json: %+v", res, err)
 	}
 }
 
@@ -198,4 +233,18 @@ func newDB(cs string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func (s *server) configureLogger() error {
+	level, err := logrus.ParseLevel(logLevel)
+	if err != nil {
+		return err
+	}
+
+	s.logger.SetLevel(level)
+
+	// Uncomment for get full path of called method in log message.
+	// s.logger.SetReportCaller(true)
+
+	return nil
 }

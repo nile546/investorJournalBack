@@ -29,6 +29,7 @@ type Config struct {
 	HoursUpdateInstruments   int
 	MinutesUpdateInstruments int
 	SecondsUpdateInstruments int
+	LogLevel                 string
 }
 
 // NewConfig ...
@@ -50,6 +51,7 @@ func NewConfig() *Config {
 		HoursUpdateInstruments:   3,
 		MinutesUpdateInstruments: 0,
 		SecondsUpdateInstruments: 0,
+		LogLevel:                 "debug",
 	}
 }
 
