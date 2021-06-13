@@ -1,7 +1,8 @@
-CREATE TABLE stock_strategies (
+CREATE TABLE strategies (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     name VARCHAR,
     description TEXT,
-    user_id BIGINT REFERENCES users (id) NOT NULL,
+    user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
+    type SMALLINT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 )
