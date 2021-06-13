@@ -1,8 +1,8 @@
 CREATE TABLE crypto_deals(
     id BIGSERIAL NOT NULL PRIMARY KEY,
     crypto_instrument_id BIGINT REFERENCES crypto_instruments (id),
-    crypto_strategy_id BIGINT REFERENCES crypto_strategies (id),
-    crypto_pattern_id BIGINT REFERENCES crypto_patterns (id),
+    strategy_id BIGINT REFERENCES strategies (id),
+    pattern_id BIGINT REFERENCES patterns (id),
     position SMALLINT, 
     time_frame SMALLINT,
     enter_datetime TIMESTAMP NOT NULL,
