@@ -8,6 +8,8 @@ const (
 	signupRoute        = "/signup"
 	signinRoute        = "/signin"
 	confirmSignupRoute = "/confirm-signup"
+	signoutRoute       = "/signout"
+	refreshRoute       = "/refresh"
 
 	// landing
 	landingRoute = "/landing"
@@ -24,8 +26,4 @@ const (
 	create      = "/create"
 	delete      = "/delete"
 	update      = "/update"
-
-	// session routes
-	updateSessionRoute = "/refresh"
-	clearSessionRoute  = "/delete"
 )

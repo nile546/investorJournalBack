@@ -51,8 +51,6 @@ func (s *server) sessionMiddleware(next http.Handler) http.Handler {
 
 			openRoutes := []string{
 				authRoute,
-				updateSessionRoute,
-				clearSessionRoute,
 			}
 
 			for _, rt := range openRoutes {

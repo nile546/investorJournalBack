@@ -229,7 +229,7 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 		Name:     "rt",
 		Value:    refreshToken,
 		HttpOnly: true,
-		Path:     apiRoute + updateSessionRoute,
+		Path:     apiRoute + authRoute + refreshRoute,
 		Expires:  time.Now().Add(24 * time.Hour),
 	}
 
