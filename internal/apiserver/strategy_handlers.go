@@ -8,12 +8,13 @@ import (
 	"github.com/nile546/diplom/internal/models"
 )
 
-func (s *server) CreateStockStrategy(w http.ResponseWriter, r *http.Request) {
+func (s *server) CreateStrategy(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		UserID      int64  `json:"user_id"`
+		Name        string       `json:"name"`
+		Description string       `json:"description"`
+		UserID      int64        `json:"user_id"`
+		Type        *models.Type `json:"type"`
 	}
 
 	req := &request{}
@@ -29,16 +30,18 @@ func (s *server) CreateStockStrategy(w http.ResponseWriter, r *http.Request) {
 		validation.Field(&req.Name, validation.Required),
 		validation.Field(&req.Description, validation.Required),
 		validation.Field(&req.UserID, validation.Required),
+		validation.Field(&req.Type, validation.Required),
 	)
 	if err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err = s.repository.StockStrategy().CreateStockStrategy(&models.StockStrategy{
+	err = s.repository.Strategy().CreateStrategy(&models.Strategy{
 		Name:        req.Name,
 		Description: &req.Description,
-		UserID:      req.UserID,
+		UserID:      &req.UserID,
+		Type:        *req.Type,
 	})
 	if err != nil {
 		s.error(w, err.Error())
@@ -75,7 +78,7 @@ func (s *server) UpdateStockStrategy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.repository.StockStrategy().UpdateStockStrategy(&models.StockStrategy{
+	err = s.repository.Strategy().UpdateStrategy(&models.Strategy{
 		ID:          req.ID,
 		Name:        req.Name,
 		Description: &req.Description,
@@ -88,7 +91,7 @@ func (s *server) UpdateStockStrategy(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, nil)
 }
 
-func (s *server) GetAllStockStrategy(w http.ResponseWriter, r *http.Request) {
+func (s *server) GetAllStrategy(w http.ResponseWriter, r *http.Request) {
 
 	var userID int64
 
@@ -98,7 +101,7 @@ func (s *server) GetAllStockStrategy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	strgs, err := s.repository.StockStrategy().GetAllStockStrategy(userID)
+	strgs, err := s.repository.Strategy().GetAllStrategy(userID)
 	if err != nil {
 		s.error(w, err.Error())
 		return
@@ -108,7 +111,7 @@ func (s *server) GetAllStockStrategy(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *server) DeleteStockStrategy(w http.ResponseWriter, r *http.Request) {
+func (s *server) DeleteStrategy(w http.ResponseWriter, r *http.Request) {
 	var id int64
 
 	err := json.NewDecoder(r.Body).Decode(&id)
@@ -117,7 +120,7 @@ func (s *server) DeleteStockStrategy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.repository.StockStrategy().DeleteStockStrategy(id)
+	err = s.repository.Strategy().DeleteStrategy(id)
 	if err != nil {
 		s.error(w, err.Error())
 		return

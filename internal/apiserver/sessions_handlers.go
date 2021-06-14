@@ -53,7 +53,7 @@ func (s *server) updateSession(w http.ResponseWriter, r *http.Request) {
 	atc := &http.Cookie{
 		Name:     "at",
 		Value:    accessToken,
-		Path:     apiRoute + privateRoute,
+		Path:     "/",
 		HttpOnly: true,
 		Expires:  time.Now().Add(time.Minute * 35),
 	}
@@ -95,7 +95,7 @@ func (s *server) clearSession(w http.ResponseWriter, r *http.Request) {
 	clearAtc := &http.Cookie{
 		Name:     "at",
 		Value:    "",
-		Path:     apiRoute + privateRoute,
+		Path:     "/",
 		HttpOnly: true,
 		Expires:  time.Unix(0, 0),
 	}

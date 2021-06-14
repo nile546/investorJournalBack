@@ -85,6 +85,7 @@ func (s *server) ConfugureRouter() {
 
 	s.router.Use(requestIDMiddleware)
 	s.router.Use(s.loggerMiddleware)
+	s.router.Use(s.GetUserSession)
 
 	if !production {
 		cors := handlers.CORS(
@@ -102,6 +103,7 @@ func (s *server) ConfugureRouter() {
 	// Open routes, use without session
 
 	api.HandleFunc(updateSessionRoute, s.updateSession)
+	api.HandleFunc(clearSessionRoute, s.clearSession)
 
 	auth := api.PathPrefix(authRoute).Subrouter()
 	auth.HandleFunc(signupRoute, s.signup).Methods(http.MethodPost)
@@ -110,11 +112,7 @@ func (s *server) ConfugureRouter() {
 
 	// Closed routes, with use session
 
-	private := api.PathPrefix(privateRoute).Subrouter()
-	private.HandleFunc(clearSessionRoute, s.clearSession)
-	private.Use(s.GetUserSession)
-
-	stockDeals := private.PathPrefix(stockDealsRoute).Subrouter()
+	stockDeals := api.PathPrefix(stockDealsRoute).Subrouter()
 	stockDeals.HandleFunc(getAllRoute, s.getAllStockDeals).Methods(http.MethodPost)
 
 	spa := spaHandler{staticPath: "web", indexPath: "index.html"}
@@ -140,6 +138,19 @@ func Start(c *config.Config) error {
 
 	r := pgstore.New(db)
 
+	var st *string
+
+	str := "patt"
+
+	st = &str
+
+	p := &models.Strategy{
+		Name:        "pat",
+		Description: st,
+	}
+
+	r.Strategy().CreateStrategy(p)
+
 	mConf := &emailer.Config{
 		Login:  c.MailerLogin,
 		Pass:   c.MailerPass,
@@ -161,8 +172,6 @@ func Start(c *config.Config) error {
 		cryptoUrl:      c.CryptoUrl,
 		cryptoKey:      c.CryptoKey,
 	}
-
-	i.Stocks().GrabAll(c.SpbexchangeAddress, c.MskexchangeAddress)
 
 	srv := newServer(r, m, i, l)
 

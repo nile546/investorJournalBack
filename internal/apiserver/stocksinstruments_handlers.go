@@ -8,11 +8,11 @@ func (s *server) updateStocksInstruments(spburl string, mskurl string) {
 		return
 	}
 
-	err = s.repository.StockInstrument().TruncateStocksInstruments()
-	if err != nil {
-		s.logger.Errorf("Error truncate stock_instruments: %+v", err)
-		return
-	}
+	//err = s.repository.StockInstrument().TruncateStocksInstruments()
+	//if err != nil {
+	//	s.logger.Errorf("Error truncate stock_instruments: %+v", err)
+	//	return
+	//}
 
 	err = s.repository.StockInstrument().InsertStocksInstruments(stocks)
 	if err != nil {

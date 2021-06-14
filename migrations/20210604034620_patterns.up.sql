@@ -3,6 +3,7 @@ CREATE TABLE patterns (
     name VARCHAR,
     description TEXT,
     icon TEXT,
+    type SMALLINT,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 

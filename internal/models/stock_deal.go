@@ -17,7 +17,7 @@ const (
 type TimeFrame int8
 
 const (
-	// M1 ...
+	// Min1 ...
 	M1 TimeFrame = iota + 1
 
 	// M2 ...
@@ -57,8 +57,8 @@ const (
 type StockDeal struct {
 	ID              int64           `json:"id"`
 	Stock           StockInstrument `json:"stock"`
-	Strategy        *StockStrategy  `json:"strategy"`
-	Pattern         *StockPattern   `json:"pattern"`
+	Strategy        *Strategy       `json:"strategy"`
+	Pattern         *Pattern        `json:"pattern"`
 	Position        *Position       `json:"position"`
 	TimeFrame       *TimeFrame      `json:"time_frame"`
 	EnterDateTime   time.Time       `json:"enter_datetime"`
@@ -67,9 +67,10 @@ type StockDeal struct {
 	Quantity        int             `json:"quantity"`
 	ExitDateTime    *time.Time      `json:"exit_datetime"`
 	ExitPoint       *int64          `json:"exit_point"`
-	RiskRatio       float32         `json:"risk_ratio"` //?Если сделка не завершена, будет ли коэффициент?
+	RiskRatio       float32         `json:"risk_ratio"`
 	Result          *int64          `json:"result"`
 	ResultInPercent float64         `json:"result_in_percent"`
 	StartDeposit    int64           `json:"start_deposit"`
 	EndDeposit      int64           `json:"end_deposit"`
+	UserID          int64           `json:"user_id"`
 }

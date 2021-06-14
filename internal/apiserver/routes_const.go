@@ -28,7 +28,4 @@ const (
 	// session routes
 	updateSessionRoute = "/refresh"
 	clearSessionRoute  = "/delete"
-
-	//Any routes
-	privateRoute = "/private"
 )

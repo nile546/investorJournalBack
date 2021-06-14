@@ -3,6 +3,7 @@ package instruments
 import (
 	"encoding/csv"
 	"errors"
+	"io"
 	"net/http"
 
 	"github.com/nile546/diplom/internal/models"
@@ -53,6 +54,9 @@ func grabBanki(bankiUrl string) (*[]models.BankInstrument, error) {
 	cs.Comma = ';'
 	for {
 		record, err := cs.Read()
+		if err == io.EOF {
+			break
+		}
 		if err != nil {
 			log.Errorf("Read error: Bank with id = %d : %+v", ID, err)
 			break

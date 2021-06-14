@@ -46,7 +46,7 @@ func (b *BankInstrumentRepository) InsertBanksInstruments(banks *[]models.BankIn
 
 func (b *BankInstrumentRepository) TruncateBanksInstruments() (err error) {
 
-	q := `TRUNCATE TABLE banks RESTART IDENTITY`
+	q := `TRUNCATE TABLE banks_instruments RESTART IDENTITY`
 
 	var res sql.Result
 

@@ -8,8 +8,8 @@ type Repository interface {
 	BankInstrument() BankInstrumentRepository
 	CryptoInstrument() CryptoInstrumentRepository
 	StockDeal() StockDealRepository
-	StockStrategy() StockStrategyRepository
-	StockPattern() StockPatternRepository
+	Strategy() StrategyRepository
+	Pattern() PatternRepository
 }
 
 type UserRepository interface {
@@ -42,16 +42,16 @@ type StockDealRepository interface {
 	GetAll(*models.TableParams) error
 }
 
-type StockStrategyRepository interface {
-	CreateStockStrategy(*models.StockStrategy) error
-	UpdateStockStrategy(*models.StockStrategy) error
-	GetAllStockStrategy(int64) (*[]models.StockStrategy, error)
-	DeleteStockStrategy(int64) error
+type StrategyRepository interface {
+	CreateStrategy(*models.Strategy) error
+	UpdateStrategy(*models.Strategy) error
+	GetAllStrategy(int64) (*[]models.Strategy, error)
+	DeleteStrategy(int64) error
 }
 
-type StockPatternRepository interface {
-	CreateStockPattern(*models.StockPattern) error
-	UpdateStockPattern(*models.StockPattern) error
-	GetAllStockPattern(int64) (*[]models.StockPattern, error)
-	DeleteStockPattern(int64) error
+type PatternRepository interface {
+	CreatePattern(*models.Pattern) error
+	UpdatePattern(*models.Pattern) error
+	GetAllPattern(int64) (*[]models.Pattern, error)
+	DeletePattern(int64) error
 }

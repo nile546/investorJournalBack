@@ -3,6 +3,7 @@ package instruments
 import (
 	"encoding/csv"
 	"errors"
+	"io"
 
 	"net/http"
 	"net/url"
@@ -141,8 +142,11 @@ func (r *Stockinstrument) spbgrab(u string) (*[]models.StockInstrument, error) {
 	cs.LazyQuotes = true
 	cs.Comma = ';'
 	for {
-		record, e := cs.Read()
-		if e != nil {
+		record, err := cs.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
 			log.Errorf("Read error: Stock(SPB) with id = %d : %+v", ID, err)
 			break
 		}
@@ -215,6 +219,9 @@ func (r *Stockinstrument) mskgrab(u string) (*[]models.StockInstrument, error) {
 	cs.Comma = ';'
 	for {
 		record, err := cs.Read()
+		if err == io.EOF {
+			break
+		}
 		if err != nil {
 			log.Errorf("Read error: Stock(MSK) with id = %d : %+v", ID, err)
 			break

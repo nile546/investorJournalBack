@@ -211,7 +211,7 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 	atc := &http.Cookie{
 		Name:     "at",
 		Value:    accessToken,
-		Path:     apiRoute + privateRoute,
+		Path:     "/",
 		HttpOnly: true,
 		Expires:  time.Now().Add(time.Minute * 35),
 	}

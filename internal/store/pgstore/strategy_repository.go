@@ -6,15 +6,15 @@ import (
 	"github.com/nile546/diplom/internal/models"
 )
 
-type StockStrategyRepository struct {
+type StrategyRepository struct {
 	db *sql.DB
 }
 
-func (s *StockStrategyRepository) CreateStockStrategy(strategy *models.StockStrategy) error {
+func (s *StrategyRepository) CreateStrategy(strategy *models.Strategy) error {
 
-	q := "INSERT INTO stock_strategies (name, description, user_id) VALUES ($1, $2, $3)"
+	q := "INSERT INTO strategies (name, description, user_id, type) VALUES ($1, $2, $3, $4)"
 
-	res, err := s.db.Exec(q, strategy.Name, strategy.Description, strategy.UserID)
+	res, err := s.db.Exec(q, strategy.Name, strategy.Description, strategy.UserID, strategy.Type)
 	if err != nil {
 		return err
 	}
@@ -27,9 +27,9 @@ func (s *StockStrategyRepository) CreateStockStrategy(strategy *models.StockStra
 	return nil
 }
 
-func (s *StockStrategyRepository) UpdateStockStrategy(strategy *models.StockStrategy) error {
+func (s *StrategyRepository) UpdateStrategy(strategy *models.Strategy) error {
 
-	q := "UPDATE stock_strategies SET (name, description) = ($1, $2) WHERE id = $3"
+	q := "UPDATE strategies SET (name, description) = ($1, $2) WHERE id = $3"
 
 	res, err := s.db.Exec(q, strategy.Name, strategy.Description, strategy.ID)
 	if err != nil {
@@ -44,19 +44,19 @@ func (s *StockStrategyRepository) UpdateStockStrategy(strategy *models.StockStra
 	return nil
 }
 
-func (s *StockStrategyRepository) GetAllStockStrategy(userId int64) (*[]models.StockStrategy, error) {
+func (s *StrategyRepository) GetAllStrategy(userId int64) (*[]models.Strategy, error) {
 
-	q := `SELECT * FROM stock_strategies where user_id=$1`
+	q := `SELECT * FROM strategies where user_id IS NULL OR user_id=$1`
 
 	res, err := s.db.Query(q, userId)
 	if err != nil {
 		return nil, err
 	}
 
-	strgs := &[]models.StockStrategy{}
+	strgs := &[]models.Strategy{}
 
 	for res.Next() {
-		strg := models.StockStrategy{}
+		strg := models.Strategy{}
 		err = res.Scan(&strg.ID, &strg.Name, &strg.Description, &strg.UserID, &strg.CreatedAt)
 		if err != nil {
 			return nil, err
@@ -67,9 +67,9 @@ func (s *StockStrategyRepository) GetAllStockStrategy(userId int64) (*[]models.S
 	return strgs, nil
 }
 
-func (s *StockStrategyRepository) DeleteStockStrategy(id int64) error {
+func (s *StrategyRepository) DeleteStrategy(id int64) error {
 
-	q := "DELETE FROM stock_strategies WHERE id=$1"
+	q := "DELETE FROM strategies WHERE id=$1"
 
 	res, err := s.db.Exec(q, id)
 	if err != nil {

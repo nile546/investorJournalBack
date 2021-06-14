@@ -8,12 +8,14 @@ import (
 	"github.com/nile546/diplom/internal/models"
 )
 
-func (s *server) CreateStockPattern(w http.ResponseWriter, r *http.Request) {
+func (s *server) CreatePattern(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		UserID      int64  `json:"user_id"`
+		Name        string      `json:"name"`
+		Description string      `json:"description"`
+		UserID      int64       `json:"user_id"`
+		Type        models.Type `json:"type"`
+		Icon        string      `json:"icon"`
 	}
 
 	req := &request{}
@@ -27,18 +29,20 @@ func (s *server) CreateStockPattern(w http.ResponseWriter, r *http.Request) {
 	err = validation.ValidateStruct(
 		req,
 		validation.Field(&req.Name, validation.Required),
-		validation.Field(&req.Description, validation.Required),
 		validation.Field(&req.UserID, validation.Required),
+		validation.Field(&req.Type, validation.Required),
 	)
 	if err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err = s.repository.StockPattern().CreateStockPattern(&models.StockPattern{
+	err = s.repository.Pattern().CreatePattern(&models.Pattern{
 		Name:        req.Name,
 		Description: &req.Description,
-		UserID:      req.UserID,
+		UserID:      &req.UserID,
+		Type:        req.Type,
+		Icon:        &req.Icon,
 	})
 	if err != nil {
 		s.error(w, err.Error())
@@ -48,12 +52,13 @@ func (s *server) CreateStockPattern(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, nil)
 }
 
-func (s *server) UpdateStockPattern(w http.ResponseWriter, r *http.Request) {
+func (s *server) UpdatePattern(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
 		ID          int64  `json:"id"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
+		Icon        string `json:"icon"`
 	}
 
 	req := &request{}
@@ -68,17 +73,17 @@ func (s *server) UpdateStockPattern(w http.ResponseWriter, r *http.Request) {
 		req,
 		validation.Field(&req.ID, validation.Required),
 		validation.Field(&req.Name, validation.Required),
-		validation.Field(&req.Description, validation.Required),
 	)
 	if err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err = s.repository.StockPattern().UpdateStockPattern(&models.StockPattern{
+	err = s.repository.Pattern().UpdatePattern(&models.Pattern{
 		ID:          req.ID,
 		Name:        req.Name,
 		Description: &req.Description,
+		Icon:        &req.Icon,
 	})
 	if err != nil {
 		s.error(w, err.Error())
@@ -88,7 +93,7 @@ func (s *server) UpdateStockPattern(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, nil)
 }
 
-func (s *server) GetAllStockPattern(w http.ResponseWriter, r *http.Request) {
+func (s *server) GetAllPattern(w http.ResponseWriter, r *http.Request) {
 	var userID int64
 
 	err := json.NewDecoder(r.Body).Decode(&userID)
@@ -97,7 +102,7 @@ func (s *server) GetAllStockPattern(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ptrns, err := s.repository.StockPattern().GetAllStockPattern(1)
+	ptrns, err := s.repository.Pattern().GetAllPattern(userID)
 	if err != nil {
 		s.error(w, err.Error())
 		return
@@ -106,7 +111,7 @@ func (s *server) GetAllStockPattern(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, ptrns)
 }
 
-func (s *server) DeleteStockPattern(w http.ResponseWriter, r *http.Request) {
+func (s *server) DeletePattern(w http.ResponseWriter, r *http.Request) {
 
 	var id int64
 
@@ -116,7 +121,7 @@ func (s *server) DeleteStockPattern(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.repository.StockPattern().DeleteStockPattern(id)
+	err = s.repository.Pattern().DeletePattern(id)
 	if err != nil {
 		s.error(w, err.Error())
 		return
