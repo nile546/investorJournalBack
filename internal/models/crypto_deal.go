@@ -2,11 +2,12 @@ package models
 
 import "time"
 
-//"Position", "TimeFrame" declared in stock deals model
+//"Position", "TimeFrame", "Currency" declared in stock deals model
 
 type CryptoDeal struct {
 	ID              int64            `json:"id"`
 	Crypto          CryptoInstrument `json:"crypto"`
+	Currency        *Currency        `json:"currency"`
 	Strategy        *Strategy        `json:"strategy"`
 	Pattern         *Pattern         `json:"pattern"`
 	Position        *Position        `json:"position"`

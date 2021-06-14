@@ -4,15 +4,18 @@ import (
 	"time"
 )
 
-type instrumentsConfig struct {
+type updateInstrumentsConfig struct {
 	spbExchangeUrl string
 	mskStocksUrl   string
 	bankiUrl       string
 	cryptoUrl      string
 	cryptoKey      string
+	hours          int
+	minutes        int
+	seconds        int
 }
 
-func (s *server) updateInstruments(hour, min, sec int, callHandlers func(c *instrumentsConfig), iC *instrumentsConfig) error {
+func (s *server) updateInstruments(callHandlers func(c *updateInstrumentsConfig), c *updateInstrumentsConfig) error {
 	loc, err := time.LoadLocation("Local")
 	if err != nil {
 		return err
@@ -20,7 +23,7 @@ func (s *server) updateInstruments(hour, min, sec int, callHandlers func(c *inst
 
 	now := time.Now().Local()
 	firstCallTime := time.Date(
-		now.Year(), now.Month(), now.Day(), hour, min, sec, 0, loc)
+		now.Year(), now.Month(), now.Day(), c.hours, c.minutes, c.seconds, 0, loc)
 	if firstCallTime.Before(now) {
 		firstCallTime = firstCallTime.Add(time.Hour * 24)
 	}
@@ -30,7 +33,7 @@ func (s *server) updateInstruments(hour, min, sec int, callHandlers func(c *inst
 	go func() {
 		time.Sleep(duration)
 		for {
-			callHandlers(iC)
+			callHandlers(c)
 			time.Sleep(time.Hour * 24)
 		}
 	}()
@@ -38,7 +41,7 @@ func (s *server) updateInstruments(hour, min, sec int, callHandlers func(c *inst
 	return nil
 }
 
-func (s *server) callUpdateHandlers(c *instrumentsConfig) {
+func (s *server) callUpdateHandlers(c *updateInstrumentsConfig) {
 	s.updateStocksInstruments(c.spbExchangeUrl, c.mskStocksUrl)
 	s.updateCryptoInstruments(c.cryptoUrl, c.cryptoKey)
 	s.updateBanksInstruments(c.bankiUrl)

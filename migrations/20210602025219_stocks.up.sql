@@ -2,6 +2,7 @@ CREATE TABLE stocks_instruments(
     id BIGSERIAL NOT NULL PRIMARY KEY,
     title VARCHAR NOT NULL,
     ticker VARCHAR NOT NULL,
-    type VARCHAR NOT NULL,
+    type VARCHAR,
+    isin VARCHAR,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL 
 )

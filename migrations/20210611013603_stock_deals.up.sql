@@ -1,6 +1,7 @@
 CREATE TABLE stock_deals(
     id BIGSERIAL NOT NULL PRIMARY KEY,
     stock_instrument_id BIGINT REFERENCES stocks_instruments (id),
+    currency SMALLINT,
     strategy_id BIGINT REFERENCES strategies (id),
     pattern_id BIGINT REFERENCES patterns (id),
     position SMALLINT, 
@@ -12,6 +13,7 @@ CREATE TABLE stock_deals(
     exit_datetime TIMESTAMP,
     exit_point BIGINT,
     risk_ratio FLOAT,
+    Variability SMALLINT,
     user_id BIGINT REFERENCES users (id)
 )
 

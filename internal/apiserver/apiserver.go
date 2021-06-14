@@ -12,6 +12,8 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/nile546/diplom/config"
+	"github.com/nile546/diplom/internal/brokersgrab"
+	"github.com/nile546/diplom/internal/brokersgrab/grabs"
 	"github.com/nile546/diplom/internal/investinstruments"
 	"github.com/nile546/diplom/internal/investinstruments/instruments"
 	"github.com/nile546/diplom/internal/mailer"
@@ -49,6 +51,7 @@ type server struct {
 	instruments investinstruments.Instruments
 	session     session
 	logger      *logrus.Logger
+	brokersGrab brokersgrab.Grab
 }
 
 type spaHandler struct {
@@ -138,19 +141,6 @@ func Start(c *config.Config) error {
 
 	r := pgstore.New(db)
 
-	var st *string
-
-	str := "patt"
-
-	st = &str
-
-	p := &models.Strategy{
-		Name:        "pat",
-		Description: st,
-	}
-
-	r.Strategy().CreateStrategy(p)
-
 	mConf := &emailer.Config{
 		Login:  c.MailerLogin,
 		Pass:   c.MailerPass,
@@ -165,21 +155,28 @@ func Start(c *config.Config) error {
 
 	i := instruments.New(l)
 
-	cI := &instrumentsConfig{
+	cI := &updateInstrumentsConfig{
 		spbExchangeUrl: c.SpbexchangeAddress,
 		mskStocksUrl:   c.MskexchangeAddress,
 		bankiUrl:       c.BankiUrl,
 		cryptoUrl:      c.CryptoUrl,
 		cryptoKey:      c.CryptoKey,
+		hours:          c.HoursUpdateInstruments,
+		minutes:        c.MinutesUpdateInstruments,
+		seconds:        c.SecondsUpdateInstruments,
 	}
 
-	srv := newServer(r, m, i, l)
+	b := grabs.New()
+
+	//b.TinkoffGrab().GetTinkoffStockDeals("t.vOoTCbcoO8nacpr4lKaVx0Hv5OwOju93dctV0umgOmhp8OKX9bq-9EcyGRzoBBp_yIbs4iQgITafLD0r5tvyYg")
+
+	srv := newServer(r, m, i, l, b)
 
 	if err = srv.configureLogger(); err != nil {
 		return err
 	}
 
-	err = srv.updateInstruments(c.HoursUpdateInstruments, c.MinutesUpdateInstruments, c.SecondsUpdateInstruments, srv.callUpdateHandlers, cI)
+	err = srv.updateInstruments(srv.callUpdateHandlers, cI)
 	if err != nil {
 		srv.logger.Errorf("Error update instruments: %+v", err)
 	}
@@ -190,7 +187,7 @@ func Start(c *config.Config) error {
 
 }
 
-func newServer(r store.Repository, m mailer.Mailer, i investinstruments.Instruments, l *logrus.Logger) *server {
+func newServer(r store.Repository, m mailer.Mailer, i investinstruments.Instruments, l *logrus.Logger, b brokersgrab.Grab) *server {
 
 	srv := &server{
 		router:      mux.NewRouter(),
@@ -198,6 +195,7 @@ func newServer(r store.Repository, m mailer.Mailer, i investinstruments.Instrume
 		mailer:      m,
 		logger:      l,
 		instruments: i,
+		brokersGrab: b,
 	}
 	srv.ConfugureRouter()
 
