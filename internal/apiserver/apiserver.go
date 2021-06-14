@@ -102,13 +102,12 @@ func (s *server) ConfugureRouter() {
 
 	// Open routes, use without session
 
-	api.HandleFunc(refreshRoute, s.refresh)
-	api.HandleFunc(signoutRoute, s.signout)
-
 	auth := api.PathPrefix(authRoute).Subrouter()
 	auth.HandleFunc(signupRoute, s.signup).Methods(http.MethodPost)
 	auth.HandleFunc(confirmSignupRoute, s.confirmSignup).Methods(http.MethodPost)
 	auth.HandleFunc(signinRoute, s.signin).Methods(http.MethodPost)
+	auth.HandleFunc(refreshRoute, s.refresh)
+	auth.HandleFunc(signoutRoute, s.signout)
 
 	// Closed routes, with use session
 
