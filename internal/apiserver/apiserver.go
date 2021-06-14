@@ -85,7 +85,6 @@ func (s *server) ConfugureRouter() {
 
 	s.router.Use(requestIDMiddleware)
 	s.router.Use(s.loggerMiddleware)
-	s.router.Use(s.GetUserSession)
 
 	if !production {
 		cors := handlers.CORS(
@@ -99,6 +98,7 @@ func (s *server) ConfugureRouter() {
 	}
 
 	api := s.router.PathPrefix(apiRoute).Subrouter()
+	api.Use(s.sessionMiddleware)
 
 	// Open routes, use without session
 

@@ -46,17 +46,17 @@ func (s *server) loggerMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *server) GetUserSession(next http.Handler) http.Handler {
+func (s *server) sessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 
-			path := []string{
+			openRoutes := []string{
 				authRoute,
 				updateSessionRoute,
 				clearSessionRoute,
 			}
 
-			for _, rt := range path {
+			for _, rt := range openRoutes {
 				if strings.Contains(r.URL.Path, rt) {
 					next.ServeHTTP(w, r)
 					return
