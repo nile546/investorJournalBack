@@ -2,7 +2,6 @@ package apiserver
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -46,40 +45,37 @@ func (s *server) loggerMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *server) GetUserSession(next http.Handler) http.Handler {
+func (s *server) sessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 
-			path := []string{
+			openRoutes := []string{
 				authRoute,
-				updateSessionRoute,
-				clearSessionRoute,
 			}
 
-			for _, rt := range path {
+			for _, rt := range openRoutes {
 				if strings.Contains(r.URL.Path, rt) {
 					next.ServeHTTP(w, r)
 					return
 				}
 			}
 
-			fmt.Println(r.URL.Path)
-
-			ck, err := r.Cookie("at")
+			c, err := r.Cookie("at")
 			if err != nil {
-				s.respond(w, err.Error())
+				s.logger.Error(err)
+				s.unauthorized(w)
 				return
 			}
 
 			at := &models.Token{}
 
-			if err = at.GetClaims(ck.Value, tokenKey); err != nil {
-				s.respond(w, err.Error())
+			if err = at.GetClaims(c.Value, tokenKey); err != nil {
+				s.logger.Error(err)
+				s.unauthorized(w)
 				return
 			}
 
-			s.session.User.ID = at.UserID
-
+			s.session.userId = at.UserID
 			next.ServeHTTP(w, r)
 		},
 	)

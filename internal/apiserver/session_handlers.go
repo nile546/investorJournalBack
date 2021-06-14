@@ -1,7 +1,6 @@
 package apiserver
 
 import (
-	"encoding/json"
 	"net/http"
 	"time"
 
@@ -11,28 +10,26 @@ import (
 	"github.com/nile546/diplom/internal/models"
 )
 
-func (s *server) updateSession(w http.ResponseWriter, r *http.Request) {
+func (s *server) refresh(w http.ResponseWriter, r *http.Request) {
 
-	type request struct {
-		RT string `json:"refreshToken"`
-	}
-
-	req := &request{}
-
-	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		s.error(w, err.Error())
-		return
-	}
-
-	if err := validation.ValidateStruct(req,
-		validation.Field(&req.RT, validation.Required, is.UUIDv4),
-	); err != nil {
-		s.error(w, err.Error())
-		return
-	}
-
-	refreshToken, userID, err := s.repository.User().UpdateRefreshToken(req.RT)
+	rt, err := r.Cookie("rt")
 	if err != nil {
+		s.logger.Error(err)
+		s.error(w, err.Error())
+		return
+	}
+
+	if err := validation.ValidateStruct(rt,
+		validation.Field(&rt.Value, validation.Required, is.UUIDv4),
+	); err != nil {
+		s.logger.Error(err)
+		s.error(w, err.Error())
+		return
+	}
+
+	refreshToken, userID, err := s.repository.User().UpdateRefreshToken(rt.Value)
+	if err != nil {
+		s.logger.Error(err)
 		s.error(w, err.Error())
 		return
 	}
@@ -46,6 +43,7 @@ func (s *server) updateSession(w http.ResponseWriter, r *http.Request) {
 
 	accessToken, err := at.Generate(tokenKey)
 	if err != nil {
+		s.logger.Error(err)
 		s.error(w, err.Error())
 		return
 	}
@@ -69,7 +67,7 @@ func (s *server) updateSession(w http.ResponseWriter, r *http.Request) {
 		Name:     "rt",
 		Value:    refreshToken,
 		HttpOnly: true,
-		Path:     apiRoute + updateSessionRoute,
+		Path:     apiRoute + authRoute + refreshRoute,
 		Expires:  time.Now().Add(24 * time.Hour),
 	}
 
@@ -83,7 +81,7 @@ func (s *server) updateSession(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, nil)
 }
 
-func (s *server) clearSession(w http.ResponseWriter, r *http.Request) {
+func (s *server) signout(w http.ResponseWriter, r *http.Request) {
 
 	atc, err := r.Cookie("at")
 
@@ -104,7 +102,7 @@ func (s *server) clearSession(w http.ResponseWriter, r *http.Request) {
 	clearRtc := &http.Cookie{
 		Name:     "rt",
 		Value:    "",
-		Path:     apiRoute + updateSessionRoute,
+		Path:     apiRoute + authRoute + refreshRoute,
 		HttpOnly: true,
 		Expires:  time.Unix(0, 0),
 	}

@@ -59,7 +59,7 @@ type spaHandler struct {
 	indexPath  string
 }
 type session struct {
-	User *models.User
+	userId int64
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +88,6 @@ func (s *server) ConfugureRouter() {
 
 	s.router.Use(requestIDMiddleware)
 	s.router.Use(s.loggerMiddleware)
-	s.router.Use(s.GetUserSession)
 
 	if !production {
 		cors := handlers.CORS(
@@ -102,16 +101,16 @@ func (s *server) ConfugureRouter() {
 	}
 
 	api := s.router.PathPrefix(apiRoute).Subrouter()
+	api.Use(s.sessionMiddleware)
 
 	// Open routes, use without session
-
-	api.HandleFunc(updateSessionRoute, s.updateSession)
-	api.HandleFunc(clearSessionRoute, s.clearSession)
 
 	auth := api.PathPrefix(authRoute).Subrouter()
 	auth.HandleFunc(signupRoute, s.signup).Methods(http.MethodPost)
 	auth.HandleFunc(confirmSignupRoute, s.confirmSignup).Methods(http.MethodPost)
 	auth.HandleFunc(signinRoute, s.signin).Methods(http.MethodPost)
+	auth.HandleFunc(refreshRoute, s.refresh)
+	auth.HandleFunc(signoutRoute, s.signout)
 
 	// Closed routes, with use session
 
@@ -227,6 +226,10 @@ func (s *server) respond(w http.ResponseWriter, payload interface{}) {
 	if err := json.NewEncoder(w).Encode(res); err != nil {
 		s.logger.Errorf("error encode data %+v to json: %+v", res, err)
 	}
+}
+
+func (s *server) unauthorized(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusUnauthorized)
 }
 
 func newDB(cs string) (*sql.DB, error) {
