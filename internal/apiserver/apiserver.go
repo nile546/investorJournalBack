@@ -56,7 +56,7 @@ type spaHandler struct {
 	indexPath  string
 }
 type session struct {
-	User *models.User
+	userId int64
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -229,6 +229,10 @@ func (s *server) respond(w http.ResponseWriter, payload interface{}) {
 	if err := json.NewEncoder(w).Encode(res); err != nil {
 		s.logger.Errorf("error encode data %+v to json: %+v", res, err)
 	}
+}
+
+func (s *server) unauthorized(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusUnauthorized)
 }
 
 func newDB(cs string) (*sql.DB, error) {
