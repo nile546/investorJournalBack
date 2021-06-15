@@ -11,11 +11,11 @@ import (
 func (s *server) CreatePattern(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		Name        string      `json:"name"`
-		Description string      `json:"description"`
-		UserID      int64       `json:"user_id"`
-		Type        models.Type `json:"type"`
-		Icon        string      `json:"icon"`
+		Name        string             `json:"name"`
+		Description string             `json:"description"`
+		UserID      int64              `json:"user_id"`
+		Type        models.TypePattern `json:"type"`
+		Icon        string             `json:"icon"`
 	}
 
 	req := &request{}

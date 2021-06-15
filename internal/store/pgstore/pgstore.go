@@ -15,6 +15,7 @@ type Repository struct {
 	stockDealRepository        *StockDealRepository
 	strategyRepository         *StrategyRepository
 	patternRepository          *PatternRepository
+	stockDealPartRepository    *StockDealPartRepository
 }
 
 func New(db *sql.DB) *Repository {
@@ -106,4 +107,16 @@ func (r *Repository) Pattern() store.PatternRepository {
 	}
 
 	return r.patternRepository
+}
+
+func (r *Repository) StockDealPart() store.StockDealPartRepository {
+	if r.stockDealPartRepository != nil {
+		return r.stockDealPartRepository
+	}
+
+	r.stockDealPartRepository = &StockDealPartRepository{
+		db: r.db,
+	}
+
+	return r.stockDealPartRepository
 }

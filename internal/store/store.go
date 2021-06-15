@@ -10,6 +10,7 @@ type Repository interface {
 	StockDeal() StockDealRepository
 	Strategy() StrategyRepository
 	Pattern() PatternRepository
+	StockDealPart() StockDealPartRepository
 }
 
 type UserRepository interface {
@@ -26,6 +27,7 @@ type UserRepository interface {
 type StockInstrumentRepository interface {
 	InsertStocksInstruments(*[]models.StockInstrument) error
 	GetAllStockInstruments() (*[]models.StockInstrument, error)
+	GetInstrumentByISIN(string) (*models.StockInstrument, error)
 }
 
 type BankInstrumentRepository interface {
@@ -40,6 +42,7 @@ type CryptoInstrumentRepository interface {
 
 type StockDealRepository interface {
 	GetAll(*models.TableParams) error
+	GetStockDealsIDByISIN(string) (int64, error)
 }
 
 type StrategyRepository interface {
@@ -54,4 +57,8 @@ type PatternRepository interface {
 	UpdatePattern(*models.Pattern) error
 	GetAllPattern(int64) (*[]models.Pattern, error)
 	DeletePattern(int64) error
+}
+
+type StockDealPartRepository interface {
+	InsertStockDealPart(*models.StockDealParts) error
 }

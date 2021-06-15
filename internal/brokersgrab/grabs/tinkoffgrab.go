@@ -40,8 +40,14 @@ func (t *TinkoffGrab) getTinkoffOperations() (*[]models.TinkoffOperation, error)
 		if operations[i].Status == "Done" {
 			if operations[i].InstrumentType == "Stock" {
 				if operations[i].OperationType == "Buy" || operations[i].OperationType == "Sell" {
+					ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+					defer cancel()
+					instrument, err := client.InstrumentByFIGI(ctx, operations[i].FIGI)
+					if err != nil {
+						//TODO: ADD TO LOGGER
+					}
 					tinkoffOperation := &models.TinkoffOperation{
-						FIGI:      operations[i].FIGI,
+						ISIN:      instrument.ISIN,
 						Currency:  currencyConvert(operations[i].Currency),
 						Quantity:  operations[i].Quantity,
 						DateTime:  operations[i].DateTime,
@@ -58,7 +64,7 @@ func (t *TinkoffGrab) getTinkoffOperations() (*[]models.TinkoffOperation, error)
 
 }
 
-func currencyConvert(currency sdk.Currency) int8 {
+func currencyConvert(currency sdk.Currency) models.Currency {
 
 	switch currency {
 	case "USD":

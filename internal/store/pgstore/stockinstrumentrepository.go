@@ -71,3 +71,27 @@ func (s *StockInstrumentRepository) GetAllStockInstruments() (*[]models.StockIns
 
 	return stocks_instruments, nil
 }
+
+func (s *StockInstrumentRepository) GetInstrumentByISIN(ISIN string) (*models.StockInstrument, error) {
+	q := `SELECT * FROM stocks_instruments WHERE isin=$1`
+
+	res, err := s.db.Query(q, ISIN)
+	if err != nil {
+		return nil, err
+	}
+
+	instrument := &models.StockInstrument{
+		Isin: &ISIN,
+	}
+
+	for res.Next() {
+
+		err = res.Scan(&instrument.ID, &instrument.Ticker, &instrument.Title, &instrument.Type, &instrument.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	return instrument, nil
+}

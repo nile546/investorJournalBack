@@ -43,3 +43,19 @@ func (r *StockDealRepository) GetAll(tp *models.TableParams) error {
 	tp.Source = source
 	return nil
 }
+
+func (r *StockDealRepository) GetStockDealsIDByISIN(ISIN string) (int64, error) {
+	q := `SELECT id FROM stock_deals 
+	WHERE (stock_instrument_id= 
+	SELECT id FROM stocks_instruments 
+	WHERE isin=$1) 
+	AND (exit_datetime IS NULL) AND (variability=false)`
+
+	var stock_dealID int64
+
+	if err := r.db.QueryRow(q, ISIN).Scan(&stock_dealID); err != nil {
+		return 0, err
+	}
+
+	return stock_dealID, nil
+}
