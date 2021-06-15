@@ -7,5 +7,5 @@ type Grab interface {
 }
 
 type TinkoffGrab interface {
-	GetTinkoffStockDeals(string) (*[]models.StockDeal, error)
+	GetTinkoffStockDeals(string) (*[]models.TinkoffOperation, error)
 }

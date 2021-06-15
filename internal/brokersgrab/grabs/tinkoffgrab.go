@@ -2,7 +2,7 @@ package grabs
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"time"
 
 	sdk "github.com/TinkoffCreditSystems/invest-openapi-go-sdk"
@@ -13,29 +13,12 @@ type TinkoffGrab struct {
 	token string
 }
 
-type extoStock struct {
-	ID              int64      `json:"id"`
-	EnterDateTime   time.Time  `json:"enter_datetime"`
-	EnterPoint      int64      `json:"enter_point"`
-	StopLoss        *int64     `json:"stop_loss"`
-	Quantity        int        `json:"quantity"`
-	ExitDateTime    *time.Time `json:"exit_datetime"`
-	ExitPoint       *int64     `json:"exit_point"`
-	RiskRatio       float32    `json:"risk_ratio"`
-	Result          *int64     `json:"result"`
-	ResultInPercent float64    `json:"result_in_percent"`
-	StartDeposit    int64      `json:"start_deposit"`
-	EndDeposit      int64      `json:"end_deposit"`
-	UserID          int64      `json:"user_id"`
-}
-
-func (t *TinkoffGrab) GetTinkoffStockDeals(token string) (*[]models.StockDeal, error) {
+func (t *TinkoffGrab) GetTinkoffStockDeals(token string) (*[]models.TinkoffOperation, error) {
 	t.token = token
-	t.getTinkoffOperations()
-	return nil, nil
+	return t.getTinkoffOperations()
 }
 
-func (t *TinkoffGrab) getTinkoffOperations() {
+func (t *TinkoffGrab) getTinkoffOperations() (*[]models.TinkoffOperation, error) {
 
 	client := sdk.NewRestClient(t.token)
 
@@ -44,13 +27,68 @@ func (t *TinkoffGrab) getTinkoffOperations() {
 
 	operations, err := client.Operations(ctx, sdk.DefaultAccount, time.Now().AddDate(0, 0, -1000), time.Now(), "")
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 
-	//for _, operation := range operations {
+	if len(operations) <= 0 {
+		return nil, errors.New("Нет сделок")
+	}
 
-	//}
+	tinkoffOperations := &[]models.TinkoffOperation{}
 
-	fmt.Println(operations)
+	for i := len(operations) - 1; i >= 0; i-- {
+		if operations[i].Status == "Done" {
+			if operations[i].InstrumentType == "Stock" {
+				if operations[i].OperationType == "Buy" || operations[i].OperationType == "Sell" {
+					tinkoffOperation := &models.TinkoffOperation{
+						FIGI:      operations[i].FIGI,
+						Currency:  currencyConvert(operations[i].Currency),
+						Quantity:  operations[i].Quantity,
+						DateTime:  operations[i].DateTime,
+						Price:     int64(operations[i].Price * 100),
+						Operation: operationConvert(operations[i].OperationType),
+					}
+					*tinkoffOperations = append(*tinkoffOperations, *tinkoffOperation)
+				}
+			}
+		}
+	}
 
+	return tinkoffOperations, nil
+
+}
+
+func currencyConvert(currency sdk.Currency) int8 {
+
+	switch currency {
+	case "USD":
+		{
+			return 1
+		}
+	case "EUR":
+		{
+			return 2
+		}
+	case "RUB":
+		{
+			return 3
+		}
+	}
+	return 0
+}
+
+func operationConvert(operation sdk.OperationType) string {
+
+	switch operation {
+	case "Buy":
+		{
+			return "Buy"
+		}
+	case "Sell":
+		{
+			return "Sell"
+		}
+
+	}
+	return ""
 }
