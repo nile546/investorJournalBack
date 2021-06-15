@@ -13,7 +13,7 @@ CREATE TABLE stock_deals(
     exit_datetime TIMESTAMP,
     exit_point BIGINT,
     risk_ratio FLOAT,
-    Variability SMALLINT,
+    variability bool,
     user_id BIGINT REFERENCES users (id)
 )
 

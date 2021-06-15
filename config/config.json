@@ -17,8 +17,8 @@
     "BankiUrl": "https://www.banki.ru/banks/ratings/export.php",
     "CryptoUrl": "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
     "CryptoKey": "75416f37-656b-4dd1-8cf5-9e5a382d3e88",
-    "HoursUpdateInstruments": 0,
-    "MinutesUpdateInstruments": 45,
+    "HoursUpdateInstruments": 3,
+    "MinutesUpdateInstruments": 0,
     "SecondsUpdateInstruments": 0,
     "LogLevel": "debug"
 } 

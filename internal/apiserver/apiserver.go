@@ -167,7 +167,7 @@ func Start(c *config.Config) error {
 
 	b := grabs.New()
 
-	//b.TinkoffGrab().GetTinkoffStockDeals("t.vOoTCbcoO8nacpr4lKaVx0Hv5OwOju93dctV0umgOmhp8OKX9bq-9EcyGRzoBBp_yIbs4iQgITafLD0r5tvyYg")
+	b.TinkoffGrab().GetTinkoffStockDeals("t.mc59vpa3zdZUotM4Opsz3e9zXpa9x--HowDyC5TTA_SdtJ5iKC1L1guawNvmCR0SIJijzg8sgifdui7MygKExg")
 
 	srv := newServer(r, m, i, l, b)
 

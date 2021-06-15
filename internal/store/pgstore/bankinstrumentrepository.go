@@ -12,6 +12,10 @@ type BankInstrumentRepository struct {
 
 func (b *BankInstrumentRepository) InsertBanksInstruments(banks *[]models.BankInstrument) (err error) {
 
+	if len(*banks) == 0 {
+		return
+	}
+
 	q := `INSERT INTO banks_instruments (title) VALUES `
 
 	var res sql.Result
@@ -44,21 +48,25 @@ func (b *BankInstrumentRepository) InsertBanksInstruments(banks *[]models.BankIn
 	return nil
 }
 
-func (b *BankInstrumentRepository) TruncateBanksInstruments() (err error) {
+func (b *BankInstrumentRepository) GetAllBankInstruments() (*[]models.BankInstrument, error) {
 
-	q := `TRUNCATE TABLE banks_instruments RESTART IDENTITY`
+	q := `SELECT * FROM banks_instruments`
 
-	var res sql.Result
-
-	res, err = b.db.Exec(q)
+	res, err := b.db.Query(q)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = res.RowsAffected()
-	if err != nil {
-		return err
+	banks_instruments := &[]models.BankInstrument{}
+
+	for res.Next() {
+		bank := models.BankInstrument{}
+		err = res.Scan(&bank.ID, &bank.Title)
+		if err != nil {
+			return nil, err
+		}
+		*banks_instruments = append(*banks_instruments, bank)
 	}
 
-	return nil
+	return banks_instruments, nil
 }

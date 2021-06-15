@@ -12,6 +12,10 @@ type CryptoInstrumentRepository struct {
 
 func (c *CryptoInstrumentRepository) InsertCryptoInstruments(cryptos *[]models.CryptoInstrument) (err error) {
 
+	if len(*cryptos) == 0 {
+		return
+	}
+
 	q := `INSERT INTO crypto_instruments (title, ticker) VALUES `
 
 	var res sql.Result
@@ -44,21 +48,25 @@ func (c *CryptoInstrumentRepository) InsertCryptoInstruments(cryptos *[]models.C
 	return nil
 }
 
-func (c *CryptoInstrumentRepository) TruncateCryptoInstruments() (err error) {
+func (c *CryptoInstrumentRepository) GetAllCryptoInstruments() (*[]models.CryptoInstrument, error) {
 
-	q := `TRUNCATE TABLE crypto_instruments RESTART IDENTITY`
+	q := `SELECT * FROM crypto_instruments`
 
-	var res sql.Result
-
-	res, err = c.db.Exec(q)
+	res, err := c.db.Query(q)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = res.RowsAffected()
-	if err != nil {
-		return err
+	crypto_instruments := &[]models.CryptoInstrument{}
+
+	for res.Next() {
+		crypt := models.CryptoInstrument{}
+		err = res.Scan(&crypt.ID, &crypt.Title, &crypt.Ticker)
+		if err != nil {
+			return nil, err
+		}
+		*crypto_instruments = append(*crypto_instruments, crypt)
 	}
 
-	return nil
+	return crypto_instruments, nil
 }

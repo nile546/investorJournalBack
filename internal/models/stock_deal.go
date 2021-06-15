@@ -64,14 +64,6 @@ const (
 	Rub
 )
 
-type Variability int8
-
-const (
-	Changeble Variability = iota + 1
-
-	UnChangeble
-)
-
 type StockDeal struct {
 	ID              int64           `json:"id"`
 	Stock           StockInstrument `json:"stock"`
@@ -92,5 +84,5 @@ type StockDeal struct {
 	StartDeposit    int64           `json:"start_deposit"`
 	EndDeposit      int64           `json:"end_deposit"`
 	UserID          int64           `json:"user_id"`
-	Variability     *Variability    `json:"variability"`
+	Variability     bool            `json:"variability"`
 }
