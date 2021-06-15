@@ -84,9 +84,8 @@ func (s *server) refresh(w http.ResponseWriter, r *http.Request) {
 func (s *server) signout(w http.ResponseWriter, r *http.Request) {
 
 	atc, err := r.Cookie("at")
-
 	if err != nil {
-		s.respond(w, err.Error())
+		s.error(w, err.Error())
 		return
 	}
 
@@ -110,7 +109,7 @@ func (s *server) signout(w http.ResponseWriter, r *http.Request) {
 
 	accessToken := &models.Token{}
 	if err := accessToken.GetClaims(atc.Value, tokenKey); err != nil {
-		s.respond(w, err.Error())
+		s.error(w, err.Error())
 		return
 	}
 
@@ -120,8 +119,8 @@ func (s *server) signout(w http.ResponseWriter, r *http.Request) {
 
 	if err = s.repository.User().DeleteRefreshTokenByUser(u); err != nil {
 		s.logger.Errorf("Error delete from refresh_token by id: %+v", err)
+		s.error(w, err.Error())
 	}
 
 	s.respond(w, nil)
-
 }
