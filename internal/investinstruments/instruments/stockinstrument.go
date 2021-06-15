@@ -168,17 +168,65 @@ func (r *Stockinstrument) spbgrab(u string) (*[]models.StockInstrument, error) {
 			continue
 		}
 
-		tp, err := convertWin1251toUTF8(record[5])
+		isin, err := convertWin1251toUTF8(record[7])
+		if err != nil {
+			log.Errorf("Convert ticker error: Stock(SPB) with id = %d : %+v", ID, err)
+			ID++
+			continue
+		}
+
+		if strings.Contains(ticker, "обыкновенн") {
+			ticker, err = convertWin1251toUTF8(record[7])
+			if err != nil {
+				log.Errorf("Convert ticker error: Stock(SPB) with id = %d : %+v", ID, err)
+				ID++
+				continue
+			}
+			isin, err = convertWin1251toUTF8(record[8])
+			if err != nil {
+				log.Errorf("Convert ticker error: Stock(SPB) with id = %d : %+v", ID, err)
+				ID++
+				continue
+			}
+		}
+
+		if strings.Contains(ticker, "расписки") {
+			ticker, err = convertWin1251toUTF8(record[9])
+			if err != nil {
+				log.Errorf("Convert ticker error: Stock(SPB) with id = %d : %+v", ID, err)
+				ID++
+				continue
+			}
+			isin, err = convertWin1251toUTF8(record[10])
+			if err != nil {
+				log.Errorf("Convert ticker error: Stock(SPB) with id = %d : %+v", ID, err)
+				ID++
+				continue
+			}
+		}
+
+		tp, err := convertWin1251toUTF8(record[4])
 		if err != nil {
 			log.Errorf("Convert type error: Stock(SPB) with id = %d : %+v", ID, err)
 			ID++
 			continue
 		}
+
+		if tp == "" {
+			tp, err = convertWin1251toUTF8(record[5])
+			if err != nil {
+				log.Errorf("Convert type error: Stock(SPB) with id = %d : %+v", ID, err)
+				ID++
+				continue
+			}
+		}
+
 		stock := models.StockInstrument{
 			ID:     ID,
 			Title:  title,
 			Ticker: &ticker,
 			Type:   &tp,
+			Isin:   &isin,
 		}
 		*stocks = append(*stocks, stock)
 		ID++
@@ -230,16 +278,27 @@ func (r *Stockinstrument) mskgrab(u string) (*[]models.StockInstrument, error) {
 			ID++
 			continue
 		}
-		title, err := convertWin1251toUTF8(record[11])
+
+		ticker, err := convertWin1251toUTF8(record[7])
+		if ticker == "" {
+			continue
+		}
 		if err != nil {
-			log.Errorf("Convert title error: Stock(MSK) with id = %d : %+v", ID, err)
+			log.Errorf("Convert ticker error: Stock(MSK) with id = %d : %+v", ID, err)
 			ID++
 			continue
 		}
 
-		ticker, err := convertWin1251toUTF8(record[7])
+		isin, err := convertWin1251toUTF8(record[8])
 		if err != nil {
 			log.Errorf("Convert ticker error: Stock(MSK) with id = %d : %+v", ID, err)
+			ID++
+			continue
+		}
+
+		title, err := convertWin1251toUTF8(record[11])
+		if err != nil {
+			log.Errorf("Convert title error: Stock(MSK) with id = %d : %+v", ID, err)
 			ID++
 			continue
 		}
@@ -255,6 +314,7 @@ func (r *Stockinstrument) mskgrab(u string) (*[]models.StockInstrument, error) {
 			Title:  title,
 			Ticker: &ticker,
 			Type:   &tp,
+			Isin:   &isin,
 		}
 		*stocks = append(*stocks, stock)
 		ID++

@@ -7,5 +7,6 @@ type StockInstrument struct {
 	Title     string    `json:"title"`
 	Ticker    *string   `json:"ticker"`
 	Type      *string   `json:"type"`
+	Isin      *string   `json:"isin"`
 	CreatedAt time.Time `json:"createdAt"`
 }

@@ -54,9 +54,20 @@ const (
 	MN1
 )
 
+type Currency int8
+
+const (
+	Usd Currency = iota + 1
+
+	Eur
+
+	Rub
+)
+
 type StockDeal struct {
 	ID              int64           `json:"id"`
 	Stock           StockInstrument `json:"stock"`
+	Currency        *Currency       `json:"currency"`
 	Strategy        *Strategy       `json:"strategy"`
 	Pattern         *Pattern        `json:"pattern"`
 	Position        *Position       `json:"position"`
@@ -73,4 +84,5 @@ type StockDeal struct {
 	StartDeposit    int64           `json:"start_deposit"`
 	EndDeposit      int64           `json:"end_deposit"`
 	UserID          int64           `json:"user_id"`
+	Variability     bool            `json:"variability"`
 }

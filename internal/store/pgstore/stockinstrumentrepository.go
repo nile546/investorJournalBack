@@ -13,6 +13,10 @@ type StockInstrumentRepository struct {
 
 func (s *StockInstrumentRepository) InsertStocksInstruments(stocks *[]models.StockInstrument) (err error) {
 
+	if len(*stocks) == 0 {
+		return
+	}
+
 	q := `INSERT INTO stocks_instruments (title, ticker, type) VALUES `
 
 	var res sql.Result
@@ -45,21 +49,25 @@ func (s *StockInstrumentRepository) InsertStocksInstruments(stocks *[]models.Sto
 	return nil
 }
 
-func (s *StockInstrumentRepository) TruncateStocksInstruments() (err error) {
+func (s *StockInstrumentRepository) GetAllStockInstruments() (*[]models.StockInstrument, error) {
 
-	q := `TRUNCATE TABLE stocks_instruments RESTART IDENTITY`
+	q := `SELECT * FROM stocks_instruments`
 
-	var res sql.Result
-
-	res, err = s.db.Exec(q)
+	res, err := s.db.Query(q)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = res.RowsAffected()
-	if err != nil {
-		return err
+	stocks_instruments := &[]models.StockInstrument{}
+
+	for res.Next() {
+		si := models.StockInstrument{}
+		err = res.Scan(&si.ID, &si.Title, &si.Ticker, &si.Type, &si.Isin)
+		if err != nil {
+			return nil, err
+		}
+		*stocks_instruments = append(*stocks_instruments, si)
 	}
 
-	return nil
+	return stocks_instruments, nil
 }

@@ -25,17 +25,17 @@ type UserRepository interface {
 
 type StockInstrumentRepository interface {
 	InsertStocksInstruments(*[]models.StockInstrument) error
-	TruncateStocksInstruments() error
+	GetAllStockInstruments() (*[]models.StockInstrument, error)
 }
 
 type BankInstrumentRepository interface {
 	InsertBanksInstruments(*[]models.BankInstrument) error
-	TruncateBanksInstruments() error
+	GetAllBankInstruments() (*[]models.BankInstrument, error)
 }
 
 type CryptoInstrumentRepository interface {
 	InsertCryptoInstruments(*[]models.CryptoInstrument) error
-	TruncateCryptoInstruments() error
+	GetAllCryptoInstruments() (*[]models.CryptoInstrument, error)
 }
 
 type StockDealRepository interface {
