@@ -9,5 +9,5 @@ type TinkoffOperation struct {
 	Quantity  int       `json:"quantity"`
 	DateTime  time.Time `json:"enter_datetime"`
 	Price     int64     `json:"enter_point"`
-	Operation string    `json:"operation"`
+	Operation Type      `json:"operation"`
 }

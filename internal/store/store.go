@@ -1,6 +1,10 @@
 package store
 
-import "github.com/nile546/diplom/internal/models"
+import (
+	"time"
+
+	"github.com/nile546/diplom/internal/models"
+)
 
 type Repository interface {
 	User() UserRepository
@@ -43,6 +47,9 @@ type CryptoInstrumentRepository interface {
 type StockDealRepository interface {
 	GetAll(*models.TableParams) error
 	GetStockDealsIDByISIN(string) (int64, error)
+	CreateStockDeal(*models.StockDeal) (int64, error)
+	UpdateQuantityStockDeal(int64, int) error
+	SetStockDealCompleted(time.Time, int64, int64) error
 }
 
 type StrategyRepository interface {
@@ -61,4 +68,5 @@ type PatternRepository interface {
 
 type StockDealPartRepository interface {
 	InsertStockDealPart(*models.StockDealParts) error
+	CheckQuantityDeal(int64) (bool, error)
 }

@@ -83,18 +83,18 @@ func currencyConvert(currency sdk.Currency) models.Currency {
 	return 0
 }
 
-func operationConvert(operation sdk.OperationType) string {
+func operationConvert(operation sdk.OperationType) models.Type {
 
 	switch operation {
 	case "Buy":
 		{
-			return "Buy"
+			return 1
 		}
 	case "Sell":
 		{
-			return "Sell"
+			return 2
 		}
 
 	}
-	return ""
+	return 0
 }

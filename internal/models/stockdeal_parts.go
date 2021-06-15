@@ -5,15 +5,16 @@ import "time"
 type Type int8
 
 const (
-	Sell Type = iota + 1
+	Buy Type = iota + 1
 
-	Buy
+	Sell
 )
 
 type StockDealParts struct {
-	StockDealID int64     `json:"stockdeal_id"`
-	Quantity    int64     `json:"quantity"`
+	ID          int64     `json:"id"`
+	Quantity    int       `json:"quantity"`
 	Type        Type      `json:"type"`
 	Price       int64     `json:"price"`
 	DateTime    time.Time `json:"date_time"`
+	StockDealId int64     `json:"stockdeal_id"`
 }

@@ -26,18 +26,16 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stock_deals := &[]models.StockDeal{}
-
 	for i, operation := range *tinkoff_operations {
-		if operation.Operation == "Buy" {
+		if operation.Operation == 1 {
 
-			stockdealID, err := s.repository.StockDeal().GetStockDealsIDByISIN(operation.ISIN)
+			stockDealID, err := s.repository.StockDeal().GetStockDealsIDByISIN(operation.ISIN)
 			if err != nil {
 				s.logger.Errorf("Error get stock deal id by isin from operation id:%d, with error: %+v", i, err)
 				continue
 			}
 
-			if stockdealID == 0 {
+			if stockDealID == 0 {
 				stockInstrument, err := s.repository.StockInstrument().GetInstrumentByISIN(operation.ISIN)
 				if err != nil {
 					s.logger.Errorf("Error get stock instrument by isin from operation id:%d, with error: %+v", i, err)
@@ -54,11 +52,82 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 					Variability:   false,
 				}
 
-				*stock_deals = append(*stock_deals, *stockDeal)
+				idStockDeal, err := s.repository.StockDeal().CreateStockDeal(stockDeal)
+				if err != nil {
+					s.logger.Errorf("Error create stock deal from operation id:%d, with error: %+v", i, err)
+					continue
+				}
+
+				stockDealPart := &models.StockDealParts{
+					Quantity:    operation.Quantity,
+					Type:        operation.Operation,
+					Price:       operation.Price,
+					DateTime:    operation.DateTime,
+					StockDealId: idStockDeal,
+				}
+
+				err = s.repository.StockDealPart().InsertStockDealPart(stockDealPart)
+				if err != nil {
+					s.logger.Errorf("Error insert stock deal parts from operation id:%d, with error: %+v", i, err)
+					continue
+				}
 
 				continue
 			}
 
+			stockDealPart := &models.StockDealParts{
+				Quantity:    operation.Quantity,
+				Type:        operation.Operation,
+				Price:       operation.Price,
+				DateTime:    operation.DateTime,
+				StockDealId: stockDealID,
+			}
+
+			err = s.repository.StockDealPart().InsertStockDealPart(stockDealPart)
+			if err != nil {
+				s.logger.Errorf("Error insert stock deal parts from operation id:%d, with error: %+v", i, err)
+				continue
+			}
+
+			err = s.repository.StockDeal().UpdateQuantityStockDeal(stockDealID, operation.Quantity)
+			if err != nil {
+				s.logger.Errorf("Error update stock deal parts from operation id:%d, with error: %+v", i, err)
+				continue
+			}
+
 		}
+
+		stockDealID, err := s.repository.StockDeal().GetStockDealsIDByISIN(operation.ISIN)
+		if err != nil {
+			s.logger.Errorf("Error get stock deal id by isin from operation id:%d, with error: %+v", i, err)
+			continue
+		}
+
+		stockDealPart := &models.StockDealParts{
+			Quantity:    operation.Quantity,
+			Type:        operation.Operation,
+			Price:       operation.Price,
+			DateTime:    operation.DateTime,
+			StockDealId: stockDealID,
+		}
+
+		err = s.repository.StockDealPart().InsertStockDealPart(stockDealPart)
+		if err != nil {
+			s.logger.Errorf("Error insert stock deal parts from operation id:%d, with error: %+v", i, err)
+			continue
+		}
+
+		statusCompletedDeal, err := s.repository.StockDealPart().CheckQuantityDeal(stockDealID)
+		if err != nil {
+			s.logger.Errorf("Error check stock deal completed in parts from operation id:%d, with error: %+v", i, err)
+			continue
+		}
+
+		if !statusCompletedDeal {
+			continue
+		}
+
+		err = s.repository.StockDeal().SetStockDealCompleted(operation.DateTime, operation.Price, stockDealID)
+
 	}
 }
