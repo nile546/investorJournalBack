@@ -10,11 +10,13 @@ import (
 )
 
 type TinkoffGrab struct {
-	token string
+	token    string
+	grabDate time.Time
 }
 
-func (t *TinkoffGrab) GetTinkoffStockDeals(token string) (*[]models.TinkoffOperation, error) {
+func (t *TinkoffGrab) GetTinkoffStockDeals(token string, grabDate time.Time) (*[]models.TinkoffOperation, error) {
 	t.token = token
+	t.grabDate = grabDate
 	return t.getTinkoffOperations()
 }
 
@@ -25,7 +27,7 @@ func (t *TinkoffGrab) getTinkoffOperations() (*[]models.TinkoffOperation, error)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	operations, err := client.Operations(ctx, sdk.DefaultAccount, time.Now().AddDate(0, 0, -1000), time.Now(), "")
+	operations, err := client.Operations(ctx, sdk.DefaultAccount, t.grabDate, time.Now(), "")
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +46,7 @@ func (t *TinkoffGrab) getTinkoffOperations() (*[]models.TinkoffOperation, error)
 					defer cancel()
 					instrument, err := client.InstrumentByFIGI(ctx, operations[i].FIGI)
 					if err != nil {
-						//TODO: ADD TO LOGGER
+						continue
 					}
 					tinkoffOperation := &models.TinkoffOperation{
 						ISIN:      instrument.ISIN,

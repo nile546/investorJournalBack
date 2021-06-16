@@ -2,6 +2,7 @@ package pgstore
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/nile546/diplom/internal/models"
 )
@@ -161,4 +162,35 @@ func (ur *UserRepository) DeleteRefreshTokenByUser(u *models.User) error {
 	}
 
 	return nil
+}
+
+func (ur *UserRepository) UpdateDateGrab(dateGrab time.Time, userID int64) error {
+
+	q := "UPDATE users SET date_grab = $1 WHERE id = $2"
+
+	res, err := ur.db.Exec(q, dateGrab, userID)
+	if err != nil {
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ur *UserRepository) GetDateGrabByUserID(userID int64) (time.Time, error) {
+
+	q := "SELECT date_grab FROM users WHERE id=$1"
+
+	var dateGrab time.Time
+
+	err := ur.db.QueryRow(q, userID).Scan(&dateGrab)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return dateGrab, nil
 }

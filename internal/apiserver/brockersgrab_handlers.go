@@ -3,6 +3,7 @@ package apiserver
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/nile546/diplom/internal/models"
 )
@@ -19,10 +20,20 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tinkoff_operations, err := s.brokersGrab.TinkoffGrab().GetTinkoffStockDeals(req.token)
+	grabDate, err := s.repository.User().GetDateGrabByUserID(1)
 	if err != nil {
-		//s.respond(w, err.Error())
+		s.logger.Errorf("Error get date grab stock deal, with error: %+v", err)
+	}
+
+	tinkoff_operations, err := s.brokersGrab.TinkoffGrab().GetTinkoffStockDeals(req.token, grabDate)
+	if err != nil {
+		s.respond(w, err.Error())
 		return
+	}
+
+	err = s.repository.User().UpdateDateGrab(time.Now(), 1)
+	if err != nil {
+		s.logger.Errorf("Error update date grab stock deal, with error: %+v", err)
 	}
 
 	for i, operation := range *tinkoff_operations {
@@ -47,7 +58,7 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 					EnterDateTime: operation.DateTime,
 					EnterPoint:    operation.Price,
 					Quantity:      operation.Quantity,
-					UserID:        1, //s.session.userId,
+					UserID:        s.session.userId,
 					Variability:   false,
 				}
 

@@ -8,14 +8,14 @@ import (
 )
 
 type User struct {
-	ID                int64     `json:"id"`
-	Login             string    `json:"login"`
-	Email             string    `json:"email"`
-	Password          string    `json:"password"`
-	EncryptedPassword string    `json:"-"`
-	IsActive          bool      `json:"isActive"`
-	CreatedAt         time.Time `json:"createdAt"`
-	DateGrab          time.Time `json:"date_grab"`
+	ID                int64      `json:"id"`
+	Login             string     `json:"login"`
+	Email             string     `json:"email"`
+	Password          string     `json:"password"`
+	EncryptedPassword string     `json:"-"`
+	IsActive          bool       `json:"isActive"`
+	CreatedAt         time.Time  `json:"createdAt"`
+	DateGrab          *time.Time `json:"date_grab"`
 }
 
 func (u *User) EncryptPass() error {

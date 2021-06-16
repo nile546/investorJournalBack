@@ -26,6 +26,8 @@ type UserRepository interface {
 	SetRefreshToken(int64) (string, error)
 	UpdateRefreshToken(string) (string, int64, error)
 	DeleteRefreshTokenByUser(*models.User) error
+	UpdateDateGrab(time.Time, int64) error
+	GetDateGrabByUserID(int64) (time.Time, error)
 }
 
 type StockInstrumentRepository interface {
