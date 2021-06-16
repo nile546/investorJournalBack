@@ -11,10 +11,10 @@ import (
 func (s *server) CreateStrategy(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		Name        string       `json:"name"`
-		Description string       `json:"description"`
-		UserID      int64        `json:"user_id"`
-		Type        *models.Type `json:"type"`
+		Name           string                  `json:"name"`
+		Description    string                  `json:"description"`
+		UserID         int64                   `json:"user_id"`
+		InstrumentType *models.InstrumentTypes `json:"instrumentType"`
 	}
 
 	req := &request{}
@@ -30,7 +30,7 @@ func (s *server) CreateStrategy(w http.ResponseWriter, r *http.Request) {
 		validation.Field(&req.Name, validation.Required),
 		validation.Field(&req.Description, validation.Required),
 		validation.Field(&req.UserID, validation.Required),
-		validation.Field(&req.Type, validation.Required),
+		validation.Field(&req.InstrumentType, validation.Required),
 	)
 	if err != nil {
 		s.error(w, err.Error())
@@ -38,10 +38,10 @@ func (s *server) CreateStrategy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = s.repository.Strategy().CreateStrategy(&models.Strategy{
-		Name:        req.Name,
-		Description: &req.Description,
-		UserID:      &req.UserID,
-		Type:        *req.Type,
+		Name:           req.Name,
+		Description:    &req.Description,
+		UserID:         &req.UserID,
+		InstrumentType: *req.InstrumentType,
 	})
 	if err != nil {
 		s.error(w, err.Error())

@@ -14,7 +14,7 @@ func (s *StrategyRepository) CreateStrategy(strategy *models.Strategy) error {
 
 	q := "INSERT INTO strategies (name, description, user_id, type) VALUES ($1, $2, $3, $4)"
 
-	res, err := s.db.Exec(q, strategy.Name, strategy.Description, strategy.UserID, strategy.Type)
+	res, err := s.db.Exec(q, strategy.Name, strategy.Description, strategy.UserID, strategy.InstrumentType)
 	if err != nil {
 		return err
 	}

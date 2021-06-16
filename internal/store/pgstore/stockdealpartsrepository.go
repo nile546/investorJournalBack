@@ -12,9 +12,9 @@ type StockDealPartRepository struct {
 
 func (s *StockDealPartRepository) InsertStockDealPart(part *models.StockDealParts) error {
 
-	q := "INSERT INTO stockdeal_parts(quantity, price, type, datetime, stock_deal_id) VALUES ($1, $2, $3, $4, $5)"
+	q := "INSERT INTO stockdeal_parts(quantity, price, deal_type, datetime, stock_deal_id) VALUES ($1, $2, $3, $4, $5)"
 
-	res, err := s.db.Exec(q, part.Quantity, part.Price, part.Type, part.DateTime, part.StockDealId)
+	res, err := s.db.Exec(q, part.Quantity, part.Price, part.DealType, part.DateTime, part.StockDealId)
 	if err != nil {
 		return err
 	}

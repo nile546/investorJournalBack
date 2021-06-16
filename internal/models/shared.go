@@ -61,3 +61,10 @@ const (
 
 	Rub
 )
+
+type InstrumentTypes int8
+
+const (
+	Stock InstrumentTypes = iota + 1
+	Crypto
+)
