@@ -11,11 +11,11 @@ import (
 func (s *server) CreatePattern(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		Name        string             `json:"name"`
-		Description string             `json:"description"`
-		UserID      int64              `json:"user_id"`
-		Type        models.TypePattern `json:"type"`
-		Icon        string             `json:"icon"`
+		Name           string                 `json:"name"`
+		Description    string                 `json:"description"`
+		UserID         int64                  `json:"user_id"`
+		InstrumentType models.InstrumentTypes `json:"instrumentType"`
+		Icon           string                 `json:"icon"`
 	}
 
 	req := &request{}
@@ -30,7 +30,7 @@ func (s *server) CreatePattern(w http.ResponseWriter, r *http.Request) {
 		req,
 		validation.Field(&req.Name, validation.Required),
 		validation.Field(&req.UserID, validation.Required),
-		validation.Field(&req.Type, validation.Required),
+		validation.Field(&req.InstrumentType, validation.Required),
 	)
 	if err != nil {
 		s.error(w, err.Error())
@@ -38,11 +38,11 @@ func (s *server) CreatePattern(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = s.repository.Pattern().CreatePattern(&models.Pattern{
-		Name:        req.Name,
-		Description: &req.Description,
-		UserID:      &req.UserID,
-		Type:        req.Type,
-		Icon:        &req.Icon,
+		Name:           req.Name,
+		Description:    &req.Description,
+		UserID:         &req.UserID,
+		InstrumentType: req.InstrumentType,
+		Icon:           &req.Icon,
 	})
 	if err != nil {
 		s.error(w, err.Error())

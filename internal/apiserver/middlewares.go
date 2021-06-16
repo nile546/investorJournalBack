@@ -49,6 +49,13 @@ func (s *server) sessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 
+			// Fix for session for dev mode
+			if !production {
+				s.session.userId = 1
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			openRoutes := []string{
 				authRoute,
 			}

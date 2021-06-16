@@ -66,7 +66,7 @@ func (t *TinkoffGrab) getTinkoffOperations() (*[]models.TinkoffOperation, error)
 
 }
 
-func currencyConvert(currency sdk.Currency) models.Currency {
+func currencyConvert(currency sdk.Currency) models.Currencies {
 
 	switch currency {
 	case "USD":
@@ -85,7 +85,7 @@ func currencyConvert(currency sdk.Currency) models.Currency {
 	return 0
 }
 
-func operationConvert(operation sdk.OperationType) models.Type {
+func operationConvert(operation sdk.OperationType) models.DealTypes {
 
 	switch operation {
 	case "Buy":

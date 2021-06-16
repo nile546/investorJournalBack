@@ -12,9 +12,9 @@ type PatternRepository struct {
 
 func (p *PatternRepository) CreatePattern(pattern *models.Pattern) error {
 
-	q := "INSERT INTO patterns (name, description, user_id, type, icon) VALUES ($1, $2, $3, $4, $5)"
+	q := "INSERT INTO patterns (name, description, user_id, instrument_type, icon) VALUES ($1, $2, $3, $4, $5)"
 
-	res, err := p.db.Exec(q, pattern.Name, pattern.Description, pattern.UserID, pattern.Type, pattern.Icon)
+	res, err := p.db.Exec(q, pattern.Name, pattern.Description, pattern.UserID, pattern.InstrumentType, pattern.Icon)
 	if err != nil {
 		return err
 	}

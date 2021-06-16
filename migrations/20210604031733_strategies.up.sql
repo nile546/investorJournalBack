@@ -3,6 +3,6 @@ CREATE TABLE strategies (
     name VARCHAR,
     description TEXT,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    type SMALLINT NOT NULL,
+    instrument_type SMALLINT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 )

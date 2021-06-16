@@ -80,7 +80,7 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 
 				stockDealPart := &models.StockDealParts{
 					Quantity:    operation.Quantity,
-					Type:        operation.Operation,
+					DealType:    operation.Operation,
 					Price:       operation.Price,
 					DateTime:    operation.DateTime,
 					StockDealId: idStockDeal,
@@ -97,7 +97,7 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 
 			stockDealPart := &models.StockDealParts{
 				Quantity:    operation.Quantity,
-				Type:        operation.Operation,
+				DealType:    operation.Operation,
 				Price:       operation.Price,
 				DateTime:    operation.DateTime,
 				StockDealId: stockDealID,
@@ -126,7 +126,7 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 
 		stockDealPart := &models.StockDealParts{
 			Quantity:    operation.Quantity,
-			Type:        operation.Operation,
+			DealType:    operation.Operation,
 			Price:       operation.Price,
 			DateTime:    operation.DateTime,
 			StockDealId: stockDealID,
