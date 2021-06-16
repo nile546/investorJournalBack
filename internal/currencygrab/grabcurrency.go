@@ -1,9 +1,9 @@
 package currency
 
 type GrabsCurrency interface {
-	GrabCBR() GrabCBR
+	GrabCbr() GrabCBR
 }
 
 type GrabCBR interface {
-	GrabUsdEur()
+	GrabUsdEur() error
 }

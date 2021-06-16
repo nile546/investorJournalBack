@@ -7,7 +7,7 @@ import (
 type GrabCBR struct {
 }
 
-func (g *GrabCBR) GrabUsdEur() {
+func (g *GrabCBR) GrabUsdEur() error {
 
 	var resp *http.Response
 	var req *http.Request
@@ -15,19 +15,22 @@ func (g *GrabCBR) GrabUsdEur() {
 
 	req, err = http.NewRequest(http.MethodGet, "http://www.cbr.ru/scripts/XML_daily.asp", nil)
 	if err != nil {
-		return
+		return err
 	}
 
 	client := &http.Client{}
 
 	resp, err = client.Do(req)
 	if err != nil {
-		return
+		return err
 	}
 
 	if resp.StatusCode != 200 {
-		return
+		return err
 	}
 
 	defer resp.Body.Close()
+
+	return nil
+
 }
