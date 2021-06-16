@@ -15,6 +15,7 @@ type Repository interface {
 	Strategy() StrategyRepository
 	Pattern() PatternRepository
 	StockDealPart() StockDealPartRepository
+	TinkoffToken() TinkoffTokenRepository
 }
 
 type UserRepository interface {
@@ -28,6 +29,7 @@ type UserRepository interface {
 	DeleteRefreshTokenByUser(*models.User) error
 	UpdateDateGrab(time.Time, int64) error
 	GetDateGrabByUserID(int64) (time.Time, error)
+	UpdateAutoGrab(int64) error
 }
 
 type StockInstrumentRepository interface {
@@ -71,4 +73,10 @@ type PatternRepository interface {
 type StockDealPartRepository interface {
 	InsertStockDealPart(*models.StockDealParts) error
 	CheckQuantityDeal(int64) (bool, error)
+}
+
+type TinkoffTokenRepository interface {
+	InsertTinkoffToken(string, int64) error
+	GetTinkoffToken(int64) (string, error)
+	UpdateTinkoffToken(string, int64) error
 }

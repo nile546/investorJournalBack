@@ -16,6 +16,7 @@ type User struct {
 	IsActive          bool       `json:"isActive"`
 	CreatedAt         time.Time  `json:"createdAt"`
 	DateGrab          *time.Time `json:"date_grab"`
+	AutoGrabDeals     bool       `json:"auto_grab_deals"`
 }
 
 func (u *User) EncryptPass() error {

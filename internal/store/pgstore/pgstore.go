@@ -16,6 +16,7 @@ type Repository struct {
 	strategyRepository         *StrategyRepository
 	patternRepository          *PatternRepository
 	stockDealPartRepository    *StockDealPartRepository
+	tinkoffTokenRepository     *TinkoffTokenRepository
 }
 
 func New(db *sql.DB) *Repository {
@@ -119,4 +120,16 @@ func (r *Repository) StockDealPart() store.StockDealPartRepository {
 	}
 
 	return r.stockDealPartRepository
+}
+
+func (r *Repository) TinkoffToken() store.TinkoffTokenRepository {
+	if r.tinkoffTokenRepository != nil {
+		return r.tinkoffTokenRepository
+	}
+
+	r.tinkoffTokenRepository = &TinkoffTokenRepository{
+		db: r.db,
+	}
+
+	return r.tinkoffTokenRepository
 }

@@ -116,6 +116,7 @@ func (s *server) ConfugureRouter() {
 
 	stockDeals := api.PathPrefix(stockDealsRoute).Subrouter()
 	stockDeals.HandleFunc(getAllRoute, s.getAllStockDeals).Methods(http.MethodPost)
+	stockDeals.HandleFunc(grabDealsRoute, s.GetTinkoffStockDeals).Methods(http.MethodPost)
 
 	spa := spaHandler{staticPath: "web", indexPath: "index.html"}
 

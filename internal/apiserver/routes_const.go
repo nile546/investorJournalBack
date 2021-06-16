@@ -20,6 +20,9 @@ const (
 	// stocks
 	stockDealsRoute = "/stock-deals"
 
+	// grab deal
+	grabDealsRoute = "/grab"
+
 	// common
 	getAllRoute = "/getAll"
 	get         = "/get"

@@ -194,3 +194,20 @@ func (ur *UserRepository) GetDateGrabByUserID(userID int64) (time.Time, error) {
 
 	return dateGrab, nil
 }
+
+func (ur *UserRepository) UpdateAutoGrab(userID int64) error {
+
+	q := "UPDATE users SET auto_grab_deals = $1 WHERE id = $2"
+
+	res, err := ur.db.Exec(q, true, userID)
+	if err != nil {
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

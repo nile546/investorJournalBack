@@ -10,7 +10,8 @@ import (
 
 func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 	type request struct {
-		token string
+		token         string
+		autoGrabDeals bool
 	}
 
 	req := &request{}
@@ -20,7 +21,14 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	grabDate, err := s.repository.User().GetDateGrabByUserID(1)
+	if req.autoGrabDeals {
+		err := s.repository.User().UpdateAutoGrab(s.session.userId)
+		if err != nil {
+			s.logger.Errorf("Error auto grab stock deal, with error: %+v", err)
+		}
+	}
+
+	grabDate, err := s.repository.User().GetDateGrabByUserID(s.session.userId)
 	if err != nil {
 		s.logger.Errorf("Error get date grab stock deal, with error: %+v", err)
 	}
@@ -35,6 +43,8 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		s.logger.Errorf("Error update date grab stock deal, with error: %+v", err)
 	}
+
+	//Сохранить токен
 
 	for i, operation := range *tinkoff_operations {
 		if operation.Operation == 1 {
@@ -139,6 +149,8 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = s.repository.StockDeal().SetStockDealCompleted(operation.DateTime, operation.Price, stockDealID)
-
+		if err != nil {
+			s.logger.Errorf("Error set stock deal completed in parts from operation id:%d, with error: %+v", i, err)
+		}
 	}
 }

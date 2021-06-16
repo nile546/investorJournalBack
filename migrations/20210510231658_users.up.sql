@@ -5,5 +5,6 @@ CREATE TABLE users(
     encrypted_password VARCHAR NOT NULL,
     is_active BOOLEAN DEFAULT FALSE NOT NULL,
     date_grab TIMESTAMP DEFAULT '2016-10-01 00:00:00' NOT NULL,
+    auto_grab_deals BOOLEAN,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL 
 )
