@@ -243,3 +243,33 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, u)
 
 }
+
+func (s *server) GetUserByID(w http.ResponseWriter, r *http.Request) {
+
+	type request struct {
+		ID int64
+	}
+
+	req := &request{}
+
+	err := json.NewDecoder(r.Body).Decode(req)
+	if err != nil {
+		s.error(w, err.Error())
+		u, err := s.repository.User().GetUserByID(s.session.userId)
+		if err != nil {
+			s.error(w, err.Error())
+			return
+		}
+
+		s.respond(w, u)
+		return
+	}
+	u, err := s.repository.User().GetUserByID(req.ID)
+	if err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, u)
+
+}

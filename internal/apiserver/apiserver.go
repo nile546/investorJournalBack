@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/nile546/diplom/config"
+	grabscurrency "github.com/nile546/diplom/internal/apiserver/currencygrab/grabs"
 	"github.com/nile546/diplom/internal/brokersgrab"
 	"github.com/nile546/diplom/internal/brokersgrab/grabs"
 	"github.com/nile546/diplom/internal/investinstruments"
@@ -167,6 +168,10 @@ func Start(c *config.Config) error {
 	}
 
 	b := grabs.New()
+
+	t := grabscurrency.New()
+
+	t.GrabCBR().GrabUsdEur()
 
 	srv := newServer(r, m, i, l, b)
 
