@@ -8,7 +8,7 @@ type Strategy struct {
 	ID          int64     `json:"id"`
 	Name        string    `json:"name"`
 	Description *string   `json:"description"`
-	UserID      *int64    `json:"user_id"`
+	UserID      *int64    `json:"userId"`
 	Type        Type      `json:"type"`
-	CreatedAt   time.Time `json:"created_at"`
+	CreatedAt   time.Time `json:"createdAt"`
 }

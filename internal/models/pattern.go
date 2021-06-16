@@ -14,7 +14,7 @@ type Pattern struct {
 	Name        string      `json:"name"`
 	Description *string     `json:"description"`
 	Icon        *string     `json:"icon"`
-	UserID      *int64      `json:"user_id"`
+	UserID      *int64      `json:"userId"`
 	Type        TypePattern `json:"type"`
-	CreatedAt   time.Time   `json:"created_at"`
+	CreatedAt   time.Time   `json:"createdAt"`
 }
