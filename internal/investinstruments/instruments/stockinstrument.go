@@ -14,34 +14,38 @@ import (
 )
 
 type Stockinstrument struct {
+	mp map[string]models.StockInstrument
 }
 
 func (r *Stockinstrument) GrabAll(spburl string, mskurl string) (*[]models.StockInstrument, error) {
-	stocksSPB, err := r.spbgrab(spburl)
+	r.mp = make(map[string]models.StockInstrument)
+	err := r.spbgrab(spburl)
 	if err != nil {
 		return nil, err
 	}
 
-	stocksMSK, err := r.mskgrab(mskurl)
+	err = r.mskgrab(mskurl)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, stock := range *stocksMSK {
-		*stocksSPB = append(*stocksSPB, stock)
+	stocks := &[]models.StockInstrument{}
+
+	for _, stockInstrument := range r.mp {
+		*stocks = append(*stocks, stockInstrument)
 	}
 
-	return stocksSPB, nil
+	return stocks, nil
 }
 
-func (r *Stockinstrument) spbgrab(u string) (*[]models.StockInstrument, error) {
+func (r *Stockinstrument) spbgrab(u string) error {
 	var resp *http.Response
 	var req *http.Request
 	var err error
 
 	req, err = http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	type payload struct {
@@ -53,13 +57,13 @@ func (r *Stockinstrument) spbgrab(u string) (*[]models.StockInstrument, error) {
 
 	resp, err = client.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, errors.New("SPBExchange not respond")
+		return errors.New("SPBExchange not respond")
 	}
 
 	pl := new(payload)
@@ -71,7 +75,7 @@ func (r *Stockinstrument) spbgrab(u string) (*[]models.StockInstrument, error) {
 	// Parse and store
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	doc.Find("input").Each(func(index int, input *goquery.Selection) {
@@ -125,16 +129,15 @@ func (r *Stockinstrument) spbgrab(u string) (*[]models.StockInstrument, error) {
 
 	resp, err = client.Do(req2)
 	if err != nil {
-		return nil, err
+		return err //nil, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, errors.New("SPBExchange not respond")
+		return nil
 	}
 
-	stocks := &[]models.StockInstrument{}
 	var ID int64 = 0
 
 	cs := csv.NewReader(resp.Body)
@@ -221,44 +224,43 @@ func (r *Stockinstrument) spbgrab(u string) (*[]models.StockInstrument, error) {
 			}
 		}
 
-		stock := models.StockInstrument{
+		r.mp[isin] = models.StockInstrument{
 			ID:     ID,
 			Title:  title,
 			Ticker: &ticker,
 			Type:   &tp,
 			Isin:   &isin,
 		}
-		*stocks = append(*stocks, stock)
+
 		ID++
 	}
 
-	return stocks, nil
+	return nil
 }
 
-func (r *Stockinstrument) mskgrab(u string) (*[]models.StockInstrument, error) {
+func (r *Stockinstrument) mskgrab(u string) error {
 	var resp *http.Response
 	var req *http.Request
 	var err error
 
 	req, err = http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	client := &http.Client{}
 
 	resp, err = client.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if resp.StatusCode != 200 {
-		return nil, errors.New("MSKExchange not respond")
+		return err
 	}
 
 	defer resp.Body.Close()
 
-	stocks := &[]models.StockInstrument{}
 	var ID int64 = 0
 
 	cs := csv.NewReader(resp.Body)
@@ -309,16 +311,16 @@ func (r *Stockinstrument) mskgrab(u string) (*[]models.StockInstrument, error) {
 			ID++
 			continue
 		}
-		stock := models.StockInstrument{
+		r.mp[isin] = models.StockInstrument{
 			ID:     ID,
 			Title:  title,
 			Ticker: &ticker,
 			Type:   &tp,
 			Isin:   &isin,
 		}
-		*stocks = append(*stocks, stock)
+
 		ID++
 	}
 
-	return stocks, nil
+	return err
 }

@@ -46,8 +46,8 @@ type CryptoInstrumentRepository interface {
 
 type StockDealRepository interface {
 	GetAll(*models.TableParams) error
-	GetStockDealsIDByISIN(string) (int64, error)
-	CreateStockDeal(*models.StockDeal) (int64, error)
+	GetStockDealsIDByISIN(string) int64
+	CreateOpenStockDeal(*models.StockDeal) (int64, error)
 	UpdateQuantityStockDeal(int64, int) error
 	SetStockDealCompleted(time.Time, int64, int64) error
 }

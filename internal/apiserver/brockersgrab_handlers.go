@@ -8,7 +8,6 @@ import (
 )
 
 func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
-
 	type request struct {
 		token string
 	}
@@ -22,18 +21,18 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 
 	tinkoff_operations, err := s.brokersGrab.TinkoffGrab().GetTinkoffStockDeals(req.token)
 	if err != nil {
-		s.respond(w, err.Error())
+		//s.respond(w, err.Error())
 		return
 	}
 
 	for i, operation := range *tinkoff_operations {
 		if operation.Operation == 1 {
 
-			stockDealID, err := s.repository.StockDeal().GetStockDealsIDByISIN(operation.ISIN)
-			if err != nil {
-				s.logger.Errorf("Error get stock deal id by isin from operation id:%d, with error: %+v", i, err)
-				continue
-			}
+			stockDealID := s.repository.StockDeal().GetStockDealsIDByISIN(operation.ISIN)
+			//if err != nil {
+			//	s.logger.Errorf("Error get stock deal id by isin from operation id:%d, with error: %+v", i, err)
+			//	continue
+			//}
 
 			if stockDealID == 0 {
 				stockInstrument, err := s.repository.StockInstrument().GetInstrumentByISIN(operation.ISIN)
@@ -48,11 +47,11 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 					EnterDateTime: operation.DateTime,
 					EnterPoint:    operation.Price,
 					Quantity:      operation.Quantity,
-					UserID:        s.session.userId,
+					UserID:        1, //s.session.userId,
 					Variability:   false,
 				}
 
-				idStockDeal, err := s.repository.StockDeal().CreateStockDeal(stockDeal)
+				idStockDeal, err := s.repository.StockDeal().CreateOpenStockDeal(stockDeal)
 				if err != nil {
 					s.logger.Errorf("Error create stock deal from operation id:%d, with error: %+v", i, err)
 					continue
@@ -95,13 +94,14 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-		}
-
-		stockDealID, err := s.repository.StockDeal().GetStockDealsIDByISIN(operation.ISIN)
-		if err != nil {
-			s.logger.Errorf("Error get stock deal id by isin from operation id:%d, with error: %+v", i, err)
 			continue
 		}
+
+		stockDealID := s.repository.StockDeal().GetStockDealsIDByISIN(operation.ISIN)
+		//if err != nil {
+		//	s.logger.Errorf("Error get stock deal id by isin from operation id:%d, with error: %+v", i, err)
+		//	continue
+		//}
 
 		stockDealPart := &models.StockDealParts{
 			Quantity:    operation.Quantity,

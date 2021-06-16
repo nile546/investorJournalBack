@@ -12,7 +12,7 @@ type StockDealPartRepository struct {
 
 func (s *StockDealPartRepository) InsertStockDealPart(part *models.StockDealParts) error {
 
-	q := "INSERT INTO stockdeal_parts(quantity, price, type, date_time, stock_deal_id) VALUES ($1, $2, $3, $4, $5)"
+	q := "INSERT INTO stockdeal_parts(quantity, price, type, datetime, stock_deal_id) VALUES ($1, $2, $3, $4, $5)"
 
 	res, err := s.db.Exec(q, part.Quantity, part.Price, part.Type, part.DateTime, part.StockDealId)
 	if err != nil {
@@ -31,8 +31,8 @@ func (s *StockDealPartRepository) CheckQuantityDeal(idStockDeal int64) (bool, er
 
 	q := `SELECT
 	CASE
-		WHEN (SELECT SUM(quantity) FROM stockdeal_parts WHERE stockdeal_id = $1 AND type = 1)
-		   = (SELECT SUM(quantity) FROM stockdeal_parts WHERE stockdeal_id = $1 AND type = 2)  THEN true
+		WHEN (SELECT SUM(quantity) FROM stockdeal_parts WHERE stock_deal_id = $1 AND type = 1)
+		   = (SELECT SUM(quantity) FROM stockdeal_parts WHERE stock_deal_id = $1 AND type = 2)  THEN true
 		ELSE false
 	END as check_quantity`
 

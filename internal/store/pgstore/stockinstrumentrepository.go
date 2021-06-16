@@ -17,7 +17,7 @@ func (s *StockInstrumentRepository) InsertStocksInstruments(stocks *[]models.Sto
 		return
 	}
 
-	q := `INSERT INTO stocks_instruments (title, ticker, type) VALUES `
+	q := `INSERT INTO stocks_instruments (title, ticker, type, isin) VALUES `
 
 	var res sql.Result
 	var buf string
@@ -25,13 +25,13 @@ func (s *StockInstrumentRepository) InsertStocksInstruments(stocks *[]models.Sto
 	for i, stock := range *stocks {
 		if i == len(*stocks)-1 {
 			buf = "('"
-			buf += strings.Replace(stock.Title, "'", "''", -1) + "', '" + strings.Replace(*stock.Ticker, "'", "''", -1) + "', '" + strings.Replace(*stock.Type, "'", "''", -1)
+			buf += strings.Replace(stock.Title, "'", "''", -1) + "', '" + strings.Replace(*stock.Ticker, "'", "''", -1) + "', '" + strings.Replace(*stock.Type, "'", "''", -1) + "', '" + strings.Replace(*stock.Isin, "'", "''", -1)
 			buf += "')"
 			q += buf
 			break
 		}
 		buf = "('"
-		buf += strings.Replace(stock.Title, "'", "''", -1) + "', '" + strings.Replace(*stock.Ticker, "'", "''", -1) + "', '" + strings.Replace(*stock.Type, "'", "''", -1)
+		buf += strings.Replace(stock.Title, "'", "''", -1) + "', '" + strings.Replace(*stock.Ticker, "'", "''", -1) + "', '" + strings.Replace(*stock.Type, "'", "''", -1) + "', '" + strings.Replace(*stock.Isin, "'", "''", -1)
 		buf += "'), "
 		q += buf
 	}
@@ -62,7 +62,7 @@ func (s *StockInstrumentRepository) GetAllStockInstruments() (*[]models.StockIns
 
 	for res.Next() {
 		si := models.StockInstrument{}
-		err = res.Scan(&si.ID, &si.Title, &si.Ticker, &si.Type, &si.Isin)
+		err = res.Scan(&si.ID, &si.Title, &si.Ticker, &si.Type, &si.Isin, &si.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -86,7 +86,7 @@ func (s *StockInstrumentRepository) GetInstrumentByISIN(ISIN string) (*models.St
 
 	for res.Next() {
 
-		err = res.Scan(&instrument.ID, &instrument.Ticker, &instrument.Title, &instrument.Type, &instrument.CreatedAt)
+		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.Ticker, &instrument.Type, &instrument.Isin, &instrument.CreatedAt)
 		if err != nil {
 			return nil, err
 		}

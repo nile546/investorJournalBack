@@ -45,30 +45,28 @@ func (r *StockDealRepository) GetAll(tp *models.TableParams) error {
 	return nil
 }
 
-func (r *StockDealRepository) GetStockDealsIDByISIN(ISIN string) (int64, error) {
-	q := `SELECT id FROM stock_deals WHERE (stock_instrument_id= 
-	SELECT id FROM stocks_instruments WHERE isin=$1) AND (exit_datetime IS NULL) AND (variability=false)`
+func (r *StockDealRepository) GetStockDealsIDByISIN(ISIN string) int64 {
+	q := `SELECT id FROM stock_deals WHERE (stock_instrument_id=
+		(SELECT id FROM stocks_instruments WHERE isin=$1) AND (exit_datetime IS NULL) AND (variability=false))`
 
 	var stock_dealID int64
 
 	if err := r.db.QueryRow(q, ISIN).Scan(&stock_dealID); err != nil {
-		return 0, err
+		return 0
 	}
 
-	return stock_dealID, nil
+	return stock_dealID
 }
 
-func (r *StockDealRepository) CreateStockDeal(deal *models.StockDeal) (int64, error) {
+func (r *StockDealRepository) CreateOpenStockDeal(deal *models.StockDeal) (int64, error) {
 
-	q := `INSERT INTO stock_deal (stock_insrument_id, currency, strategy_id, pattern_id, 
-	position, time_frame, enter_datetime, enter_point, stop_loss, quantity, 
-	exit_datetime, exit_point, risk_ratio, variabiliry, user_id) 
-	VALUES ($1, $2, $3) 
+	q := `INSERT INTO stock_deals (stock_instrument_id, currency, enter_datetime, enter_point, quantity, variability, user_id) 
+	VALUES ($1, $2, $3, $4, $5, $6, $7) 
 	RETURNING id`
 
 	var idStockDeal int64
 
-	err := r.db.QueryRow(q, deal.Stock.ID, deal.Currency, deal.Strategy.ID, deal.Pattern.ID, deal.Position, deal.TimeFrame, deal.EnterDateTime, deal.EnterPoint, deal.StopLoss, deal.Quantity, deal.ExitDateTime, deal.RiskRatio, deal.Variability, deal.UserID).Scan(&idStockDeal)
+	err := r.db.QueryRow(q, deal.Stock.ID, &deal.Currency, deal.EnterDateTime, deal.EnterPoint, deal.Quantity, deal.Variability, deal.UserID).Scan(&idStockDeal)
 	if err != nil {
 		return 0, err
 	}

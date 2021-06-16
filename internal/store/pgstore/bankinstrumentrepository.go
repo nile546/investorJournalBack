@@ -61,7 +61,7 @@ func (b *BankInstrumentRepository) GetAllBankInstruments() (*[]models.BankInstru
 
 	for res.Next() {
 		bank := models.BankInstrument{}
-		err = res.Scan(&bank.ID, &bank.Title)
+		err = res.Scan(&bank.ID, &bank.Title, &bank.CreatedAt)
 		if err != nil {
 			return nil, err
 		}

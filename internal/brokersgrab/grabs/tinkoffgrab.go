@@ -49,7 +49,7 @@ func (t *TinkoffGrab) getTinkoffOperations() (*[]models.TinkoffOperation, error)
 					tinkoffOperation := &models.TinkoffOperation{
 						ISIN:      instrument.ISIN,
 						Currency:  currencyConvert(operations[i].Currency),
-						Quantity:  operations[i].Quantity,
+						Quantity:  operations[i].QuantityExecuted,
 						DateTime:  operations[i].DateTime,
 						Price:     int64(operations[i].Price * 100),
 						Operation: operationConvert(operations[i].OperationType),

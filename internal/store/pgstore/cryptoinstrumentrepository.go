@@ -61,7 +61,7 @@ func (c *CryptoInstrumentRepository) GetAllCryptoInstruments() (*[]models.Crypto
 
 	for res.Next() {
 		crypt := models.CryptoInstrument{}
-		err = res.Scan(&crypt.ID, &crypt.Title, &crypt.Ticker)
+		err = res.Scan(&crypt.ID, &crypt.Title, &crypt.Ticker, &crypt.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
