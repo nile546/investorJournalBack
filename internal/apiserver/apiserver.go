@@ -114,6 +114,7 @@ func (s *server) ConfugureRouter() {
 	auth.HandleFunc(signinRoute, s.signin).Methods(http.MethodPost)
 	auth.HandleFunc(refreshRoute, s.refresh)
 	auth.HandleFunc(signoutRoute, s.signout)
+	auth.HandleFunc(getCurrentUserRoute, s.getCurrentUser).Methods(http.MethodPost)
 
 	// Closed routes, with use session
 

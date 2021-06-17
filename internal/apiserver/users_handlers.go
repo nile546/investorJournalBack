@@ -254,6 +254,18 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (s *server) getCurrentUser(w http.ResponseWriter, r *http.Request) {
+
+	u, err := s.repository.User().GetUserByID(s.session.userId)
+	if err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, u)
+
+}
+
 func (s *server) getUser(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
@@ -264,14 +276,9 @@ func (s *server) getUser(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		u, err := s.repository.User().GetUserByID(s.session.userId)
-		if err != nil {
-			s.error(w, err.Error())
-			return
-		}
-
-		s.respond(w, u)
+		s.error(w, err.Error())
 		return
+
 	}
 	u, err := s.repository.User().GetUserByID(req.ID)
 	if err != nil {
