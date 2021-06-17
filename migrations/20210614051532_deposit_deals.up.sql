@@ -6,8 +6,8 @@ CREATE TABLE deposit_deals(
     enter_datetime TIMESTAMP NOT NULL,
     percent FLOAT,
     exit_datetime TIMESTAMP,    
-    startDeposit  BIGINT,
-	endDeposit    BIGINT,
+    start_Deposit  BIGINT,
+	end_Deposit    BIGINT,
     result BIGINT,
     user_id BIGINT REFERENCES users (id)
 )

@@ -16,6 +16,8 @@ type Repository interface {
 	Pattern() PatternRepository
 	StockDealPart() StockDealPartRepository
 	TinkoffToken() TinkoffTokenRepository
+	CryptoDeal() CryptoDealRepository
+	DepositDeal() DepositDealRepository
 }
 
 type UserRepository interface {
@@ -49,6 +51,10 @@ type CryptoInstrumentRepository interface {
 }
 
 type StockDealRepository interface {
+	CreateStockDeal(*models.StockDeal) error
+	UpdateStockDeal(*models.StockDeal) error
+	DeleteStockDeal(int64) error
+	GetStockDealByID(int64) (*models.StockDeal, error)
 	GetAll(*models.TableParams) error
 	GetStockDealsIDByISIN(string) int64
 	CreateOpenStockDeal(*models.StockDeal) (int64, error)
@@ -79,4 +85,20 @@ type TinkoffTokenRepository interface {
 	InsertTinkoffToken(string, int64) error
 	GetTinkoffToken(int64) (string, error)
 	UpdateTinkoffToken(string, int64) error
+}
+
+type CryptoDealRepository interface {
+	CreateCryptoDeal(*models.CryptoDeal) error
+	UpdateCryptoDeal(*models.CryptoDeal) error
+	DeleteCryptoDeal(int64) error
+	GetCryptoDealByID(int64) (*models.CryptoDeal, error)
+	GetAll(*models.TableParams) error
+}
+
+type DepositDealRepository interface {
+	CreateDepositDeal(*models.DepositDeal) error
+	UpdateDepositDeal(*models.DepositDeal) error
+	DeleteDepositDeal(int64) error
+	GetDepositDealByID(int64) (*models.DepositDeal, error)
+	GetAll(*models.TableParams) error
 }

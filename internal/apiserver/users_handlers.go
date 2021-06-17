@@ -40,10 +40,11 @@ func (s *server) signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	u := &models.User{
-		Login:    req.Login,
-		Email:    req.Email,
-		Password: req.Password,
-		IsActive: false,
+		Login:         req.Login,
+		Email:         req.Email,
+		Password:      req.Password,
+		AutoGrabDeals: false,
+		IsActive:      false,
 	}
 
 	if err := u.EncryptPass(); err != nil {

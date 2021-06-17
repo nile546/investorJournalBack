@@ -11,6 +11,100 @@ type StockDealRepository struct {
 	db *sql.DB
 }
 
+func (r *StockDealRepository) CreateStockDeal(deal *models.StockDeal) error {
+
+	q := `INSERT INTO stock_deals
+	(stock_instrument_id, currency, strategy_id, pattern_id, 
+	position, time_frame, enter_datetime, enter_point, stop_loss, 
+	quantity, exit_datetime, exit_point, risk_ratio, variability, user_id)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
+
+	res, err := r.db.Exec(q, deal.Stock, deal.Currency, deal.Strategy.ID,
+		deal.Pattern.ID, deal.Position, deal.TimeFrame, deal.EnterDateTime,
+		deal.EnterPoint, deal.StopLoss, deal.Quantity, deal.ExitDateTime,
+		deal.ExitPoint, deal.RiskRatio, deal.Variability, deal.UserID)
+	if err != nil {
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *StockDealRepository) UpdateStockDeal(deal *models.StockDeal) error {
+
+	q := `UPDATE stock_deals SET (stock_instrument_id, currency, strategy_id, pattern_id, 
+		position, time_frame, enter_datetime, enter_point, stop_loss, 
+		quantity, exit_datetime, exit_point, risk_ratio)=($1, $2, $3, $4, $5, $6,
+		$7, $8, $9, $10, $11, $12, $13)	WHERE id=$14`
+
+	res, err := r.db.Exec(q, deal.Stock.ID, deal.Currency, deal.Strategy.ID,
+		deal.Pattern.ID, deal.Position, deal.TimeFrame, deal.EnterDateTime,
+		deal.EnterPoint, deal.StopLoss, deal.Quantity, deal.ExitDateTime,
+		deal.ExitPoint, deal.RiskRatio, deal.ID)
+	if err != nil {
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *StockDealRepository) DeleteStockDeal(id int64) error {
+
+	q := "DELETE FROM stock_deals WHERE id=$1"
+
+	res, err := r.db.Exec(q, id)
+	if err != nil {
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *StockDealRepository) GetStockDealByID(id int64) (*models.StockDeal, error) {
+
+	q := `SELECT stock_instrument_id, strategy_id, currency, position, time_frame, enter_datetime, enter_point, stop_loss, 
+	quantity, exit_datetime, exit_point, risk_ratio, variability, user_id FROM stock_deals where id=$1`
+
+	res, err := r.db.Query(q, id)
+	if err != nil {
+		return nil, err
+	}
+
+	deal := &models.StockDeal{
+		ID: id,
+	}
+
+	for res.Next() {
+
+		err = res.Scan(&deal.Stock.ID, &deal.Strategy.ID, &deal.Pattern.ID,
+			&deal.Currency, &deal.Position, &deal.TimeFrame, &deal.EnterDateTime,
+			&deal.EnterPoint, &deal.StopLoss, &deal.Quantity, &deal.ExitDateTime,
+			&deal.ExitPoint, &deal.RiskRatio, &deal.Variability, &deal.UserID)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	return deal, nil
+
+}
+
 func (r *StockDealRepository) GetAll(tp *models.TableParams) error {
 
 	q := `

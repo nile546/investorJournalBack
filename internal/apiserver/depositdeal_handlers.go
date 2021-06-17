@@ -9,7 +9,7 @@ import (
 	"github.com/nile546/diplom/internal/models"
 )
 
-func (s *server) getAllStockDeals(w http.ResponseWriter, r *http.Request) {
+func (s *server) getAllDepositDeals(w http.ResponseWriter, r *http.Request) {
 	type request struct {
 		TableParams models.TableParams `json:"tableParams"`
 	}
@@ -29,7 +29,7 @@ func (s *server) getAllStockDeals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.repository.StockDeal().GetAll(&req.TableParams); err != nil {
+	if err := s.repository.DepositDeal().GetAll(&req.TableParams); err != nil {
 		s.error(w, err.Error())
 		return
 	}
@@ -38,9 +38,9 @@ func (s *server) getAllStockDeals(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *server) createStockDeal(w http.ResponseWriter, r *http.Request) {
+func (s *server) createDepositDeal(w http.ResponseWriter, r *http.Request) {
 	type request struct {
-		Deal models.StockDeal `json:"stockDeal"`
+		Deal models.DepositDeal `json:"depositDeal"`
 	}
 
 	req := &request{}
@@ -58,17 +58,17 @@ func (s *server) createStockDeal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := s.repository.StockDeal().CreateStockDeal(&req.Deal)
+	err := s.repository.DepositDeal().CreateDepositDeal(&req.Deal)
 	if err != nil {
-		s.logger.Errorf("Error create stock deal, with error %+v", err)
+		s.logger.Errorf("Error create deposit deal, with error %+v", err)
 		s.error(w, err.Error())
 	}
 
 }
 
-func (s *server) updateStockDeal(w http.ResponseWriter, r *http.Request) {
+func (s *server) updateDepositDeal(w http.ResponseWriter, r *http.Request) {
 	type request struct {
-		Deal models.StockDeal `json:"stockDeal"`
+		Deal models.DepositDeal `json:"depositDeal"`
 	}
 
 	req := &request{}
@@ -79,7 +79,7 @@ func (s *server) updateStockDeal(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if req.Deal.UserID != s.session.userId {
-		s.logger.Errorf("Error update stock deal, with error %+v", errors.New("id user initiator does not match session user id"))
+		s.logger.Errorf("Error update deposit deal, with error %+v", errors.New("id user initiator does not match session user id"))
 		s.error(w, "Id user initiator does not match session user id")
 	}
 
@@ -91,15 +91,15 @@ func (s *server) updateStockDeal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := s.repository.StockDeal().UpdateStockDeal(&req.Deal)
+	err := s.repository.DepositDeal().UpdateDepositDeal(&req.Deal)
 	if err != nil {
-		s.logger.Errorf("Error update stock deal, with error %+v", err)
+		s.logger.Errorf("Error update deposit deal, with error %+v", err)
 		s.error(w, err.Error())
 	}
 
 }
 
-func (s *server) deleteStockDeal(w http.ResponseWriter, r *http.Request) {
+func (s *server) deleteDepositDeal(w http.ResponseWriter, r *http.Request) {
 	type request struct {
 		ID int64 `json:"id"`
 	}
@@ -119,15 +119,15 @@ func (s *server) deleteStockDeal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := s.repository.StockDeal().DeleteStockDeal(req.ID)
+	err := s.repository.DepositDeal().DeleteDepositDeal(req.ID)
 	if err != nil {
-		s.logger.Errorf("Error delete stock deal, with error %+v", err)
+		s.logger.Errorf("Error delete deposit deal, with error %+v", err)
 		s.error(w, err.Error())
 	}
 
 }
 
-func (s *server) getStockDealByID(w http.ResponseWriter, r *http.Request) {
+func (s *server) getDepositDealByID(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
 		ID int64 `json:"id"`
@@ -148,9 +148,9 @@ func (s *server) getStockDealByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	deal, err := s.repository.StockDeal().GetStockDealByID(req.ID)
+	deal, err := s.repository.DepositDeal().GetDepositDealByID(req.ID)
 	if err != nil {
-		s.logger.Errorf("Error delete stock deal, with error %+v", err)
+		s.logger.Errorf("Error delete deposit deal, with error %+v", err)
 		s.error(w, err.Error())
 	}
 

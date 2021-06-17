@@ -16,7 +16,7 @@ type StockDeal struct {
 	Quantity        int             `json:"quantity"`
 	ExitDateTime    *time.Time      `json:"exitDatetime"`
 	ExitPoint       *int64          `json:"exitPoint"`
-	RiskRatio       float32         `json:"riskRatio"`
+	RiskRatio       *float32        `json:"riskRatio"`
 	Result          *int64          `json:"result"`
 	ResultInPercent float64         `json:"resultInPercent"`
 	StartDeposit    int64           `json:"startDeposit"`

@@ -2,7 +2,6 @@ package apiserver
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"time"
 
@@ -26,7 +25,7 @@ func (s *server) getAllStockDealFromBrokers(w http.ResponseWriter, r *http.Reque
 	err := s.getTinkoffStockDeals(req.TinkoffToken, req.AutoGrabDeals)
 	if err != nil {
 		s.logger.Errorf("Error insert Tinkoff stock deals, with error: %+v", err)
-		s.respond(w, errors.New("Request not processed, please try again later, "+err.Error()))
+		s.error(w, "Request not processed, please try again later, "+err.Error())
 	}
 
 }
@@ -81,11 +80,11 @@ func (s *server) insertTinkoffStockDeals(token string) error {
 		return err
 	}
 
-	if tinkoff_operations == nil { //Разобраться с ошибками
+	if tinkoff_operations == nil {
 		return nil
 	}
 
-	err = s.repository.User().UpdateDateGrab(time.Now(), s.session.userId) //user_id
+	err = s.repository.User().UpdateDateGrab(time.Now(), s.session.userId)
 	if err != nil {
 		s.logger.Errorf("Error update date grab stock deal, with error: %+v", err)
 		return err
@@ -95,7 +94,6 @@ func (s *server) insertTinkoffStockDeals(token string) error {
 		if operation.Operation == 1 {
 
 			stockDealID := s.repository.StockDeal().GetStockDealsIDByISIN(operation.ISIN)
-			//Проверить ошибку
 
 			if stockDealID == 0 {
 				stockInstrument, err := s.repository.StockInstrument().GetInstrumentByISIN(operation.ISIN)
@@ -110,7 +108,7 @@ func (s *server) insertTinkoffStockDeals(token string) error {
 					EnterDateTime: operation.DateTime,
 					EnterPoint:    operation.Price,
 					Quantity:      operation.Quantity,
-					UserID:        s.session.userId, //user_id
+					UserID:        s.session.userId,
 					Variability:   false,
 				}
 
@@ -161,7 +159,6 @@ func (s *server) insertTinkoffStockDeals(token string) error {
 		}
 
 		stockDealID := s.repository.StockDeal().GetStockDealsIDByISIN(operation.ISIN)
-		//Проверить ошбику
 
 		stockDealPart := &models.StockDealParts{
 			Quantity:    operation.Quantity,

@@ -123,6 +123,10 @@ func (s *server) ConfugureRouter() {
 
 	stockDeals := api.PathPrefix(stockDealsRoute).Subrouter()
 	stockDeals.HandleFunc(getAllRoute, s.getAllStockDeals).Methods(http.MethodPost)
+	stockDeals.HandleFunc(createRoute, s.createStockDeal).Methods(http.MethodPost)
+	stockDeals.HandleFunc(updateRoute, s.updateStockDeal).Methods(http.MethodPost)
+	stockDeals.HandleFunc(deleteRoute, s.deleteStockDeal).Methods(http.MethodPost)
+	stockDeals.HandleFunc(getRoute, s.getStockDealByID).Methods(http.MethodPost)
 	stockDeals.HandleFunc(getBrokerDealsRoute, s.getAllStockDealFromBrokers).Methods(http.MethodPost)
 
 	currency := api.PathPrefix(currencyRoute).Subrouter()
