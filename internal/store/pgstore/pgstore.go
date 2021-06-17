@@ -18,6 +18,7 @@ type Repository struct {
 	stockDealPartRepository    *StockDealPartRepository
 	tinkoffTokenRepository     *TinkoffTokenRepository
 	cryptoDealRepository       *CryptoDealRepository
+	depositDealRepository      *DepositDealRepository
 }
 
 func New(db *sql.DB) *Repository {
@@ -145,4 +146,16 @@ func (r *Repository) CryptoDeal() store.CryptoDealRepository {
 	}
 
 	return r.cryptoDealRepository
+}
+
+func (r *Repository) DepositDeal() store.DepositDealRepository {
+	if r.depositDealRepository != nil {
+		return r.depositDealRepository
+	}
+
+	r.depositDealRepository = &DepositDealRepository{
+		db: r.db,
+	}
+
+	return r.depositDealRepository
 }

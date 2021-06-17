@@ -17,6 +17,7 @@ type Repository interface {
 	StockDealPart() StockDealPartRepository
 	TinkoffToken() TinkoffTokenRepository
 	CryptoDeal() CryptoDealRepository
+	DepositDeal() DepositDealRepository
 }
 
 type UserRepository interface {
@@ -91,5 +92,13 @@ type CryptoDealRepository interface {
 	UpdateCryptoDeal(*models.CryptoDeal) error
 	DeleteCryptoDeal(int64) error
 	GetCryptoDealByID(int64) (*models.CryptoDeal, error)
+	GetAll(*models.TableParams) error
+}
+
+type DepositDealRepository interface {
+	CreateDepositDeal(*models.DepositDeal) error
+	UpdateDepositDeal(*models.DepositDeal) error
+	DeleteDepositDeal(int64) error
+	GetDepositDealByID(int64) (*models.DepositDeal, error)
 	GetAll(*models.TableParams) error
 }
