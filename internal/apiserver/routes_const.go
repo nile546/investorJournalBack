@@ -23,8 +23,8 @@ const (
 	getBrokerDealsRoute = "/get-brocker-deals"
 
 	// stock instruments
-	StockInstrumentRoute = "/stick-instrument"
-	getPopular
+	StockInstrumentRoute = "/stock-instrument"
+	getPopularInstrument = ""
 
 	// crypto
 	cryptoDealsRoute = "/crypto"
