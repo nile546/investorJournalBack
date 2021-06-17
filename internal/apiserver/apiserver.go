@@ -128,6 +128,20 @@ func (s *server) ConfugureRouter() {
 	stockDeals.HandleFunc(getRoute, s.getStockDealByID).Methods(http.MethodPost)
 	stockDeals.HandleFunc(getBrokerDealsRoute, s.getAllStockDealFromBrokers).Methods(http.MethodPost)
 
+	cryptoDeals := api.PathPrefix(cryptoDealsRoute).Subrouter()
+	cryptoDeals.HandleFunc(getAllRoute, s.getAllCryptoDeals).Methods(http.MethodPost)
+	cryptoDeals.HandleFunc(createRoute, s.createCryptoDeal).Methods(http.MethodPost)
+	cryptoDeals.HandleFunc(updateRoute, s.updateCryptoDeal).Methods(http.MethodPost)
+	cryptoDeals.HandleFunc(deleteRoute, s.deleteCryptoDeal).Methods(http.MethodPost)
+	cryptoDeals.HandleFunc(getRoute, s.getCryptoDealByID).Methods(http.MethodPost)
+
+	depositDeals := api.PathPrefix(depositDealsRoute).Subrouter()
+	depositDeals.HandleFunc(getAllRoute, s.getAllDepositDeals).Methods(http.MethodPost)
+	depositDeals.HandleFunc(createRoute, s.createDepositDeal).Methods(http.MethodPost)
+	depositDeals.HandleFunc(updateRoute, s.updateDepositDeal).Methods(http.MethodPost)
+	depositDeals.HandleFunc(deleteRoute, s.deleteDepositDeal).Methods(http.MethodPost)
+	depositDeals.HandleFunc(getRoute, s.getDepositDealByID).Methods(http.MethodPost)
+
 	currency := api.PathPrefix(currencyRoute).Subrouter()
 	currency.HandleFunc(getRoute, s.getCurrenciesRatio).Methods(http.MethodPost)
 

@@ -21,6 +21,12 @@ const (
 	stockDealsRoute     = "/stock-deals"
 	getBrokerDealsRoute = "/get-brocker-deals"
 
+	// crypto
+	cryptoDealsRoute = "/crypto"
+
+	// deposit
+	depositDealsRoute = "/deposit"
+
 	// currencies
 	currencyRoute = "/currency"
 
