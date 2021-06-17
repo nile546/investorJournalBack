@@ -181,3 +181,36 @@ func (s *StockInstrumentRepository) GetStockInstrumentByID(id int64) (*models.St
 
 	return instrument, nil
 }
+
+func (r *StockInstrumentRepository) GetAll(tp *models.TableParams) error {
+
+	q := `SELECT id, title, ticker, type, isin, created_at
+	FROM stocks_instruments
+	LIMIT $1 
+	OFFSET $2;
+	`
+
+	rows, err := r.db.Query(
+		q,
+		tp.Pagination.ItemsPerPage,
+		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
+	)
+	if err != nil {
+		return err
+	}
+
+	source := []models.StockInstrument{}
+
+	for rows.Next() {
+		var si models.StockInstrument
+		err = rows.Scan(&si.ID, &si.Title, &si.Ticker, &si.Type, &si.Isin, &si.CreatedAt)
+		if err != nil {
+			return err
+		}
+
+		source = append(source, si)
+	}
+
+	tp.Source = source
+	return nil
+}

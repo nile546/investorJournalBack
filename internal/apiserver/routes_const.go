@@ -18,13 +18,13 @@ const (
 	// users
 	usersRoute = "/users"
 
-	// stocks
+	// stock deals
 	stockDealsRoute     = "/stock-deals"
 	getBrokerDealsRoute = "/get-brocker-deals"
 
 	// stock instruments
-	StockInstrumentRoute = "/stock-instruments"
-	getPopularInstrument = ""
+	stockInstrumentsRoute = "/stock-instruments"
+	getPopularInstrument  = ""
 
 	// crypto
 	cryptoDealsRoute = "/crypto"

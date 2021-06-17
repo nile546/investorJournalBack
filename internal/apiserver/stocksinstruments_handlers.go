@@ -105,12 +105,29 @@ func (s *server) getInstrumentByID(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) getAllStockInstruments(w http.ResponseWriter, r *http.Request) {
 
-	instruments, err := s.repository.StockInstrument().GetAllStockInstruments()
-	if err != nil {
-		s.logger.Errorf("Error get all instrument, with error %+v", err)
+	type request struct {
+		TableParams models.TableParams `json:"tableParams"`
+	}
+
+	req := &request{}
+
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	s.respond(w, instruments)
+	if err := validation.ValidateStruct(
+		req,
+		validation.Field(&req.TableParams, validation.Required),
+	); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	if err := s.repository.StockInstrument().GetAll(&req.TableParams); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, req.TableParams)
 }
