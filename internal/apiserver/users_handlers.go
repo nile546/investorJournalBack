@@ -183,7 +183,7 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/*if !u.ComparePassword(c.Password) {
+	if !u.ComparePassword(c.Password) {
 		err = errors.New("Invalid password!")
 		s.error(w, err.Error())
 		return
@@ -193,7 +193,7 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 		err = errors.New("Account not verified!")
 		s.error(w, err.Error())
 		return
-	}*/
+	}
 
 	at := &models.Token{
 		UserID: u.ID,
