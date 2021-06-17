@@ -13,9 +13,9 @@ type UserRepository struct {
 
 func (ur *UserRepository) CreateUser(u *models.User) error {
 
-	q := `INSERT INTO users (login, email, encrypted_password) VALUES ($1, $2, $3) RETURNING id`
+	q := `INSERT INTO users (login, email, encrypted_password, auto_grab_deals) VALUES ($1, $2, $3, $4) RETURNING id`
 
-	if err := ur.db.QueryRow(q, u.Login, u.Email, u.EncryptedPassword).Scan(&u.ID); err != nil {
+	if err := ur.db.QueryRow(q, u.Login, u.Email, u.EncryptedPassword, u.AutoGrabDeals).Scan(&u.ID); err != nil {
 		return err
 	}
 
