@@ -51,6 +51,9 @@ type BankInstrumentRepository interface {
 type CryptoInstrumentRepository interface {
 	InsertCryptoInstruments(*[]models.CryptoInstrument) error
 	GetAllCryptoInstruments() (*[]models.CryptoInstrument, error)
+	GetPopularCryptoInstrumentByUserID(int64) (*models.CryptoInstrument, error)
+	GetPopularCryptoInstrumentsID() ([]int64, error)
+	GetCryptoInstrumentByID(int64) (*models.CryptoInstrument, error)
 }
 
 type StockDealRepository interface {

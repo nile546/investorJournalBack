@@ -23,11 +23,13 @@ const (
 	getBrokerDealsRoute = "/get-brocker-deals"
 
 	// stock instruments
-	StockInstrumentRoute = "/stock-instruments"
-	getPopularInstrument = ""
+	stockInstrumentsRoute = "/stock-instruments"
 
 	// crypto
 	cryptoDealsRoute = "/crypto"
+
+	// crypto instruments
+	cryptoInstrumentsRoute = "/crypto-instruments"
 
 	// deposit
 	depositDealsRoute = "/deposit"
@@ -35,12 +37,11 @@ const (
 	// currencies
 	currencyRoute = "/currency"
 
-	// grab deal from brocker
-
 	// common
-	getAllRoute = "/getAll"
-	getRoute    = "/get"
-	createRoute = "/create"
-	deleteRoute = "/delete"
-	updateRoute = "/update"
+	getAllRoute          = "/getAll"
+	getRoute             = "/get"
+	createRoute          = "/create"
+	deleteRoute          = "/delete"
+	updateRoute          = "/update"
+	getPopularInstrument = "/popular"
 )

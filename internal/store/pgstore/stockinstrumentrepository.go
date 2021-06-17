@@ -165,13 +165,11 @@ func (s *StockInstrumentRepository) GetStockInstrumentByID(id int64) (*models.St
 		return nil, err
 	}
 
-	instrument := &models.StockInstrument{
-		ID: id,
-	}
+	instrument := &models.StockInstrument{}
 
 	for res.Next() {
 
-		err = res.Scan(&instrument.Title, &instrument.Ticker,
+		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.Ticker,
 			&instrument.Type, &instrument.Isin, &instrument.CreatedAt)
 		if err != nil {
 			return nil, err

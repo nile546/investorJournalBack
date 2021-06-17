@@ -2,6 +2,7 @@ package pgstore
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/nile546/diplom/internal/models"
 )
@@ -69,4 +70,85 @@ func (c *CryptoInstrumentRepository) GetAllCryptoInstruments() (*[]models.Crypto
 	}
 
 	return crypto_instruments, nil
+}
+
+func (c *CryptoInstrumentRepository) GetPopularCryptoInstrumentByUserID(id int64) (*models.CryptoInstrument, error) {
+
+	q := `SELECT * FROM crypto_instruments WHERE id=(
+		SELECT o.crypto_instrument_id
+		FROM crypto_deals o
+		  LEFT JOIN crypto_deals b
+			  ON o.crypto_instrument_id > b.crypto_instrument_id
+		WHERE b.crypto_instrument_id is NULL AND o.user_id=$1
+		LIMIT 1)`
+
+	res, err := c.db.Query(q, id)
+	if res == nil {
+		return nil, errors.New("Deals not found")
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	instrument := &models.CryptoInstrument{}
+
+	for res.Next() {
+
+		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.Ticker, &instrument.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	return instrument, nil
+}
+
+func (c *CryptoInstrumentRepository) GetPopularCryptoInstrumentsID() ([]int64, error) {
+
+	q := "SELECT crypto_instrument_id, COUNT(id) AS i FROM crypto_deals GROUP BY crypto_instrument_id ORDER BY i desc LIMIT 5"
+
+	rows, err := c.db.Query(
+		q,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	var ids []int64
+
+	for rows.Next() {
+		var id int64
+		err = rows.Scan(&id)
+		if err != nil {
+			return nil, err
+		}
+
+		ids = append(ids, id)
+	}
+
+	return ids, nil
+}
+
+func (c *CryptoInstrumentRepository) GetCryptoInstrumentByID(id int64) (*models.CryptoInstrument, error) {
+
+	q := "SELECT * FROM crypto_instruments WHERE id=$1"
+
+	res, err := c.db.Query(q, id)
+	if err != nil {
+		return nil, err
+	}
+
+	instrument := &models.CryptoInstrument{}
+
+	for res.Next() {
+
+		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.Ticker, &instrument.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	return instrument, nil
 }

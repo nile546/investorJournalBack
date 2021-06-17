@@ -1,6 +1,12 @@
 package apiserver
 
-import "github.com/nile546/diplom/internal/models"
+import (
+	"encoding/json"
+	"net/http"
+
+	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/nile546/diplom/internal/models"
+)
 
 func (s *server) updateCryptoInstruments(cryptoUrl string, cryptoKey string) {
 
@@ -35,4 +41,76 @@ func getNewCryptoInstruments(newCrypto []models.CryptoInstrument, oldCrypto []mo
 		}
 	}
 	return &newCrypto
+}
+
+func (s *server) getPopularCryptoInstrument(w http.ResponseWriter, r *http.Request) {
+
+	instrument, err := s.repository.CryptoInstrument().GetPopularCryptoInstrumentByUserID(s.session.userId)
+	if err != nil {
+		s.logger.Errorf("Error get popular crypto instrument, with error %+v", err)
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, instrument)
+
+}
+
+func (s *server) getPopularCryptoInstruments(w http.ResponseWriter, r *http.Request) {
+
+	ids, err := s.repository.CryptoInstrument().GetPopularCryptoInstrumentsID()
+	if ids == nil {
+		s.error(w, "Crypto deals not fount")
+		return
+	}
+	if err != nil {
+		s.logger.Errorf("Error get popular crypto instruments, with error %+v", err)
+		s.error(w, err.Error())
+		return
+	}
+
+}
+
+func (s *server) getCryptoInstrumentByID(w http.ResponseWriter, r *http.Request) {
+
+	type request struct {
+		ID int64 `json:"id"`
+	}
+
+	req := &request{}
+
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	if err := validation.ValidateStruct(
+		req,
+		validation.Field(&req.ID, validation.Required),
+	); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	instrument, err := s.repository.CryptoInstrument().GetCryptoInstrumentByID(req.ID)
+	if err != nil {
+		s.logger.Errorf("Error delete crypto instrument by id, with error %+v", err)
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, instrument)
+
+}
+
+func (s *server) getAllCryptoInstruments(w http.ResponseWriter, r *http.Request) {
+
+	instruments, err := s.repository.CryptoInstrument().GetAllCryptoInstruments()
+	if err != nil {
+		s.logger.Errorf("Error get all crypto instrument, with error %+v", err)
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, instruments)
 }

@@ -71,7 +71,7 @@ func (s *server) getPopularStockInstruments(w http.ResponseWriter, r *http.Reque
 
 }
 
-func (s *server) getInstrumentByID(w http.ResponseWriter, r *http.Request) {
+func (s *server) getStockInstrumentByID(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
 		ID int64 `json:"id"`
@@ -92,14 +92,14 @@ func (s *server) getInstrumentByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	deal, err := s.repository.StockInstrument().GetStockInstrumentByID(req.ID)
+	instrument, err := s.repository.StockInstrument().GetStockInstrumentByID(req.ID)
 	if err != nil {
 		s.logger.Errorf("Error delete stock instrument by id, with error %+v", err)
 		s.error(w, err.Error())
 		return
 	}
 
-	s.respond(w, deal)
+	s.respond(w, instrument)
 
 }
 
@@ -107,7 +107,7 @@ func (s *server) getAllStockInstruments(w http.ResponseWriter, r *http.Request) 
 
 	instruments, err := s.repository.StockInstrument().GetAllStockInstruments()
 	if err != nil {
-		s.logger.Errorf("Error get all instrument, with error %+v", err)
+		s.logger.Errorf("Error get all stock instrument, with error %+v", err)
 		s.error(w, err.Error())
 		return
 	}

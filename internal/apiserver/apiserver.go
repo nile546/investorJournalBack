@@ -143,8 +143,15 @@ func (s *server) ConfugureRouter() {
 	depositDeals.HandleFunc(deleteRoute, s.deleteDepositDeal).Methods(http.MethodPost)
 	depositDeals.HandleFunc(getRoute, s.getDepositDealByID).Methods(http.MethodPost)
 
-	stockInstruments := api.PathPrefix(StockInstrumentRoute).Subrouter()
-	stockInstruments.HandleFunc(getAllRoute, s.getAllStockInstruments)
+	stockInstruments := api.PathPrefix(stockInstrumentsRoute).Subrouter()
+	stockInstruments.HandleFunc(getAllRoute, s.getAllStockInstruments).Methods(http.MethodPost)
+	stockInstruments.HandleFunc(getPopularInstrument, s.getPopularStockInstrument).Methods(http.MethodPost)
+	stockInstruments.HandleFunc(getRoute, s.getStockInstrumentByID).Methods(http.MethodPost)
+
+	cryptoInstruments := api.PathPrefix(cryptoDealsRoute).Subrouter()
+	cryptoInstruments.HandleFunc(getAllRoute, s.getAllStockInstruments).Methods(http.MethodPost)
+	cryptoInstruments.HandleFunc(getPopularInstrument, s.getPopularStockInstrument).Methods(http.MethodPost)
+	cryptoInstruments.HandleFunc(getRoute, s.getStockInstrumentByID).Methods(http.MethodPost)
 
 	currency := api.PathPrefix(currencyRoute).Subrouter()
 	currency.HandleFunc(getRoute, s.getCurrenciesRatio).Methods(http.MethodPost)
