@@ -4,12 +4,13 @@ const (
 	apiRoute = "/api"
 
 	// auth
-	authRoute          = "/auth"
-	signupRoute        = "/signup"
-	signinRoute        = "/signin"
-	confirmSignupRoute = "/confirm-signup"
-	signoutRoute       = "/signout"
-	refreshRoute       = "/refresh"
+	authRoute           = "/auth"
+	signupRoute         = "/signup"
+	signinRoute         = "/signin"
+	confirmSignupRoute  = "/confirm-signup"
+	signoutRoute        = "/signout"
+	refreshRoute        = "/refresh"
+	getCurrentUserRoute = "/get-current-user"
 
 	// landing
 	landingRoute = "/landing"
