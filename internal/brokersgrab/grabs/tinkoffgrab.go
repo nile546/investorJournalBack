@@ -2,7 +2,6 @@ package grabs
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	sdk "github.com/TinkoffCreditSystems/invest-openapi-go-sdk"
@@ -14,13 +13,13 @@ type TinkoffGrab struct {
 	grabDate time.Time
 }
 
-func (t *TinkoffGrab) GetTinkoffStockDeals(token string, grabDate time.Time) (*[]models.TinkoffOperation, error) {
+func (t *TinkoffGrab) GetTinkoffStockDeals(token string, grabDate time.Time) (*[]models.BrokerOperation, error) {
 	t.token = token
 	t.grabDate = grabDate
 	return t.getTinkoffOperations()
 }
 
-func (t *TinkoffGrab) getTinkoffOperations() (*[]models.TinkoffOperation, error) {
+func (t *TinkoffGrab) getTinkoffOperations() (*[]models.BrokerOperation, error) {
 
 	client := sdk.NewRestClient(t.token)
 
@@ -33,10 +32,10 @@ func (t *TinkoffGrab) getTinkoffOperations() (*[]models.TinkoffOperation, error)
 	}
 
 	if len(operations) <= 0 {
-		return nil, errors.New("Нет сделок")
+		return nil, nil
 	}
 
-	tinkoffOperations := &[]models.TinkoffOperation{}
+	tinkoffOperations := &[]models.BrokerOperation{}
 
 	for i := len(operations) - 1; i >= 0; i-- {
 		if operations[i].Status == "Done" {
@@ -48,7 +47,7 @@ func (t *TinkoffGrab) getTinkoffOperations() (*[]models.TinkoffOperation, error)
 					if err != nil {
 						continue
 					}
-					tinkoffOperation := &models.TinkoffOperation{
+					tinkoffOperation := &models.BrokerOperation{
 						ISIN:      instrument.ISIN,
 						Currency:  currencyConvert(operations[i].Currency),
 						Quantity:  operations[i].QuantityExecuted,

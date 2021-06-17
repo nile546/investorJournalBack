@@ -8,7 +8,7 @@ import (
 	"github.com/nile546/diplom/internal/models"
 )
 
-func (s *server) CreateStrategy(w http.ResponseWriter, r *http.Request) {
+func (s *server) createStrategy(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
 		Name           string                  `json:"name"`
@@ -51,7 +51,7 @@ func (s *server) CreateStrategy(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, nil)
 }
 
-func (s *server) UpdateStockStrategy(w http.ResponseWriter, r *http.Request) {
+func (s *server) updateStockStrategy(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
 		ID          int64  `json:"id"`
@@ -91,7 +91,7 @@ func (s *server) UpdateStockStrategy(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, nil)
 }
 
-func (s *server) GetAllStrategy(w http.ResponseWriter, r *http.Request) {
+func (s *server) getAllStrategy(w http.ResponseWriter, r *http.Request) {
 
 	var userID int64
 
@@ -111,7 +111,7 @@ func (s *server) GetAllStrategy(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *server) DeleteStrategy(w http.ResponseWriter, r *http.Request) {
+func (s *server) deleteStrategy(w http.ResponseWriter, r *http.Request) {
 	var id int64
 
 	err := json.NewDecoder(r.Body).Decode(&id)

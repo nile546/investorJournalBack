@@ -2,16 +2,18 @@ package apiserver
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
 	"github.com/nile546/diplom/internal/models"
 )
 
-func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
+func (s *server) getAllStockDealFromBrokers(w http.ResponseWriter, r *http.Request) {
+
 	type request struct {
-		token         string
-		autoGrabDeals bool
+		TinkoffToken  string `json:"tinkoff_token"`
+		AutoGrabDeals bool   `json:"auto_grab_deals"`
 	}
 
 	req := &request{}
@@ -21,39 +23,79 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.autoGrabDeals {
-		err := s.repository.User().UpdateAutoGrab(s.session.userId)
-		if err != nil {
-			s.logger.Errorf("Error auto grab stock deal, with error: %+v", err)
-		}
+	err := s.getTinkoffStockDeals(req.TinkoffToken, req.AutoGrabDeals)
+	if err != nil {
+		s.logger.Errorf("Error insert Tinkoff stock deals, with error: %+v", err)
+		s.respond(w, errors.New("Request not processed, please try again later, "+err.Error()))
 	}
+
+}
+
+func (s *server) getTinkoffStockDeals(token string, autoGrabDeals bool) error {
+
+	if !autoGrabDeals {
+		err := s.insertTinkoffStockDeals(token)
+		if err != nil {
+			return err
+		}
+
+		err = s.repository.TinkoffToken().InsertTinkoffToken(token, s.session.userId)
+		if err != nil {
+			s.logger.Errorf("Error update auto grab stock deal, with error: %+v", err)
+		}
+		return nil
+	}
+
+	err := s.repository.User().UpdateAutoGrab(s.session.userId, true)
+	if err != nil {
+		s.logger.Errorf("Error update auto grab stock deal, with error: %+v", err)
+	}
+
+	go func() error {
+		for {
+			err = s.insertTinkoffStockDeals(token)
+			if err != nil {
+				s.logger.Errorf("Error insert Tinkoff stock deals, with error: %+v", err)
+				break
+			}
+			time.Sleep(time.Second * 30)
+		}
+		if err != nil {
+			return err
+		}
+		return nil
+	}()
+	return nil
+}
+
+func (s *server) insertTinkoffStockDeals(token string) error {
 
 	grabDate, err := s.repository.User().GetDateGrabByUserID(s.session.userId)
 	if err != nil {
 		s.logger.Errorf("Error get date grab stock deal, with error: %+v", err)
+		return err
 	}
 
-	tinkoff_operations, err := s.brokersGrab.TinkoffGrab().GetTinkoffStockDeals(req.token, grabDate)
+	tinkoff_operations, err := s.brokersGrab.TinkoffGrab().GetTinkoffStockDeals(token, grabDate)
 	if err != nil {
-		s.respond(w, err.Error())
-		return
+		return err
 	}
 
-	err = s.repository.User().UpdateDateGrab(time.Now(), 1)
+	if tinkoff_operations == nil { //Разобраться с ошибками
+		return nil
+	}
+
+	err = s.repository.User().UpdateDateGrab(time.Now(), s.session.userId) //user_id
 	if err != nil {
 		s.logger.Errorf("Error update date grab stock deal, with error: %+v", err)
+		return err
 	}
-
-	//Сохранить токен
 
 	for i, operation := range *tinkoff_operations {
 		if operation.Operation == 1 {
 
 			stockDealID := s.repository.StockDeal().GetStockDealsIDByISIN(operation.ISIN)
-			//if err != nil {
-			//	s.logger.Errorf("Error get stock deal id by isin from operation id:%d, with error: %+v", i, err)
-			//	continue
-			//}
+			//Проверить ошибку
 
 			if stockDealID == 0 {
 				stockInstrument, err := s.repository.StockInstrument().GetInstrumentByISIN(operation.ISIN)
@@ -68,7 +110,7 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 					EnterDateTime: operation.DateTime,
 					EnterPoint:    operation.Price,
 					Quantity:      operation.Quantity,
-					UserID:        s.session.userId,
+					UserID:        s.session.userId, //user_id
 					Variability:   false,
 				}
 
@@ -103,7 +145,7 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 				StockDealId: stockDealID,
 			}
 
-			err = s.repository.StockDealPart().InsertStockDealPart(stockDealPart)
+			err := s.repository.StockDealPart().InsertStockDealPart(stockDealPart)
 			if err != nil {
 				s.logger.Errorf("Error insert stock deal parts from operation id:%d, with error: %+v", i, err)
 				continue
@@ -119,10 +161,7 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 		}
 
 		stockDealID := s.repository.StockDeal().GetStockDealsIDByISIN(operation.ISIN)
-		//if err != nil {
-		//	s.logger.Errorf("Error get stock deal id by isin from operation id:%d, with error: %+v", i, err)
-		//	continue
-		//}
+		//Проверить ошбику
 
 		stockDealPart := &models.StockDealParts{
 			Quantity:    operation.Quantity,
@@ -132,7 +171,7 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 			StockDealId: stockDealID,
 		}
 
-		err = s.repository.StockDealPart().InsertStockDealPart(stockDealPart)
+		err := s.repository.StockDealPart().InsertStockDealPart(stockDealPart)
 		if err != nil {
 			s.logger.Errorf("Error insert stock deal parts from operation id:%d, with error: %+v", i, err)
 			continue
@@ -153,4 +192,9 @@ func (s *server) GetTinkoffStockDeals(w http.ResponseWriter, r *http.Request) {
 			s.logger.Errorf("Error set stock deal completed in parts from operation id:%d, with error: %+v", i, err)
 		}
 	}
+	return nil
+}
+
+func (s *server) offAutoGrabDeals() {
+
 }

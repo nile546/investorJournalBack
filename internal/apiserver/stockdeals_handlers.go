@@ -37,3 +37,7 @@ func (s *server) getAllStockDeals(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, req.TableParams)
 
 }
+
+func (s *server) CreateStockDeal(w http.ResponseWriter, r *http.Request) {
+
+}

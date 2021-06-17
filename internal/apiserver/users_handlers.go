@@ -183,7 +183,7 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !u.ComparePassword(c.Password) {
+	/*if !u.ComparePassword(c.Password) {
 		err = errors.New("Invalid password!")
 		s.error(w, err.Error())
 		return
@@ -193,7 +193,7 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 		err = errors.New("Account not verified!")
 		s.error(w, err.Error())
 		return
-	}
+	}*/
 
 	at := &models.Token{
 		UserID: u.ID,
@@ -240,21 +240,30 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, rtc)
 
+	if u.AutoGrabDeals {
+		token, err := s.repository.TinkoffToken().GetTinkoffToken(u.ID)
+		if err != nil {
+			s.logger.Errorf("Error insert Tinkoff stock deals, with error: %+v", err)
+		}
+
+		s.getTinkoffStockDeals(token, u.AutoGrabDeals)
+
+	}
+
 	s.respond(w, u)
 
 }
 
-func (s *server) GetUserByID(w http.ResponseWriter, r *http.Request) {
+func (s *server) getUser(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		ID int64
+		ID int64 `json:"id"`
 	}
 
 	req := &request{}
 
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		s.error(w, err.Error())
 		u, err := s.repository.User().GetUserByID(s.session.userId)
 		if err != nil {
 			s.error(w, err.Error())

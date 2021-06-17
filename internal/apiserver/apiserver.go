@@ -12,9 +12,10 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/nile546/diplom/config"
-	grabscurrency "github.com/nile546/diplom/internal/apiserver/currencygrab/grabs"
 	"github.com/nile546/diplom/internal/brokersgrab"
 	"github.com/nile546/diplom/internal/brokersgrab/grabs"
+	currency "github.com/nile546/diplom/internal/currencygrab"
+	grabscurrency "github.com/nile546/diplom/internal/currencygrab/grabs"
 	"github.com/nile546/diplom/internal/investinstruments"
 	"github.com/nile546/diplom/internal/investinstruments/instruments"
 	"github.com/nile546/diplom/internal/mailer"
@@ -46,13 +47,14 @@ type APIServer struct {
 }
 
 type server struct {
-	router      *mux.Router
-	repository  store.Repository
-	mailer      mailer.Mailer
-	instruments investinstruments.Instruments
-	session     session
-	logger      *logrus.Logger
-	brokersGrab brokersgrab.Grab
+	router       *mux.Router
+	repository   store.Repository
+	mailer       mailer.Mailer
+	instruments  investinstruments.Instruments
+	session      session
+	logger       *logrus.Logger
+	brokersGrab  brokersgrab.Grab
+	currencyGrab currency.GrabsCurrency
 }
 
 type spaHandler struct {
@@ -115,9 +117,15 @@ func (s *server) ConfugureRouter() {
 
 	// Closed routes, with use session
 
+	users := api.PathPrefix(usersRoute).Subrouter()
+	users.HandleFunc(getRoute, s.getUser).Methods(http.MethodPost)
+
 	stockDeals := api.PathPrefix(stockDealsRoute).Subrouter()
 	stockDeals.HandleFunc(getAllRoute, s.getAllStockDeals).Methods(http.MethodPost)
-	stockDeals.HandleFunc(grabDealsRoute, s.GetTinkoffStockDeals).Methods(http.MethodPost)
+	stockDeals.HandleFunc(getBrokerDealsRoute, s.getAllStockDealFromBrokers).Methods(http.MethodPost)
+
+	currency := api.PathPrefix(currencyRoute).Subrouter()
+	currency.HandleFunc(getRoute, s.getCurrenciesRatio).Methods(http.MethodPost)
 
 	spa := spaHandler{staticPath: "web", indexPath: "index.html"}
 
@@ -169,11 +177,9 @@ func Start(c *config.Config) error {
 
 	b := grabs.New()
 
-	t := grabscurrency.New()
+	g := grabscurrency.New()
 
-	t.GrabCBR().GrabUsdEur()
-
-	srv := newServer(r, m, i, l, b)
+	srv := newServer(r, m, i, l, b, g)
 
 	if err = srv.configureLogger(); err != nil {
 		return err
@@ -190,15 +196,16 @@ func Start(c *config.Config) error {
 
 }
 
-func newServer(r store.Repository, m mailer.Mailer, i investinstruments.Instruments, l *logrus.Logger, b brokersgrab.Grab) *server {
+func newServer(r store.Repository, m mailer.Mailer, i investinstruments.Instruments, l *logrus.Logger, b brokersgrab.Grab, g currency.GrabsCurrency) *server {
 
 	srv := &server{
-		router:      mux.NewRouter(),
-		repository:  r,
-		mailer:      m,
-		logger:      l,
-		instruments: i,
-		brokersGrab: b,
+		router:       mux.NewRouter(),
+		repository:   r,
+		mailer:       m,
+		logger:       l,
+		instruments:  i,
+		brokersGrab:  b,
+		currencyGrab: g,
 	}
 	srv.ConfugureRouter()
 

@@ -18,15 +18,18 @@ const (
 	usersRoute = "/users"
 
 	// stocks
-	stockDealsRoute = "/stock-deals"
+	stockDealsRoute     = "/stock-deals"
+	getBrokerDealsRoute = "/get-brocker-deals"
 
-	// grab deal
-	grabDealsRoute = "/grab"
+	// currencies
+	currencyRoute = "/currency"
+
+	// grab deal from brocker
 
 	// common
 	getAllRoute = "/getAll"
-	get         = "/get"
-	create      = "/create"
-	delete      = "/delete"
-	update      = "/update"
+	getRoute    = "/get"
+	createRoute = "/create"
+	deleteRoute = "/delete"
+	updateRoute = "/update"
 )

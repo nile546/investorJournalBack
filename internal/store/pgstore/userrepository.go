@@ -69,7 +69,7 @@ func (ur *UserRepository) UpdateIsActiveByUserID(ID int64) error {
 
 func (ur *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 
-	q := `SELECT id, login, encrypted_password, is_active, created_at FROM users where email=$1`
+	q := `SELECT id, login, encrypted_password, is_active, auto_grab_deals, created_at FROM users where email=$1`
 
 	res, err := ur.db.Query(q, email)
 	if err != nil {
@@ -82,7 +82,7 @@ func (ur *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 
 	for res.Next() {
 
-		err = res.Scan(&u.ID, &u.Login, &u.EncryptedPassword, &u.IsActive, &u.CreatedAt)
+		err = res.Scan(&u.ID, &u.Login, &u.EncryptedPassword, &u.IsActive, &u.AutoGrabDeals, &u.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -195,11 +195,11 @@ func (ur *UserRepository) GetDateGrabByUserID(userID int64) (time.Time, error) {
 	return dateGrab, nil
 }
 
-func (ur *UserRepository) UpdateAutoGrab(userID int64) error {
+func (ur *UserRepository) UpdateAutoGrab(userID int64, flag bool) error {
 
 	q := "UPDATE users SET auto_grab_deals = $1 WHERE id = $2"
 
-	res, err := ur.db.Exec(q, true, userID)
+	res, err := ur.db.Exec(q, flag, userID)
 	if err != nil {
 		return err
 	}

@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type TinkoffOperation struct {
+type BrokerOperation struct {
 	ID        int64      `json:"id"`
 	ISIN      string     `json:"isin"`
 	Currency  Currencies `json:"currency"`

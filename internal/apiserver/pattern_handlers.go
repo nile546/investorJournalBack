@@ -8,7 +8,7 @@ import (
 	"github.com/nile546/diplom/internal/models"
 )
 
-func (s *server) CreatePattern(w http.ResponseWriter, r *http.Request) {
+func (s *server) createPattern(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
 		Name           string                 `json:"name"`
@@ -52,7 +52,7 @@ func (s *server) CreatePattern(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, nil)
 }
 
-func (s *server) UpdatePattern(w http.ResponseWriter, r *http.Request) {
+func (s *server) updatePattern(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
 		ID          int64  `json:"id"`
@@ -93,7 +93,7 @@ func (s *server) UpdatePattern(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, nil)
 }
 
-func (s *server) GetAllPattern(w http.ResponseWriter, r *http.Request) {
+func (s *server) getAllPattern(w http.ResponseWriter, r *http.Request) {
 	var userID int64
 
 	err := json.NewDecoder(r.Body).Decode(&userID)
@@ -111,7 +111,7 @@ func (s *server) GetAllPattern(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, ptrns)
 }
 
-func (s *server) DeletePattern(w http.ResponseWriter, r *http.Request) {
+func (s *server) deletePattern(w http.ResponseWriter, r *http.Request) {
 
 	var id int64
 

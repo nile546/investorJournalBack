@@ -29,7 +29,7 @@ type UserRepository interface {
 	DeleteRefreshTokenByUser(*models.User) error
 	UpdateDateGrab(time.Time, int64) error
 	GetDateGrabByUserID(int64) (time.Time, error)
-	UpdateAutoGrab(int64) error
+	UpdateAutoGrab(int64, bool) error
 }
 
 type StockInstrumentRepository interface {

@@ -31,8 +31,8 @@ func (s *StockDealPartRepository) CheckQuantityDeal(idStockDeal int64) (bool, er
 
 	q := `SELECT
 	CASE
-		WHEN (SELECT SUM(quantity) FROM stockdeal_parts WHERE stock_deal_id = $1 AND type = 1)
-		   = (SELECT SUM(quantity) FROM stockdeal_parts WHERE stock_deal_id = $1 AND type = 2)  THEN true
+		WHEN (SELECT SUM(quantity) FROM stockdeal_parts WHERE stock_deal_id = $1 AND deal_type = 1)
+		   = (SELECT SUM(quantity) FROM stockdeal_parts WHERE stock_deal_id = $1 AND deal_type = 2)  THEN true
 		ELSE false
 	END as check_quantity`
 
