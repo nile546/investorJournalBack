@@ -1,6 +1,10 @@
 package apiserver
 
 import (
+	"encoding/json"
+	"net/http"
+
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/nile546/diplom/internal/models"
 )
 
@@ -37,4 +41,76 @@ func getNewStockInstruments(newStocks []models.StockInstrument, oldStocks []mode
 		}
 	}
 	return &newStocks
+}
+
+func (s *server) getPopularStockInstrument(w http.ResponseWriter, r *http.Request) {
+
+	instrument, err := s.repository.StockInstrument().GetPopularStockInstrumentByUserID(s.session.userId)
+	if err != nil {
+		s.logger.Errorf("Error get popular stock instrument, with error %+v", err)
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, instrument)
+
+}
+
+func (s *server) getPopularStockInstruments(w http.ResponseWriter, r *http.Request) {
+
+	ids, err := s.repository.StockInstrument().GetPopularStockInstrumentsID()
+	if ids == nil {
+		s.error(w, "Stock deals not fount")
+		return
+	}
+	if err != nil {
+		s.logger.Errorf("Error get popular stock instruments, with error %+v", err)
+		s.error(w, err.Error())
+		return
+	}
+
+}
+
+func (s *server) getInstrumentByID(w http.ResponseWriter, r *http.Request) {
+
+	type request struct {
+		ID int64 `json:"id"`
+	}
+
+	req := &request{}
+
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	if err := validation.ValidateStruct(
+		req,
+		validation.Field(&req.ID, validation.Required),
+	); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	deal, err := s.repository.StockInstrument().GetStockInstrumentByID(req.ID)
+	if err != nil {
+		s.logger.Errorf("Error delete stock instrument by id, with error %+v", err)
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, deal)
+
+}
+
+func (s *server) getAllStockInstruments(w http.ResponseWriter, r *http.Request) {
+
+	instruments, err := s.repository.StockInstrument().GetAllStockInstruments()
+	if err != nil {
+		s.logger.Errorf("Error get all instrument, with error %+v", err)
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, instruments)
 }

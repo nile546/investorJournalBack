@@ -62,6 +62,7 @@ func (s *server) createStockDeal(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		s.logger.Errorf("Error create stock deal, with error %+v", err)
 		s.error(w, err.Error())
+		return
 	}
 
 }
@@ -81,6 +82,7 @@ func (s *server) updateStockDeal(w http.ResponseWriter, r *http.Request) {
 	if req.Deal.UserID != s.session.userId {
 		s.logger.Errorf("Error update stock deal, with error %+v", errors.New("id user initiator does not match session user id"))
 		s.error(w, "Id user initiator does not match session user id")
+		return
 	}
 
 	if err := validation.ValidateStruct(
@@ -95,6 +97,7 @@ func (s *server) updateStockDeal(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		s.logger.Errorf("Error update stock deal, with error %+v", err)
 		s.error(w, err.Error())
+		return
 	}
 
 }
@@ -123,6 +126,7 @@ func (s *server) deleteStockDeal(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		s.logger.Errorf("Error delete stock deal, with error %+v", err)
 		s.error(w, err.Error())
+		return
 	}
 
 }
@@ -152,6 +156,7 @@ func (s *server) getStockDealByID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		s.logger.Errorf("Error delete stock deal, with error %+v", err)
 		s.error(w, err.Error())
+		return
 	}
 
 	s.respond(w, deal)

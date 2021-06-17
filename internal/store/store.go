@@ -38,6 +38,9 @@ type StockInstrumentRepository interface {
 	InsertStocksInstruments(*[]models.StockInstrument) error
 	GetAllStockInstruments() (*[]models.StockInstrument, error)
 	GetInstrumentByISIN(string) (*models.StockInstrument, error)
+	GetPopularStockInstrumentByUserID(int64) (*models.StockInstrument, error)
+	GetPopularStockInstrumentsID() ([]int64, error)
+	GetStockInstrumentByID(int64) (*models.StockInstrument, error)
 }
 
 type BankInstrumentRepository interface {
