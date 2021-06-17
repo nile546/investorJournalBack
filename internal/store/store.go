@@ -16,6 +16,7 @@ type Repository interface {
 	Pattern() PatternRepository
 	StockDealPart() StockDealPartRepository
 	TinkoffToken() TinkoffTokenRepository
+	CryptoDeal() CryptoDealRepository
 }
 
 type UserRepository interface {
@@ -83,4 +84,12 @@ type TinkoffTokenRepository interface {
 	InsertTinkoffToken(string, int64) error
 	GetTinkoffToken(int64) (string, error)
 	UpdateTinkoffToken(string, int64) error
+}
+
+type CryptoDealRepository interface {
+	CreateCryptoDeal(*models.CryptoDeal) error
+	UpdateCryptoDeal(*models.CryptoDeal) error
+	DeleteCryptoDeal(int64) error
+	GetCryptoDealByID(int64) (*models.CryptoDeal, error)
+	GetAll(*models.TableParams) error
 }

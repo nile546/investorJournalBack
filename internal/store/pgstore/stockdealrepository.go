@@ -77,7 +77,8 @@ func (r *StockDealRepository) DeleteStockDeal(id int64) error {
 
 func (r *StockDealRepository) GetStockDealByID(id int64) (*models.StockDeal, error) {
 
-	q := `SELECT * FROM users where id=$1`
+	q := `SELECT stock_instrument_id, strategy_id, currency, position, time_frame, enter_datetime, enter_point, stop_loss, 
+	quantity, exit_datetime, exit_point, risk_ratio, variability, user_id FROM stock_deals where id=$1`
 
 	res, err := r.db.Query(q, id)
 	if err != nil {
@@ -90,8 +91,8 @@ func (r *StockDealRepository) GetStockDealByID(id int64) (*models.StockDeal, err
 
 	for res.Next() {
 
-		err = res.Scan(&deal.Stock.ID, &deal.Currency, &deal.Strategy.ID,
-			&deal.Pattern.ID, &deal.Position, &deal.TimeFrame, &deal.EnterDateTime,
+		err = res.Scan(&deal.Stock.ID, &deal.Strategy.ID, &deal.Pattern.ID,
+			&deal.Currency, &deal.Position, &deal.TimeFrame, &deal.EnterDateTime,
 			&deal.EnterPoint, &deal.StopLoss, &deal.Quantity, &deal.ExitDateTime,
 			&deal.ExitPoint, &deal.RiskRatio, &deal.Variability, &deal.UserID)
 		if err != nil {
