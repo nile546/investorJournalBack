@@ -2,6 +2,7 @@ package pgstore
 
 import (
 	"database/sql"
+	"math"
 
 	"github.com/nile546/diplom/internal/models"
 )
@@ -168,5 +169,22 @@ func (r *CryptoDealRepository) GetAll(tp *models.TableParams, id int64) error {
 	}
 
 	tp.Source = source
+
+	q = `SELECT COUNT(id)
+	FROM crypto_deals
+	`
+	var itemsCount int
+	if err = r.db.QueryRow(q).Scan(&itemsCount); err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	tp.Pagination.PageCount = 0
+
+	if count > 0 {
+		tp.Pagination.PageCount = int(math.Ceil(float64(count) / float64(tp.Pagination.ItemsPerPage)))
+	}
+
 	return nil
+
 }

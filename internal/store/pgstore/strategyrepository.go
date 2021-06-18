@@ -2,6 +2,7 @@ package pgstore
 
 import (
 	"database/sql"
+	"math"
 
 	"github.com/nile546/diplom/internal/models"
 )
@@ -84,6 +85,21 @@ func (s *StrategyRepository) GetAllStrategy(tp *models.TableParams, id int64) er
 	}
 
 	tp.Source = source
+
+	q = `SELECT COUNT(id)
+	FROM strategies
+	`
+	var itemsCount int
+	if err = s.db.QueryRow(q).Scan(&itemsCount); err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	tp.Pagination.PageCount = 0
+
+	if count > 0 {
+		tp.Pagination.PageCount = int(math.Ceil(float64(count) / float64(tp.Pagination.ItemsPerPage)))
+	}
 
 	return nil
 }

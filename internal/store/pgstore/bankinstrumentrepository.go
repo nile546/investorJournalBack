@@ -3,6 +3,7 @@ package pgstore
 import (
 	"database/sql"
 	"errors"
+	"math"
 
 	"github.com/nile546/diplom/internal/models"
 )
@@ -186,5 +187,22 @@ func (b *BankInstrumentRepository) GetAll(tp *models.TableParams) error {
 	}
 
 	tp.Source = source
+
+	q = `SELECT COUNT(id)
+	FROM banks_instruments
+	`
+	var itemsCount int
+	if err = b.db.QueryRow(q).Scan(&itemsCount); err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	tp.Pagination.PageCount = 0
+
+	if count > 0 {
+		tp.Pagination.PageCount = int(math.Ceil(float64(count) / float64(tp.Pagination.ItemsPerPage)))
+	}
+
 	return nil
+
 }
