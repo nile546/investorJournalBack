@@ -101,17 +101,19 @@ func (ur *UserRepository) GetUserByID(ID int64) (*models.User, error) {
 		return nil, err
 	}
 
+	if !res.Next() {
+		return nil, nil
+	}
+
 	u := &models.User{
 		ID: ID,
 	}
 
 	for res.Next() {
-
 		err = res.Scan(&u.Email, &u.Login, &u.EncryptedPassword, &u.IsActive, &u.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
-
 	}
 
 	return u, nil
