@@ -69,6 +69,8 @@ func (s *server) getPopularStockInstruments(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	s.respond(w, nil) //Добавить массив популярных акций
+
 }
 
 func (s *server) getStockInstrumentByID(w http.ResponseWriter, r *http.Request) {
@@ -94,7 +96,7 @@ func (s *server) getStockInstrumentByID(w http.ResponseWriter, r *http.Request) 
 
 	instrument, err := s.repository.StockInstrument().GetStockInstrumentByID(req.ID)
 	if err != nil {
-		s.logger.Errorf("Error delete stock instrument by id, with error %+v", err)
+		s.logger.Errorf("Error get stock instrument by id, with error %+v", err)
 		s.error(w, err.Error())
 		return
 	}
@@ -105,12 +107,30 @@ func (s *server) getStockInstrumentByID(w http.ResponseWriter, r *http.Request) 
 
 func (s *server) getAllStockInstruments(w http.ResponseWriter, r *http.Request) {
 
-	instruments, err := s.repository.StockInstrument().GetAllStockInstruments()
-	if err != nil {
+	type request struct {
+		TableParams models.TableParams `json:"tableParams"`
+	}
+
+	req := &request{}
+
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	if err := validation.ValidateStruct(
+		req,
+		validation.Field(&req.TableParams, validation.Required),
+	); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	if err := s.repository.StockInstrument().GetAll(&req.TableParams); err != nil {
 		s.logger.Errorf("Error get all stock instrument, with error %+v", err)
 		s.error(w, err.Error())
 		return
 	}
 
-	s.respond(w, instruments)
+	s.respond(w, req.TableParams)
 }

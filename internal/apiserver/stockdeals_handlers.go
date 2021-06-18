@@ -30,6 +30,7 @@ func (s *server) getAllStockDeals(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := s.repository.StockDeal().GetAll(&req.TableParams); err != nil {
+		s.logger.Errorf("Error get all stock deals, with error %+v", err)
 		s.error(w, err.Error())
 		return
 	}
@@ -52,7 +53,10 @@ func (s *server) createStockDeal(w http.ResponseWriter, r *http.Request) {
 
 	if err := validation.ValidateStruct(
 		req,
-		validation.Field(&req.Deal, validation.Required),
+		validation.Field(&req.Deal.Stock, validation.Required),
+		validation.Field(&req.Deal.EnterDateTime, validation.Required),
+		validation.Field(&req.Deal.EnterPoint, validation.Required),
+		validation.Field(&req.Deal.UserID, validation.Required),
 	); err != nil {
 		s.error(w, err.Error())
 		return
@@ -65,6 +69,7 @@ func (s *server) createStockDeal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	s.respond(w, nil)
 }
 
 func (s *server) updateStockDeal(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +92,11 @@ func (s *server) updateStockDeal(w http.ResponseWriter, r *http.Request) {
 
 	if err := validation.ValidateStruct(
 		req,
-		validation.Field(&req.Deal, validation.Required),
+		validation.Field(&req.Deal.ID, validation.Required),
+		validation.Field(&req.Deal.Stock, validation.Required),
+		validation.Field(&req.Deal.EnterDateTime, validation.Required),
+		validation.Field(&req.Deal.EnterPoint, validation.Required),
+		validation.Field(&req.Deal.UserID, validation.Required),
 	); err != nil {
 		s.error(w, err.Error())
 		return
@@ -99,6 +108,8 @@ func (s *server) updateStockDeal(w http.ResponseWriter, r *http.Request) {
 		s.error(w, err.Error())
 		return
 	}
+
+	s.respond(w, nil)
 
 }
 
@@ -128,6 +139,8 @@ func (s *server) deleteStockDeal(w http.ResponseWriter, r *http.Request) {
 		s.error(w, err.Error())
 		return
 	}
+
+	s.respond(w, nil)
 
 }
 

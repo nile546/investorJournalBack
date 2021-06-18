@@ -44,27 +44,38 @@ func (s *StrategyRepository) UpdateStrategy(strategy *models.Strategy) error {
 	return nil
 }
 
-func (s *StrategyRepository) GetAllStrategy(userId int64) (*[]models.Strategy, error) {
+func (s *StrategyRepository) GetAllStrategy(tp *models.TableParams) error {
 
-	q := `SELECT * FROM strategies where user_id IS NULL OR user_id=$1`
+	//Add user_id IS NULL OR user_id=$1
+	q := `SELECT id, name, description, user_id, instrument_type, created_at
+	FROM strategies
+	WHERE 
+	LIMIT $1 
+	OFFSET $2;
+	`
 
-	res, err := s.db.Query(q, userId)
+	rows, err := s.db.Query(
+		q,
+		tp.Pagination.ItemsPerPage,
+		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
+	)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	strgs := &[]models.Strategy{}
+	source := []models.Strategy{}
 
-	for res.Next() {
-		strg := models.Strategy{}
-		err = res.Scan(&strg.ID, &strg.Name, &strg.Description, &strg.UserID, &strg.CreatedAt)
+	for rows.Next() {
+		var s models.Strategy
+		err = rows.Scan(&s.ID, &s.Name, &s.Description, &s.UserID, &s.InstrumentType, &s.CreatedAt)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		*strgs = append(*strgs, strg)
+
+		source = append(source, s)
 	}
 
-	return strgs, nil
+	return nil
 }
 
 func (s *StrategyRepository) DeleteStrategy(id int64) error {

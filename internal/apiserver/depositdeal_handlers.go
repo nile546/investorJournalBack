@@ -30,6 +30,7 @@ func (s *server) getAllDepositDeals(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := s.repository.DepositDeal().GetAll(&req.TableParams); err != nil {
+		s.logger.Errorf("Error get all deposit deal, with error %+v", err)
 		s.error(w, err.Error())
 		return
 	}
@@ -52,7 +53,11 @@ func (s *server) createDepositDeal(w http.ResponseWriter, r *http.Request) {
 
 	if err := validation.ValidateStruct(
 		req,
-		validation.Field(&req.Deal, validation.Required),
+		validation.Field(&req.Deal.Bank, validation.Required),
+		validation.Field(&req.Deal.EnterDateTime, validation.Required),
+		validation.Field(&req.Deal.StartDeposit, validation.Required),
+		validation.Field(&req.Deal.Percent, validation.Required),
+		validation.Field(&req.Deal.UserID, validation.Required),
 	); err != nil {
 		s.error(w, err.Error())
 		return
@@ -63,6 +68,8 @@ func (s *server) createDepositDeal(w http.ResponseWriter, r *http.Request) {
 		s.logger.Errorf("Error create deposit deal, with error %+v", err)
 		s.error(w, err.Error())
 	}
+
+	s.respond(w, nil)
 
 }
 
@@ -85,7 +92,12 @@ func (s *server) updateDepositDeal(w http.ResponseWriter, r *http.Request) {
 
 	if err := validation.ValidateStruct(
 		req,
-		validation.Field(&req.Deal, validation.Required),
+		validation.Field(&req.Deal.ID, validation.Required),
+		validation.Field(&req.Deal.EnterDateTime, validation.Required),
+		validation.Field(&req.Deal.Bank, validation.Required),
+		validation.Field(&req.Deal.StartDeposit, validation.Required),
+		validation.Field(&req.Deal.Percent, validation.Required),
+		validation.Field(&req.Deal.UserID, validation.Required),
 	); err != nil {
 		s.error(w, err.Error())
 		return
@@ -96,6 +108,8 @@ func (s *server) updateDepositDeal(w http.ResponseWriter, r *http.Request) {
 		s.logger.Errorf("Error update deposit deal, with error %+v", err)
 		s.error(w, err.Error())
 	}
+
+	s.respond(w, nil)
 
 }
 
@@ -124,6 +138,8 @@ func (s *server) deleteDepositDeal(w http.ResponseWriter, r *http.Request) {
 		s.logger.Errorf("Error delete deposit deal, with error %+v", err)
 		s.error(w, err.Error())
 	}
+
+	s.respond(w, nil)
 
 }
 

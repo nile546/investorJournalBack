@@ -11,10 +11,7 @@ import (
 func (s *server) createStrategy(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		Name           string                  `json:"name"`
-		Description    string                  `json:"description"`
-		UserID         int64                   `json:"user_id"`
-		InstrumentType *models.InstrumentTypes `json:"instrumentType"`
+		Strategy *models.Strategy `json:"strategy"`
 	}
 
 	req := &request{}
@@ -27,22 +24,16 @@ func (s *server) createStrategy(w http.ResponseWriter, r *http.Request) {
 
 	err = validation.ValidateStruct(
 		req,
-		validation.Field(&req.Name, validation.Required),
-		validation.Field(&req.Description, validation.Required),
-		validation.Field(&req.UserID, validation.Required),
-		validation.Field(&req.InstrumentType, validation.Required),
+		validation.Field(&req.Strategy.Name, validation.Required),
+		validation.Field(&req.Strategy.UserID, validation.Required),
+		validation.Field(&req.Strategy.InstrumentType, validation.Required),
 	)
 	if err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err = s.repository.Strategy().CreateStrategy(&models.Strategy{
-		Name:           req.Name,
-		Description:    &req.Description,
-		UserID:         &req.UserID,
-		InstrumentType: *req.InstrumentType,
-	})
+	err = s.repository.Strategy().CreateStrategy(req.Strategy)
 	if err != nil {
 		s.error(w, err.Error())
 		return
@@ -54,9 +45,7 @@ func (s *server) createStrategy(w http.ResponseWriter, r *http.Request) {
 func (s *server) updateStockStrategy(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		ID          int64  `json:"id"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
+		Strategy *models.Strategy `json:"strategy"`
 	}
 
 	req := &request{}
@@ -69,20 +58,15 @@ func (s *server) updateStockStrategy(w http.ResponseWriter, r *http.Request) {
 
 	err = validation.ValidateStruct(
 		req,
-		validation.Field(&req.ID, validation.Required),
-		validation.Field(&req.Name, validation.Required),
-		validation.Field(&req.Description, validation.Required),
+		validation.Field(&req.Strategy.ID, validation.Required),
+		validation.Field(&req.Strategy.Name, validation.Required),
 	)
 	if err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err = s.repository.Strategy().UpdateStrategy(&models.Strategy{
-		ID:          req.ID,
-		Name:        req.Name,
-		Description: &req.Description,
-	})
+	err = s.repository.Strategy().UpdateStrategy(req.Strategy)
 	if err != nil {
 		s.error(w, err.Error())
 		return
@@ -93,36 +77,61 @@ func (s *server) updateStockStrategy(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) getAllStrategy(w http.ResponseWriter, r *http.Request) {
 
-	var userID int64
+	type request struct {
+		TableParams models.TableParams `json:"tableParams"`
+	}
 
-	err := json.NewDecoder(r.Body).Decode(&userID)
-	if err != nil {
+	req := &request{}
+
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	strgs, err := s.repository.Strategy().GetAllStrategy(userID)
-	if err != nil {
+	if err := validation.ValidateStruct(
+		req,
+		validation.Field(&req.TableParams, validation.Required),
+	); err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	s.respond(w, strgs)
+	if err := s.repository.Strategy().GetAllStrategy(&req.TableParams); err != nil {
+		s.logger.Errorf("Error get all strategy, with error %+v", err)
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, req.TableParams)
 
 }
 
 func (s *server) deleteStrategy(w http.ResponseWriter, r *http.Request) {
-	var id int64
 
-	err := json.NewDecoder(r.Body).Decode(&id)
+	type request struct {
+		ID int64 `json:"id"`
+	}
+
+	req := &request{}
+
+	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err = s.repository.Strategy().DeleteStrategy(id)
+	if err := validation.ValidateStruct(
+		req,
+		validation.Field(&req.ID, validation.Required),
+	); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	err = s.repository.Strategy().DeleteStrategy(req.ID)
 	if err != nil {
 		s.error(w, err.Error())
+		s.logger.Errorf("Error delete strategy, with error %+v", err)
 		return
 	}
 

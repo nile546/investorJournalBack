@@ -244,10 +244,13 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 	if u.AutoGrabDeals {
 		token, err := s.repository.TinkoffToken().GetTinkoffToken(u.ID)
 		if err != nil {
-			s.logger.Errorf("Error insert Tinkoff stock deals, with error: %+v", err)
+			s.logger.Errorf("Error Tinkoff token not found, with error: %+v", err)
 		}
 
-		s.getTinkoffStockDeals(token, u.AutoGrabDeals)
+		err = s.getTinkoffStockDeals(token, u.AutoGrabDeals)
+		if err != nil {
+			s.logger.Errorf("Error insert Tinkoff stock deals, with error: %+v", err)
+		}
 
 	}
 

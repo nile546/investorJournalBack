@@ -18,7 +18,7 @@ const (
 	// users
 	usersRoute = "/users"
 
-	// stocks
+	// stock deals
 	stockDealsRoute     = "/stock-deals"
 	getBrokerDealsRoute = "/get-brocker-deals"
 
@@ -33,6 +33,9 @@ const (
 
 	// deposit
 	depositDealsRoute = "/deposit"
+
+	// crypto instruments
+	bankInstrumentsRoute = "/bank-instruments"
 
 	// currencies
 	currencyRoute = "/currency"

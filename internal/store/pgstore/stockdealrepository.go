@@ -16,13 +16,13 @@ func (r *StockDealRepository) CreateStockDeal(deal *models.StockDeal) error {
 	q := `INSERT INTO stock_deals
 	(stock_instrument_id, currency, strategy_id, pattern_id, 
 	position, time_frame, enter_datetime, enter_point, stop_loss, 
-	quantity, exit_datetime, exit_point, risk_ratio, variability, user_id)
+	quantity, exit_datetime, exit_point, risk_ratio, user_id)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
 
 	res, err := r.db.Exec(q, deal.Stock, deal.Currency, deal.Strategy.ID,
 		deal.Pattern.ID, deal.Position, deal.TimeFrame, deal.EnterDateTime,
 		deal.EnterPoint, deal.StopLoss, deal.Quantity, deal.ExitDateTime,
-		deal.ExitPoint, deal.RiskRatio, deal.Variability, deal.UserID)
+		deal.ExitPoint, deal.RiskRatio, deal.UserID)
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func (r *StockDealRepository) GetStockDealByID(id int64) (*models.StockDeal, err
 }
 
 func (r *StockDealRepository) GetAll(tp *models.TableParams) error {
-
+	//Добавить user_id
 	q := `
 	SELECT sd.id 
 	FROM stock_deals AS sd

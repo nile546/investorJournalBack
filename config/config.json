@@ -18,7 +18,7 @@
     "CryptoUrl": "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
     "CryptoKey": "75416f37-656b-4dd1-8cf5-9e5a382d3e88",
     "HoursUpdateInstruments": 3,
-    "MinutesUpdateInstruments": 22,
+    "MinutesUpdateInstruments": 0,
     "SecondsUpdateInstruments": 0,
     "LogLevel": "debug"
 } 

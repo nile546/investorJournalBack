@@ -28,6 +28,8 @@ func (s *server) getAllStockDealFromBrokers(w http.ResponseWriter, r *http.Reque
 		s.error(w, "Request not processed, please try again later, "+err.Error())
 	}
 
+	s.respond(w, nil)
+
 }
 
 func (s *server) getTinkoffStockDeals(token string, autoGrabDeals bool) error {

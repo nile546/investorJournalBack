@@ -30,6 +30,7 @@ func (s *server) getAllCryptoDeals(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := s.repository.CryptoDeal().GetAll(&req.TableParams); err != nil {
+		s.logger.Errorf("Error get all crypto deals, with error %+v", err)
 		s.error(w, err.Error())
 		return
 	}
@@ -52,7 +53,10 @@ func (s *server) createCryptoDeal(w http.ResponseWriter, r *http.Request) {
 
 	if err := validation.ValidateStruct(
 		req,
-		validation.Field(&req.Deal, validation.Required),
+		validation.Field(&req.Deal.Crypto, validation.Required),
+		validation.Field(&req.Deal.EnterDateTime, validation.Required),
+		validation.Field(&req.Deal.EnterPoint, validation.Required),
+		validation.Field(&req.Deal.UserID, validation.Required),
 	); err != nil {
 		s.error(w, err.Error())
 		return
@@ -63,6 +67,8 @@ func (s *server) createCryptoDeal(w http.ResponseWriter, r *http.Request) {
 		s.logger.Errorf("Error create сrypto deal, with error %+v", err)
 		s.error(w, err.Error())
 	}
+
+	s.respond(w, nil)
 
 }
 
@@ -79,13 +85,17 @@ func (s *server) updateCryptoDeal(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if req.Deal.UserID != s.session.userId {
-		s.logger.Errorf("Error update crypto deal, with error %+v", errors.New("id user initiator does not match session user id"))
-		s.error(w, "Id user initiator does not match session user id")
+		s.logger.Errorf("Error update crypto deal, with error %+v", errors.New("id user initiator does not match with session user id"))
+		s.error(w, "Id user initiator does not match with session user id")
 	}
 
 	if err := validation.ValidateStruct(
 		req,
-		validation.Field(&req.Deal, validation.Required),
+		validation.Field(&req.Deal.Crypto, validation.Required),
+		validation.Field(&req.Deal.EnterDateTime, validation.Required),
+		validation.Field(&req.Deal.EnterPoint, validation.Required),
+		validation.Field(&req.Deal.UserID, validation.Required),
+		validation.Field(&req.Deal.ID, validation.Required),
 	); err != nil {
 		s.error(w, err.Error())
 		return
@@ -96,6 +106,8 @@ func (s *server) updateCryptoDeal(w http.ResponseWriter, r *http.Request) {
 		s.logger.Errorf("Error update crypto deal, with error %+v", err)
 		s.error(w, err.Error())
 	}
+
+	s.respond(w, nil)
 
 }
 
@@ -124,6 +136,8 @@ func (s *server) deleteCryptoDeal(w http.ResponseWriter, r *http.Request) {
 		s.logger.Errorf("Error delete crypto deal, with error %+v", err)
 		s.error(w, err.Error())
 	}
+
+	s.respond(w, nil)
 
 }
 

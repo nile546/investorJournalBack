@@ -83,14 +83,15 @@ func (c *CryptoInstrumentRepository) GetPopularCryptoInstrumentByUserID(id int64
 		LIMIT 1)`
 
 	res, err := c.db.Query(q, id)
-	if res == nil {
-		return nil, errors.New("Deals not found")
-	}
 	if err != nil {
 		return nil, err
 	}
 
 	instrument := &models.CryptoInstrument{}
+
+	if !res.Next() {
+		return nil, errors.New("Deals not found")
+	}
 
 	for res.Next() {
 
@@ -116,6 +117,10 @@ func (c *CryptoInstrumentRepository) GetPopularCryptoInstrumentsID() ([]int64, e
 	}
 
 	var ids []int64
+
+	if !rows.Next() {
+		return nil, errors.New("Deals not found")
+	}
 
 	for rows.Next() {
 		var id int64
@@ -151,4 +156,37 @@ func (c *CryptoInstrumentRepository) GetCryptoInstrumentByID(id int64) (*models.
 	}
 
 	return instrument, nil
+}
+
+func (c *CryptoInstrumentRepository) GetAll(tp *models.TableParams) error {
+
+	q := `SELECT id, title, ticker, created_at
+	FROM crypto_instruments
+	LIMIT $1 
+	OFFSET $2;
+	`
+
+	rows, err := c.db.Query(
+		q,
+		tp.Pagination.ItemsPerPage,
+		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
+	)
+	if err != nil {
+		return err
+	}
+
+	source := []models.CryptoInstrument{}
+
+	for rows.Next() {
+		var si models.CryptoInstrument
+		err = rows.Scan(&si.ID, &si.Title, &si.Ticker, &si.CreatedAt)
+		if err != nil {
+			return err
+		}
+
+		source = append(source, si)
+	}
+
+	tp.Source = source
+	return nil
 }

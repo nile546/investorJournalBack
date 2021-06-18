@@ -2,6 +2,7 @@ package pgstore
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/nile546/diplom/internal/models"
 )
@@ -69,4 +70,123 @@ func (b *BankInstrumentRepository) GetAllBankInstruments() (*[]models.BankInstru
 	}
 
 	return banks_instruments, nil
+}
+
+func (b *BankInstrumentRepository) GetPopularBankInstrumentByUserID(id int64) (*models.BankInstrument, error) {
+
+	q := `SELECT * FROM banks_instruments WHERE id=(
+		SELECT o.bank_instrument_id
+		FROM deposit_deals o
+		  LEFT JOIN deposit_deals b
+			  ON o.bank_instrument_id > b.bank_instrument_id
+		WHERE b.bank_instrument_id is NULL AND o.user_id=$1
+		LIMIT 1)`
+
+	res, err := b.db.Query(q, id)
+	if err != nil {
+		return nil, err
+	}
+
+	instrument := &models.BankInstrument{}
+
+	if !res.Next() {
+		return nil, errors.New("Deals not found")
+	}
+
+	for res.Next() {
+
+		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	return instrument, nil
+}
+
+func (b *BankInstrumentRepository) GetPopularBankInstrumentsID() ([]int64, error) {
+
+	q := "SELECT bank_instrument_id, COUNT(id) AS i FROM deposit_deals GROUP BY bank_instrument_id ORDER BY i desc LIMIT 5"
+
+	rows, err := b.db.Query(
+		q,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	var ids []int64
+
+	if !rows.Next() {
+		return nil, errors.New("Deals not found")
+	}
+
+	for rows.Next() {
+		var id int64
+		err = rows.Scan(&id)
+		if err != nil {
+			return nil, err
+		}
+
+		ids = append(ids, id)
+	}
+
+	return ids, nil
+}
+
+func (b *BankInstrumentRepository) GetBankInstrumentByID(id int64) (*models.BankInstrument, error) {
+
+	q := "SELECT * FROM banks_instruments WHERE id=$1"
+
+	res, err := b.db.Query(q, id)
+	if err != nil {
+		return nil, err
+	}
+
+	instrument := &models.BankInstrument{}
+
+	for res.Next() {
+
+		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	return instrument, nil
+}
+
+func (b *BankInstrumentRepository) GetAll(tp *models.TableParams) error {
+
+	q := `SELECT id, title, created_at
+	FROM banks_instruments
+	LIMIT $1 
+	OFFSET $2;
+	`
+
+	rows, err := b.db.Query(
+		q,
+		tp.Pagination.ItemsPerPage,
+		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
+	)
+	if err != nil {
+		return err
+	}
+
+	source := []models.BankInstrument{}
+
+	for rows.Next() {
+		var si models.BankInstrument
+		err = rows.Scan(&si.ID, &si.Title, &si.CreatedAt)
+		if err != nil {
+			return err
+		}
+
+		source = append(source, si)
+	}
+
+	tp.Source = source
+	return nil
 }

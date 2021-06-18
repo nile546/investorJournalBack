@@ -41,11 +41,16 @@ type StockInstrumentRepository interface {
 	GetPopularStockInstrumentByUserID(int64) (*models.StockInstrument, error)
 	GetPopularStockInstrumentsID() ([]int64, error)
 	GetStockInstrumentByID(int64) (*models.StockInstrument, error)
+	GetAll(*models.TableParams) error
 }
 
 type BankInstrumentRepository interface {
 	InsertBanksInstruments(*[]models.BankInstrument) error
 	GetAllBankInstruments() (*[]models.BankInstrument, error)
+	GetPopularBankInstrumentByUserID(int64) (*models.BankInstrument, error)
+	GetPopularBankInstrumentsID() ([]int64, error)
+	GetBankInstrumentByID(int64) (*models.BankInstrument, error)
+	GetAll(*models.TableParams) error
 }
 
 type CryptoInstrumentRepository interface {
@@ -54,6 +59,7 @@ type CryptoInstrumentRepository interface {
 	GetPopularCryptoInstrumentByUserID(int64) (*models.CryptoInstrument, error)
 	GetPopularCryptoInstrumentsID() ([]int64, error)
 	GetCryptoInstrumentByID(int64) (*models.CryptoInstrument, error)
+	GetAll(*models.TableParams) error
 }
 
 type StockDealRepository interface {
@@ -71,14 +77,14 @@ type StockDealRepository interface {
 type StrategyRepository interface {
 	CreateStrategy(*models.Strategy) error
 	UpdateStrategy(*models.Strategy) error
-	GetAllStrategy(int64) (*[]models.Strategy, error)
+	GetAllStrategy(*models.TableParams) error
 	DeleteStrategy(int64) error
 }
 
 type PatternRepository interface {
 	CreatePattern(*models.Pattern) error
 	UpdatePattern(*models.Pattern) error
-	GetAllPattern(int64) (*[]models.Pattern, error)
+	GetAllPattern(*models.TableParams) error
 	DeletePattern(int64) error
 }
 

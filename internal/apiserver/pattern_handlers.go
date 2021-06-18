@@ -11,11 +11,7 @@ import (
 func (s *server) createPattern(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		Name           string                 `json:"name"`
-		Description    string                 `json:"description"`
-		UserID         int64                  `json:"user_id"`
-		InstrumentType models.InstrumentTypes `json:"instrumentType"`
-		Icon           string                 `json:"icon"`
+		Pattern *models.Pattern `json:"pattern"`
 	}
 
 	req := &request{}
@@ -28,22 +24,16 @@ func (s *server) createPattern(w http.ResponseWriter, r *http.Request) {
 
 	err = validation.ValidateStruct(
 		req,
-		validation.Field(&req.Name, validation.Required),
-		validation.Field(&req.UserID, validation.Required),
-		validation.Field(&req.InstrumentType, validation.Required),
+		validation.Field(&req.Pattern.Name, validation.Required),
+		validation.Field(&req.Pattern.UserID, validation.Required),
+		validation.Field(&req.Pattern.InstrumentType, validation.Required),
 	)
 	if err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err = s.repository.Pattern().CreatePattern(&models.Pattern{
-		Name:           req.Name,
-		Description:    &req.Description,
-		UserID:         &req.UserID,
-		InstrumentType: req.InstrumentType,
-		Icon:           &req.Icon,
-	})
+	err = s.repository.Pattern().CreatePattern(req.Pattern)
 	if err != nil {
 		s.error(w, err.Error())
 		return
@@ -55,10 +45,7 @@ func (s *server) createPattern(w http.ResponseWriter, r *http.Request) {
 func (s *server) updatePattern(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		ID          int64  `json:"id"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		Icon        string `json:"icon"`
+		Pattern *models.Pattern
 	}
 
 	req := &request{}
@@ -71,20 +58,17 @@ func (s *server) updatePattern(w http.ResponseWriter, r *http.Request) {
 
 	err = validation.ValidateStruct(
 		req,
-		validation.Field(&req.ID, validation.Required),
-		validation.Field(&req.Name, validation.Required),
+		validation.Field(&req.Pattern.ID, validation.Required),
+		validation.Field(&req.Pattern.Name, validation.Required),
+		validation.Field(&req.Pattern.Description, validation.Required),
+		validation.Field(&req.Pattern.Icon, validation.Required),
 	)
 	if err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err = s.repository.Pattern().UpdatePattern(&models.Pattern{
-		ID:          req.ID,
-		Name:        req.Name,
-		Description: &req.Description,
-		Icon:        &req.Icon,
-	})
+	err = s.repository.Pattern().UpdatePattern(req.Pattern)
 	if err != nil {
 		s.error(w, err.Error())
 		return
@@ -94,21 +78,32 @@ func (s *server) updatePattern(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) getAllPattern(w http.ResponseWriter, r *http.Request) {
-	var userID int64
 
-	err := json.NewDecoder(r.Body).Decode(&userID)
-	if err != nil {
+	type request struct {
+		TableParams models.TableParams `json:"tableParams"`
+	}
+
+	req := &request{}
+
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	ptrns, err := s.repository.Pattern().GetAllPattern(userID)
-	if err != nil {
+	if err := validation.ValidateStruct(
+		req,
+		validation.Field(&req.TableParams, validation.Required),
+	); err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	s.respond(w, ptrns)
+	if err := s.repository.Pattern().GetAllPattern(&req.TableParams); err != nil {
+		s.error(w, err.Error())
+		return
+	}
+
+	s.respond(w, req.TableParams)
 }
 
 func (s *server) deletePattern(w http.ResponseWriter, r *http.Request) {

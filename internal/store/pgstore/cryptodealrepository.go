@@ -76,7 +76,7 @@ func (r *CryptoDealRepository) DeleteCryptoDeal(id int64) error {
 
 func (r *CryptoDealRepository) GetCryptoDealByID(id int64) (*models.CryptoDeal, error) {
 
-	q := `SELECT crypto_instrument_id, strategy_id, currency, position, time_frame, enter_datetime, enter_point, stop_loss, 
+	q := `SELECT crypto_instrument_id, strategy_id, pattern_id, currency, position, time_frame, enter_datetime, enter_point, stop_loss, 
 	quantity, exit_datetime, exit_point, risk_ratio, user_id FROM crypto_deals where id=$1`
 
 	res, err := r.db.Query(q, id)
@@ -90,7 +90,7 @@ func (r *CryptoDealRepository) GetCryptoDealByID(id int64) (*models.CryptoDeal, 
 
 	for res.Next() {
 
-		err = res.Scan(&deal.Crypto.ID, &deal.Strategy.ID, &deal.Pattern.ID,
+		err = res.Scan(&deal.Crypto.ID, &deal.Strategy.ID, &deal.Pattern,
 			&deal.Currency, &deal.Position, &deal.TimeFrame, &deal.EnterDateTime,
 			&deal.EnterPoint, &deal.StopLoss, &deal.Quantity, &deal.ExitDateTime,
 			&deal.ExitPoint, &deal.RiskRatio, &deal.UserID)

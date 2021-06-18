@@ -117,10 +117,15 @@ func (s *StockInstrumentRepository) GetPopularStockInstrumentByUserID(id int64) 
 
 	instrument := &models.StockInstrument{}
 
+	if !res.Next() {
+		return nil, errors.New("Deals not found")
+	}
+
 	for res.Next() {
 
 		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.Ticker,
 			&instrument.Type, &instrument.Isin, &instrument.CreatedAt)
+
 		if err != nil {
 			return nil, err
 		}
@@ -142,6 +147,10 @@ func (s *StockInstrumentRepository) GetPopularStockInstrumentsID() ([]int64, err
 	}
 
 	var ids []int64
+
+	if !rows.Next() {
+		return nil, errors.New("Deals not found")
+	}
 
 	for rows.Next() {
 		var id int64
@@ -178,4 +187,37 @@ func (s *StockInstrumentRepository) GetStockInstrumentByID(id int64) (*models.St
 	}
 
 	return instrument, nil
+}
+
+func (r *StockInstrumentRepository) GetAll(tp *models.TableParams) error {
+
+	q := `SELECT id, title, ticker, type, isin, created_at
+	FROM stocks_instruments
+	LIMIT $1 
+	OFFSET $2;
+	`
+
+	rows, err := r.db.Query(
+		q,
+		tp.Pagination.ItemsPerPage,
+		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
+	)
+	if err != nil {
+		return err
+	}
+
+	source := []models.StockInstrument{}
+
+	for rows.Next() {
+		var si models.StockInstrument
+		err = rows.Scan(&si.ID, &si.Title, &si.Ticker, &si.Type, &si.Isin, &si.CreatedAt)
+		if err != nil {
+			return err
+		}
+
+		source = append(source, si)
+	}
+
+	tp.Source = source
+	return nil
 }

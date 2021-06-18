@@ -148,10 +148,15 @@ func (s *server) ConfugureRouter() {
 	stockInstruments.HandleFunc(getPopularInstrument, s.getPopularStockInstrument).Methods(http.MethodPost)
 	stockInstruments.HandleFunc(getRoute, s.getStockInstrumentByID).Methods(http.MethodPost)
 
-	cryptoInstruments := api.PathPrefix(cryptoDealsRoute).Subrouter()
-	cryptoInstruments.HandleFunc(getAllRoute, s.getAllStockInstruments).Methods(http.MethodPost)
-	cryptoInstruments.HandleFunc(getPopularInstrument, s.getPopularStockInstrument).Methods(http.MethodPost)
-	cryptoInstruments.HandleFunc(getRoute, s.getStockInstrumentByID).Methods(http.MethodPost)
+	cryptoInstruments := api.PathPrefix(cryptoInstrumentsRoute).Subrouter()
+	cryptoInstruments.HandleFunc(getAllRoute, s.getAllCryptoInstruments).Methods(http.MethodPost)
+	cryptoInstruments.HandleFunc(getPopularInstrument, s.getPopularCryptoInstrument).Methods(http.MethodPost)
+	cryptoInstruments.HandleFunc(getRoute, s.getCryptoInstrumentByID).Methods(http.MethodPost)
+
+	bankInstruments := api.PathPrefix(bankInstrumentsRoute).Subrouter()
+	bankInstruments.HandleFunc(getAllRoute, s.getAllBankInstruments).Methods(http.MethodPost)
+	bankInstruments.HandleFunc(getPopularInstrument, s.getPopularBankInstrument).Methods(http.MethodPost)
+	bankInstruments.HandleFunc(getRoute, s.getBankInstrumentByID).Methods(http.MethodPost)
 
 	currency := api.PathPrefix(currencyRoute).Subrouter()
 	currency.HandleFunc(getRoute, s.getCurrenciesRatio).Methods(http.MethodPost)

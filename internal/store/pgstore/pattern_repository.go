@@ -44,27 +44,38 @@ func (p *PatternRepository) UpdatePattern(pattern *models.Pattern) error {
 	return nil
 }
 
-func (p *PatternRepository) GetAllPattern(userId int64) (*[]models.Pattern, error) {
+func (p *PatternRepository) GetAllPattern(tp *models.TableParams) error {
 
-	q := `SELECT * FROM patterns where user_id IS NULL OR user_id=$1`
+	//Add user_id IS NULL OR user_id=$1
+	q := `SELECT id, name, description, icon, instrument_type, user_id, created_at
+	FROM strategies
+	WHERE 
+	LIMIT $1 
+	OFFSET $2;
+	`
 
-	res, err := p.db.Query(q, userId)
+	rows, err := p.db.Query(
+		q,
+		tp.Pagination.ItemsPerPage,
+		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
+	)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	ptrns := &[]models.Pattern{}
+	source := []models.Pattern{}
 
-	for res.Next() {
-		ptrn := models.Pattern{}
-		err = res.Scan(&ptrn.ID, &ptrn.Name, &ptrn.Description, &ptrn.Icon, &ptrn.UserID, &ptrn.CreatedAt)
+	for rows.Next() {
+		var p models.Pattern
+		err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.Icon, &p.InstrumentType, &p.UserID, &p.CreatedAt)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		*ptrns = append(*ptrns, ptrn)
+
+		source = append(source, p)
 	}
 
-	return ptrns, nil
+	return nil
 }
 
 func (p *PatternRepository) DeletePattern(id int64) error {
