@@ -203,8 +203,8 @@ func (c *CryptoInstrumentRepository) GetAll(tp *models.TableParams) error {
 
 	tp.Pagination.PageCount = 0
 
-	if count > 0 {
-		tp.Pagination.PageCount = int(math.Ceil(float64(count) / float64(tp.Pagination.ItemsPerPage)))
+	if itemsCount > 0 {
+		tp.Pagination.PageCount = int(math.Ceil(float64(itemsCount) / float64(tp.Pagination.ItemsPerPage)))
 	}
 
 	return nil
