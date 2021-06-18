@@ -13,11 +13,11 @@ type DepositDealRepository struct {
 func (r *DepositDealRepository) CreateDepositDeal(deal *models.DepositDeal) error {
 
 	q := `INSERT INTO deposit_deals
-	(bank_instrument_id, currency, strategy_id, enter_datetime, percent, 
+	(bank_instrument_id, currency, enter_datetime, percent, 
 	exit_datetime, start_deposit, end_deposit, result, user_id)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
-	res, err := r.db.Exec(q, deal.Bank.ID, deal.Currency, deal.Strategy.ID,
+	res, err := r.db.Exec(q, deal.Bank.ID, deal.Currency,
 		deal.EnterDateTime, deal.Percent, deal.ExitDateTime,
 		deal.StartDeposit, deal.EndDeposit, deal.Result,
 		deal.UserID)
@@ -35,11 +35,11 @@ func (r *DepositDealRepository) CreateDepositDeal(deal *models.DepositDeal) erro
 
 func (r *DepositDealRepository) UpdateDepositDeal(deal *models.DepositDeal) error {
 
-	q := `UPDATE deposit_deals SET (bank_instrument_id, currency, strategy_id, enter_datetime, percent, 
+	q := `UPDATE deposit_deals SET (bank_instrument_id, currency, enter_datetime, percent, 
 		exit_datetime, start_deposit, end_deposit, result, user_id)=($1, $2, $3, $4, $5, $6,
 		$7, $8, $9, $10) WHERE id=$11`
 
-	res, err := r.db.Exec(q, deal.Bank.ID, deal.Currency, deal.Strategy.ID,
+	res, err := r.db.Exec(q, deal.Bank.ID, deal.Currency,
 		deal.EnterDateTime, deal.Percent, deal.ExitDateTime,
 		deal.StartDeposit, deal.EndDeposit, deal.Result,
 		deal.UserID, deal.ID)
@@ -74,7 +74,7 @@ func (r *DepositDealRepository) DeleteDepositDeal(id int64) error {
 
 func (r *DepositDealRepository) GetDepositDealByID(id int64) (*models.DepositDeal, error) {
 
-	q := `SELECT bank_instrument_id, currency, strategy_id, enter_datetime, percent, 
+	q := `SELECT bank_instrument_id, currency, enter_datetime, percent, 
 	exit_datetime, start_deposit, end_deposit, result, user_id FROM deposit_deals where id=$1`
 
 	res, err := r.db.Query(q, id)
@@ -88,7 +88,7 @@ func (r *DepositDealRepository) GetDepositDealByID(id int64) (*models.DepositDea
 
 	for res.Next() {
 
-		err = res.Scan(deal.Bank.ID, deal.Currency, deal.Strategy.ID,
+		err = res.Scan(deal.Bank.ID, deal.Currency,
 			deal.EnterDateTime, deal.Percent, deal.ExitDateTime,
 			deal.StartDeposit, deal.EndDeposit, deal.Result,
 			deal.UserID, deal.ID)

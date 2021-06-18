@@ -18,7 +18,7 @@ func (r *CryptoDealRepository) CreateCryptoDeal(deal *models.CryptoDeal) error {
 	quantity, exit_datetime, exit_point, risk_ratio, user_id)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
 
-	res, err := r.db.Exec(q, deal.Crypto, deal.Currency, deal.Strategy.ID,
+	res, err := r.db.Exec(q, deal.Crypto.ID, deal.Currency, deal.Strategy.ID,
 		deal.Pattern.ID, deal.Position, deal.TimeFrame, deal.EnterDateTime,
 		deal.EnterPoint, deal.StopLoss, deal.Quantity, deal.ExitDateTime,
 		deal.ExitPoint, deal.RiskRatio, deal.UserID)
