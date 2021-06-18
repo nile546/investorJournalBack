@@ -3,6 +3,7 @@ package pgstore
 import (
 	"database/sql"
 	"errors"
+	"math"
 	"strings"
 
 	"github.com/nile546/diplom/internal/models"
@@ -206,6 +207,8 @@ func (r *StockInstrumentRepository) GetAll(tp *models.TableParams) error {
 		return err
 	}
 
+	defer rows.Close()
+
 	source := []models.StockInstrument{}
 
 	for rows.Next() {
@@ -217,7 +220,22 @@ func (r *StockInstrumentRepository) GetAll(tp *models.TableParams) error {
 
 		source = append(source, si)
 	}
-
 	tp.Source = source
+
+	q = `SELECT COUNT(id)
+	FROM stocks_instruments
+	`
+	var count int
+	if err = r.db.QueryRow(q).Scan(&count); err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	tp.Pagination.PageCount = 0
+
+	if count > 0 {
+		tp.Pagination.PageCount = int(math.Ceil(float64(count) / float64(tp.Pagination.ItemsPerPage)))
+	}
+
 	return nil
 }
