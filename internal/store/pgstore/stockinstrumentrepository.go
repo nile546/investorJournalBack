@@ -178,16 +178,26 @@ func (s *StockInstrumentRepository) GetStockInstrumentByID(id int64) (*models.St
 
 func (r *StockInstrumentRepository) GetAll(tp *models.TableParams) error {
 
+	queryParams := []interface{}{
+		tp.Pagination.ItemsPerPage,
+		tp.Pagination.PageNumber * tp.Pagination.ItemsPerPage,
+	}
+
+	var like string
+	if tp.SearchText != "" {
+		queryParams = append(queryParams, tp.SearchText+"%")
+		like = `
+		WHERE ticker LIKE $3`
+	}
+
 	q := `SELECT id, title, ticker, type, isin, created_at
-	FROM stocks_instruments
-	LIMIT $1 
-	OFFSET $2;
-	`
+	FROM stocks_instruments ` + like +
+		` LIMIT $1 
+	OFFSET $2;`
 
 	rows, err := r.db.Query(
 		q,
-		tp.Pagination.ItemsPerPage,
-		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
+		queryParams...,
 	)
 	if err != nil {
 		return err
