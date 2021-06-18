@@ -156,20 +156,32 @@ func (c *CryptoInstrumentRepository) GetCryptoInstrumentByID(id int64) (*models.
 
 func (c *CryptoInstrumentRepository) GetAll(tp *models.TableParams) error {
 
+	queryParams := []interface{}{
+		tp.Pagination.ItemsPerPage,
+		tp.Pagination.PageNumber * tp.Pagination.ItemsPerPage,
+	}
+
+	var like string
+	if tp.SearchText != "" {
+		queryParams = append(queryParams, tp.SearchText+"%")
+		like = `
+		WHERE ticker LIKE $3`
+	}
+
 	q := `SELECT id, title, ticker, created_at
-	FROM crypto_instruments
-	LIMIT $1 
-	OFFSET $2;
-	`
+	FROM crypto_instruments ` + like +
+		` LIMIT $1 
+	OFFSET $2;`
 
 	rows, err := c.db.Query(
 		q,
-		tp.Pagination.ItemsPerPage,
-		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
+		queryParams...,
 	)
 	if err != nil {
 		return err
 	}
+
+	defer rows.Close()
 
 	source := []models.CryptoInstrument{}
 

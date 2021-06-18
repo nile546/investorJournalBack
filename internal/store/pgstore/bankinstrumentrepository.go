@@ -152,20 +152,32 @@ func (b *BankInstrumentRepository) GetBankInstrumentByID(id int64) (*models.Bank
 
 func (b *BankInstrumentRepository) GetAll(tp *models.TableParams) error {
 
+	queryParams := []interface{}{
+		tp.Pagination.ItemsPerPage,
+		tp.Pagination.PageNumber * tp.Pagination.ItemsPerPage,
+	}
+
+	var like string
+	if tp.SearchText != "" {
+		queryParams = append(queryParams, tp.SearchText+"%")
+		like = `
+		WHERE title LIKE $3`
+	}
+
 	q := `SELECT id, title, created_at
-	FROM banks_instruments
-	LIMIT $1 
-	OFFSET $2;
-	`
+	FROM banks_instruments ` + like +
+		` LIMIT $1 
+	OFFSET $2;`
 
 	rows, err := b.db.Query(
 		q,
-		tp.Pagination.ItemsPerPage,
-		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
+		queryParams...,
 	)
 	if err != nil {
 		return err
 	}
+
+	defer rows.Close()
 
 	source := []models.BankInstrument{}
 

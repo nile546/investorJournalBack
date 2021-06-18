@@ -47,22 +47,32 @@ func (p *PatternRepository) UpdatePattern(pattern *models.Pattern) error {
 
 func (p *PatternRepository) GetAllPattern(tp *models.TableParams, id int64) error {
 
+	queryParams := []interface{}{
+		tp.Pagination.ItemsPerPage,
+		tp.Pagination.PageNumber * tp.Pagination.ItemsPerPage,
+	}
+
+	var like string
+	if tp.SearchText != "" {
+		queryParams = append(queryParams, tp.SearchText+"%")
+		like = `
+		WHERE name LIKE $3`
+	}
+
 	q := `SELECT id, name, description, icon, instrument_type, user_id, created_at
-	FROM patterns
-	WHERE user_id IS NULL OR user_id=$1
-	LIMIT $2 
-	OFFSET $3;
-	`
+	FROM patterns ` + like +
+		` LIMIT $1 
+	OFFSET $2;`
 
 	rows, err := p.db.Query(
 		q,
-		id,
-		tp.Pagination.ItemsPerPage,
-		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
+		queryParams...,
 	)
 	if err != nil {
 		return err
 	}
+
+	defer rows.Close()
 
 	source := []models.Pattern{}
 

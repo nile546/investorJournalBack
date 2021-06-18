@@ -47,23 +47,32 @@ func (s *StrategyRepository) UpdateStrategy(strategy *models.Strategy) error {
 
 func (s *StrategyRepository) GetAllStrategy(tp *models.TableParams, id int64) error {
 
-	//Add user_id IS NULL OR user_id=$1
+	queryParams := []interface{}{
+		tp.Pagination.ItemsPerPage,
+		tp.Pagination.PageNumber * tp.Pagination.ItemsPerPage,
+	}
+
+	var like string
+	if tp.SearchText != "" {
+		queryParams = append(queryParams, tp.SearchText+"%")
+		like = `
+		WHERE name LIKE $3`
+	}
+
 	q := `SELECT id, name, description, user_id, instrument_type, created_at
-	FROM strategies
-	WHERE user_id IS NULL OR user_id=$1
-	LIMIT $2
-	OFFSET $3;
-	`
+	FROM strategies ` + like +
+		` LIMIT $1 
+	OFFSET $2;`
 
 	rows, err := s.db.Query(
 		q,
-		id,
-		tp.Pagination.ItemsPerPage,
-		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
+		queryParams...,
 	)
 	if err != nil {
 		return err
 	}
+
+	defer rows.Close()
 
 	source := []models.Strategy{}
 
