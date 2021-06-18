@@ -82,25 +82,29 @@ func (r *StockDealRepository) GetStockDealByID(id int64) (*models.StockDeal, err
 	quantity, exit_datetime, exit_point, risk_ratio, variability, 
 	user_id FROM stock_deals where id=$1`
 
-	res, err := r.db.Query(q, id)
-	if err != nil {
-		return nil, err
-	}
-
 	deal := &models.StockDeal{
 		ID: id,
 	}
 
-	for res.Next() {
-
-		err = res.Scan(&deal.Stock.ID, &deal.Strategy.ID, &deal.Pattern.ID,
-			&deal.Currency, &deal.Position, &deal.TimeFrame, &deal.EnterDateTime,
-			&deal.EnterPoint, &deal.StopLoss, &deal.Quantity, &deal.ExitDateTime,
-			&deal.ExitPoint, &deal.RiskRatio, &deal.Variability, &deal.UserID)
-		if err != nil {
-			return nil, err
-		}
-
+	err := r.db.QueryRow(q, id).Scan(
+		&deal.Stock.ID,
+		&deal.Strategy.ID,
+		&deal.Pattern.ID,
+		&deal.Currency,
+		&deal.Position,
+		&deal.TimeFrame,
+		&deal.EnterDateTime,
+		&deal.EnterPoint,
+		&deal.StopLoss,
+		&deal.Quantity,
+		&deal.ExitDateTime,
+		&deal.ExitPoint,
+		&deal.RiskRatio,
+		&deal.Variability,
+		&deal.UserID,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return deal, nil
@@ -217,4 +221,21 @@ func (r *StockDealRepository) SetStockDealCompleted(exitDateTime time.Time, exit
 	}
 
 	return nil
+}
+
+func (r *StockDealRepository) GetVariabilityByID(id int64) (bool, error) {
+
+	q := `SELECT variability FROM stock_deals where id=$1`
+
+	var variability bool
+
+	err := r.db.QueryRow(q, id).Scan(
+		&variability,
+	)
+	if err != nil {
+		return false, err
+	}
+
+	return variability, nil
+
 }

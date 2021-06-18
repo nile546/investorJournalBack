@@ -72,6 +72,7 @@ type StockDealRepository interface {
 	CreateOpenStockDeal(*models.StockDeal) (int64, error)
 	UpdateQuantityStockDeal(int64, int) error
 	SetStockDealCompleted(time.Time, int64, int64) error
+	GetVariabilityByID(int64) (bool, error)
 }
 
 type StrategyRepository interface {

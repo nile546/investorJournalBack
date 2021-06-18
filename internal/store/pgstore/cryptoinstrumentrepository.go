@@ -60,13 +60,20 @@ func (c *CryptoInstrumentRepository) GetAllCryptoInstruments() (*[]models.Crypto
 
 	crypto_instruments := &[]models.CryptoInstrument{}
 
+	count := 0
+
 	for res.Next() {
+		count++
 		crypt := models.CryptoInstrument{}
 		err = res.Scan(&crypt.ID, &crypt.Title, &crypt.Ticker, &crypt.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
 		*crypto_instruments = append(*crypto_instruments, crypt)
+	}
+
+	if count == 0 {
+		return nil, nil
 	}
 
 	return crypto_instruments, nil
@@ -82,24 +89,16 @@ func (c *CryptoInstrumentRepository) GetPopularCryptoInstrumentByUserID(id int64
 		WHERE b.crypto_instrument_id is NULL AND o.user_id=$1
 		LIMIT 1)`
 
-	res, err := c.db.Query(q, id)
-	if err != nil {
-		return nil, err
-	}
-
 	instrument := &models.CryptoInstrument{}
 
-	if !res.Next() {
-		return nil, errors.New("Deals not found")
-	}
-
-	for res.Next() {
-
-		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.Ticker, &instrument.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
-
+	err := c.db.QueryRow(q, id).Scan(
+		&instrument.ID,
+		&instrument.Title,
+		&instrument.Ticker,
+		&instrument.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return instrument, nil
@@ -139,20 +138,16 @@ func (c *CryptoInstrumentRepository) GetCryptoInstrumentByID(id int64) (*models.
 
 	q := "SELECT * FROM crypto_instruments WHERE id=$1"
 
-	res, err := c.db.Query(q, id)
-	if err != nil {
-		return nil, err
-	}
-
 	instrument := &models.CryptoInstrument{}
 
-	for res.Next() {
-
-		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.Ticker, &instrument.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
-
+	err := c.db.QueryRow(q, id).Scan(
+		&instrument.ID,
+		&instrument.Title,
+		&instrument.Ticker,
+		&instrument.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return instrument, nil
@@ -177,7 +172,10 @@ func (c *CryptoInstrumentRepository) GetAll(tp *models.TableParams) error {
 
 	source := []models.CryptoInstrument{}
 
+	count := 0
+
 	for rows.Next() {
+		count++
 		var si models.CryptoInstrument
 		err = rows.Scan(&si.ID, &si.Title, &si.Ticker, &si.CreatedAt)
 		if err != nil {
@@ -185,6 +183,10 @@ func (c *CryptoInstrumentRepository) GetAll(tp *models.TableParams) error {
 		}
 
 		source = append(source, si)
+	}
+
+	if count == 0 {
+		return nil
 	}
 
 	tp.Source = source

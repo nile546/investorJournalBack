@@ -77,25 +77,23 @@ func (r *DepositDealRepository) GetDepositDealByID(id int64) (*models.DepositDea
 	q := `SELECT bank_instrument_id, currency, enter_datetime, percent, 
 	exit_datetime, start_deposit, end_deposit, result, user_id FROM deposit_deals where id=$1`
 
-	res, err := r.db.Query(q, id)
-	if err != nil {
-		return nil, err
-	}
-
 	deal := &models.DepositDeal{
 		ID: id,
 	}
 
-	for res.Next() {
-
-		err = res.Scan(deal.Bank.ID, deal.Currency,
-			deal.EnterDateTime, deal.Percent, deal.ExitDateTime,
-			deal.StartDeposit, deal.EndDeposit, deal.Result,
-			deal.UserID, deal.ID)
-		if err != nil {
-			return nil, err
-		}
-
+	err := r.db.QueryRow(q, id).Scan(
+		&deal.Bank.ID,
+		&deal.Currency,
+		&deal.EnterDateTime,
+		&deal.Percent,
+		&deal.ExitDateTime,
+		&deal.StartDeposit,
+		&deal.EndDeposit,
+		&deal.Result,
+		&deal.UserID,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return deal, nil

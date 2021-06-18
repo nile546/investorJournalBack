@@ -79,23 +79,26 @@ func (r *CryptoDealRepository) GetCryptoDealByID(id int64) (*models.CryptoDeal, 
 	q := `SELECT crypto_instrument_id, strategy_id, pattern_id, currency, position, time_frame, enter_datetime, enter_point, stop_loss, 
 	quantity, exit_datetime, exit_point, risk_ratio, user_id FROM crypto_deals where id=$1`
 
-	res, err := r.db.Query(q, id)
-	if err != nil {
-		return nil, err
-	}
-
 	deal := &models.CryptoDeal{}
 
-	for res.Next() {
-
-		err = res.Scan(&deal.Crypto.ID, &deal.Strategy.ID, &deal.Pattern,
-			&deal.Currency, &deal.Position, &deal.TimeFrame, &deal.EnterDateTime,
-			&deal.EnterPoint, &deal.StopLoss, &deal.Quantity, &deal.ExitDateTime,
-			&deal.ExitPoint, &deal.RiskRatio, &deal.UserID)
-		if err != nil {
-			return nil, err
-		}
-
+	err := r.db.QueryRow(q, id).Scan(
+		&deal.Crypto.ID,
+		&deal.Strategy.ID,
+		&deal.Pattern.ID,
+		&deal.Currency,
+		&deal.Position,
+		&deal.TimeFrame,
+		&deal.EnterDateTime,
+		&deal.EnterPoint,
+		&deal.StopLoss,
+		&deal.Quantity,
+		&deal.ExitDateTime,
+		&deal.ExitPoint,
+		&deal.RiskRatio,
+		&deal.UserID,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return deal, nil

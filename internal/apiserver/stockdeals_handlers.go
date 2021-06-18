@@ -29,7 +29,7 @@ func (s *server) getAllStockDeals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.repository.StockDeal().GetAll(&req.TableParams); err != nil {
+	if err := s.repository.StockDeal().GetAll(&req.TableParams, s.session.userId); err != nil {
 		s.logger.Errorf("Error get all stock deals, with error %+v", err)
 		s.error(w, err.Error())
 		return
@@ -73,6 +73,7 @@ func (s *server) createStockDeal(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) updateStockDeal(w http.ResponseWriter, r *http.Request) {
+
 	type request struct {
 		Deal models.StockDeal `json:"stockDeal"`
 	}
@@ -118,6 +119,17 @@ func (s *server) deleteStockDeal(w http.ResponseWriter, r *http.Request) {
 		ID int64 `json:"id"`
 	}
 
+	variability, err := s.repository.StockDeal().GetVariabilityByID(s.session.userId)
+	if err != nil {
+		s.logger.Errorf("Error get variability, with error %+v", err)
+		s.error(w, err.Error())
+		return
+	}
+
+	if !variability {
+		return
+	}
+
 	req := &request{}
 
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
@@ -133,7 +145,7 @@ func (s *server) deleteStockDeal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := s.repository.StockDeal().DeleteStockDeal(req.ID)
+	err = s.repository.StockDeal().DeleteStockDeal(req.ID)
 	if err != nil {
 		s.logger.Errorf("Error delete stock deal, with error %+v", err)
 		s.error(w, err.Error())
