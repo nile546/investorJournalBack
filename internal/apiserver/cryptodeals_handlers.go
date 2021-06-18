@@ -29,7 +29,7 @@ func (s *server) getAllCryptoDeals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.repository.CryptoDeal().GetAll(&req.TableParams); err != nil {
+	if err := s.repository.CryptoDeal().GetAll(&req.TableParams, s.session.userId); err != nil {
 		s.logger.Errorf("Error get all crypto deals, with error %+v", err)
 		s.error(w, err.Error())
 		return

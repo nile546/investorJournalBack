@@ -108,29 +108,18 @@ func (s *StockInstrumentRepository) GetPopularStockInstrumentByUserID(id int64) 
 		WHERE b.stock_instrument_id is NULL AND o.user_id=$1
 		LIMIT 1)`
 
-	res, err := s.db.Query(q, id)
-	if res == nil {
-		return nil, errors.New("Deals not found")
-	}
-	if err != nil {
-		return nil, err
-	}
-
 	instrument := &models.StockInstrument{}
 
-	if !res.Next() {
-		return nil, errors.New("Deals not found")
-	}
-
-	for res.Next() {
-
-		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.Ticker,
-			&instrument.Type, &instrument.Isin, &instrument.CreatedAt)
-
-		if err != nil {
-			return nil, err
-		}
-
+	err := s.db.QueryRow(q, id).Scan(
+		&instrument.ID,
+		&instrument.Title,
+		&instrument.Ticker,
+		&instrument.Type,
+		&instrument.Isin,
+		&instrument.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return instrument, nil
@@ -170,21 +159,18 @@ func (s *StockInstrumentRepository) GetStockInstrumentByID(id int64) (*models.St
 
 	q := "SELECT * FROM stocks_instruments WHERE id=$1"
 
-	res, err := s.db.Query(q, id)
-	if err != nil {
-		return nil, err
-	}
-
 	instrument := &models.StockInstrument{}
 
-	for res.Next() {
-
-		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.Ticker,
-			&instrument.Type, &instrument.Isin, &instrument.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
-
+	err := s.db.QueryRow(q, id).Scan(
+		&instrument.ID,
+		&instrument.Title,
+		&instrument.Ticker,
+		&instrument.Type,
+		&instrument.Isin,
+		&instrument.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return instrument, nil
@@ -211,7 +197,10 @@ func (r *StockInstrumentRepository) GetAll(tp *models.TableParams) error {
 
 	source := []models.StockInstrument{}
 
+	count := 0
+
 	for rows.Next() {
+		count++
 		var si models.StockInstrument
 		err = rows.Scan(&si.ID, &si.Title, &si.Ticker, &si.Type, &si.Isin, &si.CreatedAt)
 		if err != nil {
@@ -220,13 +209,18 @@ func (r *StockInstrumentRepository) GetAll(tp *models.TableParams) error {
 
 		source = append(source, si)
 	}
+
+	if count == 0 {
+		return nil
+	}
+
 	tp.Source = source
 
 	q = `SELECT COUNT(id)
 	FROM stocks_instruments
 	`
-	var count int
-	if err = r.db.QueryRow(q).Scan(&count); err != nil {
+	var itemsCount int
+	if err = r.db.QueryRow(q).Scan(&itemsCount); err != nil {
 		return err
 	}
 	defer rows.Close()

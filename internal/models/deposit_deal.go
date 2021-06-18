@@ -6,7 +6,6 @@ type DepositDeal struct {
 	ID            int64          `json:"id"`
 	Bank          BankInstrument `json:"bank"`
 	Currency      *Currencies    `json:"currency"`
-	Strategy      *Strategy      `json:"strategy"`
 	EnterDateTime time.Time      `json:"enterDatetime"`
 	Percent       float64        `json:"percent"`
 	ExitDateTime  time.Time      `json:"exitDatetime"`

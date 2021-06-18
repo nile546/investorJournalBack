@@ -67,24 +67,25 @@ type StockDealRepository interface {
 	UpdateStockDeal(*models.StockDeal) error
 	DeleteStockDeal(int64) error
 	GetStockDealByID(int64) (*models.StockDeal, error)
-	GetAll(*models.TableParams) error
+	GetAll(*models.TableParams, int64) error
 	GetStockDealsIDByISIN(string) int64
 	CreateOpenStockDeal(*models.StockDeal) (int64, error)
 	UpdateQuantityStockDeal(int64, int) error
 	SetStockDealCompleted(time.Time, int64, int64) error
+	GetVariabilityByID(int64) (bool, error)
 }
 
 type StrategyRepository interface {
 	CreateStrategy(*models.Strategy) error
 	UpdateStrategy(*models.Strategy) error
-	GetAllStrategy(*models.TableParams) error
+	GetAllStrategy(*models.TableParams, int64) error
 	DeleteStrategy(int64) error
 }
 
 type PatternRepository interface {
 	CreatePattern(*models.Pattern) error
 	UpdatePattern(*models.Pattern) error
-	GetAllPattern(*models.TableParams) error
+	GetAllPattern(*models.TableParams, int64) error
 	DeletePattern(int64) error
 }
 
@@ -104,7 +105,7 @@ type CryptoDealRepository interface {
 	UpdateCryptoDeal(*models.CryptoDeal) error
 	DeleteCryptoDeal(int64) error
 	GetCryptoDealByID(int64) (*models.CryptoDeal, error)
-	GetAll(*models.TableParams) error
+	GetAll(*models.TableParams, int64) error
 }
 
 type DepositDealRepository interface {
@@ -112,5 +113,5 @@ type DepositDealRepository interface {
 	UpdateDepositDeal(*models.DepositDeal) error
 	DeleteDepositDeal(int64) error
 	GetDepositDealByID(int64) (*models.DepositDeal, error)
-	GetAll(*models.TableParams) error
+	GetAll(*models.TableParams, int64) error
 }

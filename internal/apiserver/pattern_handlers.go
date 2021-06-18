@@ -98,7 +98,7 @@ func (s *server) getAllPattern(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.repository.Pattern().GetAllPattern(&req.TableParams); err != nil {
+	if err := s.repository.Pattern().GetAllPattern(&req.TableParams, s.session.userId); err != nil {
 		s.error(w, err.Error())
 		return
 	}

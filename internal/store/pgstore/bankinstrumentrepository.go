@@ -60,13 +60,20 @@ func (b *BankInstrumentRepository) GetAllBankInstruments() (*[]models.BankInstru
 
 	banks_instruments := &[]models.BankInstrument{}
 
+	count := 0
+
 	for res.Next() {
+		count++
 		bank := models.BankInstrument{}
 		err = res.Scan(&bank.ID, &bank.Title, &bank.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
 		*banks_instruments = append(*banks_instruments, bank)
+	}
+
+	if count == 0 {
+		return nil, nil
 	}
 
 	return banks_instruments, nil
@@ -82,24 +89,14 @@ func (b *BankInstrumentRepository) GetPopularBankInstrumentByUserID(id int64) (*
 		WHERE b.bank_instrument_id is NULL AND o.user_id=$1
 		LIMIT 1)`
 
-	res, err := b.db.Query(q, id)
-	if err != nil {
-		return nil, err
-	}
-
 	instrument := &models.BankInstrument{}
 
-	if !res.Next() {
-		return nil, errors.New("Deals not found")
-	}
-
-	for res.Next() {
-
-		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
-
+	err := b.db.QueryRow(q, id).Scan(
+		&instrument.ID,
+		&instrument.Title,
+		&instrument.CreatedAt)
+	if err != nil {
+		return nil, err
 	}
 
 	return instrument, nil
@@ -139,20 +136,14 @@ func (b *BankInstrumentRepository) GetBankInstrumentByID(id int64) (*models.Bank
 
 	q := "SELECT * FROM banks_instruments WHERE id=$1"
 
-	res, err := b.db.Query(q, id)
-	if err != nil {
-		return nil, err
-	}
-
 	instrument := &models.BankInstrument{}
 
-	for res.Next() {
-
-		err = res.Scan(&instrument.ID, &instrument.Title, &instrument.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
-
+	err := b.db.QueryRow(q, id).Scan(
+		&instrument.ID,
+		&instrument.Title,
+		&instrument.CreatedAt)
+	if err != nil {
+		return nil, err
 	}
 
 	return instrument, nil
@@ -177,7 +168,10 @@ func (b *BankInstrumentRepository) GetAll(tp *models.TableParams) error {
 
 	source := []models.BankInstrument{}
 
+	count := 0
+
 	for rows.Next() {
+		count++
 		var si models.BankInstrument
 		err = rows.Scan(&si.ID, &si.Title, &si.CreatedAt)
 		if err != nil {
@@ -185,6 +179,10 @@ func (b *BankInstrumentRepository) GetAll(tp *models.TableParams) error {
 		}
 
 		source = append(source, si)
+	}
+
+	if count == 0 {
+		return nil
 	}
 
 	tp.Source = source

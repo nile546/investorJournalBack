@@ -96,7 +96,7 @@ func (s *server) getAllStrategy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.repository.Strategy().GetAllStrategy(&req.TableParams); err != nil {
+	if err := s.repository.Strategy().GetAllStrategy(&req.TableParams, s.session.userId); err != nil {
 		s.logger.Errorf("Error get all strategy, with error %+v", err)
 		s.error(w, err.Error())
 		return

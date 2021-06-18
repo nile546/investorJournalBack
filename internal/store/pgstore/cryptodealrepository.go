@@ -18,7 +18,7 @@ func (r *CryptoDealRepository) CreateCryptoDeal(deal *models.CryptoDeal) error {
 	quantity, exit_datetime, exit_point, risk_ratio, user_id)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
 
-	res, err := r.db.Exec(q, deal.Crypto, deal.Currency, deal.Strategy.ID,
+	res, err := r.db.Exec(q, deal.Crypto.ID, deal.Currency, deal.Strategy.ID,
 		deal.Pattern.ID, deal.Position, deal.TimeFrame, deal.EnterDateTime,
 		deal.EnterPoint, deal.StopLoss, deal.Quantity, deal.ExitDateTime,
 		deal.ExitPoint, deal.RiskRatio, deal.UserID)
@@ -79,42 +79,56 @@ func (r *CryptoDealRepository) GetCryptoDealByID(id int64) (*models.CryptoDeal, 
 	q := `SELECT crypto_instrument_id, strategy_id, pattern_id, currency, position, time_frame, enter_datetime, enter_point, stop_loss, 
 	quantity, exit_datetime, exit_point, risk_ratio, user_id FROM crypto_deals where id=$1`
 
-	res, err := r.db.Query(q, id)
-	if err != nil {
-		return nil, err
-	}
+	crypto := &models.CryptoInstrument{}
+	strategy := &models.Strategy{}
+	pattern := &models.Pattern{}
 
 	deal := &models.CryptoDeal{
-		ID: id,
+		ID:       id,
+		Crypto:   *crypto,
+		Strategy: strategy,
+		Pattern:  pattern,
 	}
 
-	for res.Next() {
-
-		err = res.Scan(&deal.Crypto.ID, &deal.Strategy.ID, &deal.Pattern,
-			&deal.Currency, &deal.Position, &deal.TimeFrame, &deal.EnterDateTime,
-			&deal.EnterPoint, &deal.StopLoss, &deal.Quantity, &deal.ExitDateTime,
-			&deal.ExitPoint, &deal.RiskRatio, &deal.UserID)
-		if err != nil {
-			return nil, err
-		}
-
+	err := r.db.QueryRow(q, id).Scan(
+		&deal.Crypto.ID,
+		&deal.Strategy.ID,
+		&deal.Pattern.ID,
+		&deal.Currency,
+		&deal.Position,
+		&deal.TimeFrame,
+		&deal.EnterDateTime,
+		&deal.EnterPoint,
+		&deal.StopLoss,
+		&deal.Quantity,
+		&deal.ExitDateTime,
+		&deal.ExitPoint,
+		&deal.RiskRatio,
+		&deal.UserID,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return deal, nil
 
 }
 
-func (r *CryptoDealRepository) GetAll(tp *models.TableParams) error {
+func (r *CryptoDealRepository) GetAll(tp *models.TableParams, id int64) error {
 
 	q := `
-	SELECT sd.id 
-	FROM crypto_deals AS sd
-	LIMIT $1 
-	OFFSET $2;
+	SELECT cd.id, cd.crypto_instrument_id, cd.currency, cd.strategy_id,
+	cd.pattern_id, cd.position, cd.time_frame, cd.enter_date_time, cd.enter_point, 
+	cd.stop_loss, cd.quantity, cd.exit_datetime, cd.exit_point, cd.risk_ratio, cd.user_id
+	FROM crypto_deals AS cd
+	WHERE cd.user_id=$1
+	LIMIT $2 
+	OFFSET $3;
 	`
 
 	rows, err := r.db.Query(
 		q,
+		id,
 		tp.Pagination.ItemsPerPage,
 		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
 	)
@@ -122,16 +136,35 @@ func (r *CryptoDealRepository) GetAll(tp *models.TableParams) error {
 		return err
 	}
 
+	count := 0
+
+	crypto := &models.CryptoInstrument{}
+	strategy := &models.Strategy{}
+	pattern := &models.Pattern{}
+
 	source := []models.CryptoDeal{}
 
 	for rows.Next() {
-		var sd models.CryptoDeal
-		err = rows.Scan(&sd.ID)
+		count++
+		cd := models.CryptoDeal{
+			ID:       id,
+			Crypto:   *crypto,
+			Strategy: strategy,
+			Pattern:  pattern,
+		}
+		err = rows.Scan(&cd.ID, &cd.Crypto.ID, &cd.Strategy.ID, &cd.Pattern,
+			&cd.Currency, &cd.Position, &cd.TimeFrame, &cd.EnterDateTime,
+			&cd.EnterPoint, &cd.StopLoss, &cd.Quantity, &cd.ExitDateTime,
+			&cd.ExitPoint, &cd.RiskRatio, &cd.UserID)
 		if err != nil {
 			return err
 		}
 
-		source = append(source, sd)
+		source = append(source, cd)
+	}
+
+	if count == 0 {
+		return nil
 	}
 
 	tp.Source = source

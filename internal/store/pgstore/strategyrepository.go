@@ -44,18 +44,19 @@ func (s *StrategyRepository) UpdateStrategy(strategy *models.Strategy) error {
 	return nil
 }
 
-func (s *StrategyRepository) GetAllStrategy(tp *models.TableParams) error {
+func (s *StrategyRepository) GetAllStrategy(tp *models.TableParams, id int64) error {
 
 	//Add user_id IS NULL OR user_id=$1
 	q := `SELECT id, name, description, user_id, instrument_type, created_at
 	FROM strategies
-	WHERE 
-	LIMIT $1 
-	OFFSET $2;
+	WHERE user_id IS NULL OR user_id=$1
+	LIMIT $2
+	OFFSET $3;
 	`
 
 	rows, err := s.db.Query(
 		q,
+		id,
 		tp.Pagination.ItemsPerPage,
 		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
 	)
@@ -65,7 +66,10 @@ func (s *StrategyRepository) GetAllStrategy(tp *models.TableParams) error {
 
 	source := []models.Strategy{}
 
+	count := 0
+
 	for rows.Next() {
+		count++
 		var s models.Strategy
 		err = rows.Scan(&s.ID, &s.Name, &s.Description, &s.UserID, &s.InstrumentType, &s.CreatedAt)
 		if err != nil {
@@ -74,6 +78,12 @@ func (s *StrategyRepository) GetAllStrategy(tp *models.TableParams) error {
 
 		source = append(source, s)
 	}
+
+	if count == 0 {
+		return nil
+	}
+
+	tp.Source = source
 
 	return nil
 }
