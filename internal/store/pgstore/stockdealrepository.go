@@ -81,9 +81,15 @@ func (r *StockDealRepository) GetStockDealByID(id int64) (*models.StockDeal, err
 	position, time_frame, enter_datetime, enter_point, stop_loss, 
 	quantity, exit_datetime, exit_point, risk_ratio, variability, 
 	user_id FROM stock_deals where id=$1`
+	stock := &models.StockInstrument{}
+	strategy := &models.Strategy{}
+	pattern := &models.Pattern{}
 
-	deal := &models.StockDeal{
-		ID: id,
+	deal := models.StockDeal{
+		ID:       id,
+		Stock:    *stock,
+		Strategy: strategy,
+		Pattern:  pattern,
 	}
 
 	err := r.db.QueryRow(q, id).Scan(
@@ -107,7 +113,7 @@ func (r *StockDealRepository) GetStockDealByID(id int64) (*models.StockDeal, err
 		return nil, err
 	}
 
-	return deal, nil
+	return &deal, nil
 
 }
 
@@ -134,13 +140,22 @@ func (r *StockDealRepository) GetAll(tp *models.TableParams, id int64) error {
 		return err
 	}
 
+	stock := &models.StockInstrument{}
+	strategy := &models.Strategy{}
+	pattern := &models.Pattern{}
+
 	source := []models.StockDeal{}
 
 	count := 0
 
 	for rows.Next() {
 		count++
-		var sd models.StockDeal
+		sd := models.StockDeal{
+			ID:       id,
+			Stock:    *stock,
+			Strategy: strategy,
+			Pattern:  pattern,
+		}
 		err = rows.Scan(&sd.ID, &sd.Stock.ID, &sd.Strategy.ID, &sd.Pattern.ID,
 			&sd.Currency, &sd.Position, &sd.TimeFrame, &sd.EnterDateTime,
 			&sd.EnterPoint, &sd.StopLoss, &sd.Quantity, &sd.ExitDateTime,

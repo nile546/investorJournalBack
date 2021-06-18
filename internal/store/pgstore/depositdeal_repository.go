@@ -77,8 +77,11 @@ func (r *DepositDealRepository) GetDepositDealByID(id int64) (*models.DepositDea
 	q := `SELECT bank_instrument_id, currency, enter_datetime, percent, 
 	exit_datetime, start_deposit, end_deposit, result, user_id FROM deposit_deals where id=$1`
 
+	bank := &models.BankInstrument{}
+
 	deal := &models.DepositDeal{
-		ID: id,
+		ID:   id,
+		Bank: *bank,
 	}
 
 	err := r.db.QueryRow(q, id).Scan(
@@ -123,11 +126,15 @@ func (r *DepositDealRepository) GetAll(tp *models.TableParams, id int64) error {
 
 	source := []models.DepositDeal{}
 
+	bank := &models.BankInstrument{}
+
 	count := 0
 
 	for rows.Next() {
 		count++
-		var dd models.DepositDeal
+		dd := models.DepositDeal{
+			Bank: *bank,
+		}
 		err = rows.Scan(&dd.ID, dd.Bank.ID, dd.Currency,
 			dd.EnterDateTime, dd.Percent, dd.ExitDateTime,
 			dd.StartDeposit, dd.EndDeposit, dd.Result,

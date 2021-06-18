@@ -79,7 +79,16 @@ func (r *CryptoDealRepository) GetCryptoDealByID(id int64) (*models.CryptoDeal, 
 	q := `SELECT crypto_instrument_id, strategy_id, pattern_id, currency, position, time_frame, enter_datetime, enter_point, stop_loss, 
 	quantity, exit_datetime, exit_point, risk_ratio, user_id FROM crypto_deals where id=$1`
 
-	deal := &models.CryptoDeal{}
+	crypto := &models.CryptoInstrument{}
+	strategy := &models.Strategy{}
+	pattern := &models.Pattern{}
+
+	deal := &models.CryptoDeal{
+		ID:       id,
+		Crypto:   *crypto,
+		Strategy: strategy,
+		Pattern:  pattern,
+	}
 
 	err := r.db.QueryRow(q, id).Scan(
 		&deal.Crypto.ID,
@@ -129,11 +138,20 @@ func (r *CryptoDealRepository) GetAll(tp *models.TableParams, id int64) error {
 
 	count := 0
 
+	crypto := &models.CryptoInstrument{}
+	strategy := &models.Strategy{}
+	pattern := &models.Pattern{}
+
 	source := []models.CryptoDeal{}
 
 	for rows.Next() {
 		count++
-		var cd models.CryptoDeal
+		cd := models.CryptoDeal{
+			ID:       id,
+			Crypto:   *crypto,
+			Strategy: strategy,
+			Pattern:  pattern,
+		}
 		err = rows.Scan(&cd.ID, &cd.Crypto.ID, &cd.Strategy.ID, &cd.Pattern,
 			&cd.Currency, &cd.Position, &cd.TimeFrame, &cd.EnterDateTime,
 			&cd.EnterPoint, &cd.StopLoss, &cd.Quantity, &cd.ExitDateTime,
