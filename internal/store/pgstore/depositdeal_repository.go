@@ -102,17 +102,20 @@ func (r *DepositDealRepository) GetDepositDealByID(id int64) (*models.DepositDea
 
 }
 
-func (r *DepositDealRepository) GetAll(tp *models.TableParams) error {
+func (r *DepositDealRepository) GetAll(tp *models.TableParams, id int64) error {
 
 	q := `
-	SELECT sd.id 
-	FROM deposit_deals AS sd
-	LIMIT $1 
-	OFFSET $2;
+	SELECT dd.id, dd.bank_instrument_id, dd.currency, dd.enter_datetime, dd.percent, 
+	dd.exit_datetime, dd.start_deposit, dd.end_deposit, dd.reult, dd.user_id 
+	FROM deposit_deals AS dd
+	WHERE dd.user_id=$1
+	LIMIT $2 
+	OFFSET $3;
 	`
 
 	rows, err := r.db.Query(
 		q,
+		id,
 		tp.Pagination.ItemsPerPage,
 		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
 	)
@@ -122,14 +125,24 @@ func (r *DepositDealRepository) GetAll(tp *models.TableParams) error {
 
 	source := []models.DepositDeal{}
 
+	count := 0
+
 	for rows.Next() {
-		var sd models.DepositDeal
-		err = rows.Scan(&sd.ID)
+		count++
+		var dd models.DepositDeal
+		err = rows.Scan(&dd.ID, dd.Bank.ID, dd.Currency,
+			dd.EnterDateTime, dd.Percent, dd.ExitDateTime,
+			dd.StartDeposit, dd.EndDeposit, dd.Result,
+			dd.UserID)
 		if err != nil {
 			return err
 		}
 
-		source = append(source, sd)
+		source = append(source, dd)
+	}
+
+	if count == 0 {
+		return nil
 	}
 
 	tp.Source = source

@@ -44,18 +44,18 @@ func (p *PatternRepository) UpdatePattern(pattern *models.Pattern) error {
 	return nil
 }
 
-func (p *PatternRepository) GetAllPattern(tp *models.TableParams) error {
+func (p *PatternRepository) GetAllPattern(tp *models.TableParams, id int64) error {
 
-	//Add user_id IS NULL OR user_id=$1
 	q := `SELECT id, name, description, icon, instrument_type, user_id, created_at
-	FROM strategies
-	WHERE 
-	LIMIT $1 
-	OFFSET $2;
+	FROM patterns
+	WHERE user_id IS NULL OR user_id=$1
+	LIMIT $2 
+	OFFSET $3;
 	`
 
 	rows, err := p.db.Query(
 		q,
+		id,
 		tp.Pagination.ItemsPerPage,
 		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
 	)
@@ -65,7 +65,10 @@ func (p *PatternRepository) GetAllPattern(tp *models.TableParams) error {
 
 	source := []models.Pattern{}
 
+	count := 0
+
 	for rows.Next() {
+		count++
 		var p models.Pattern
 		err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.Icon, &p.InstrumentType, &p.UserID, &p.CreatedAt)
 		if err != nil {
@@ -74,6 +77,12 @@ func (p *PatternRepository) GetAllPattern(tp *models.TableParams) error {
 
 		source = append(source, p)
 	}
+
+	if count == 0 {
+		return nil
+	}
+
+	tp.Source = source
 
 	return nil
 }

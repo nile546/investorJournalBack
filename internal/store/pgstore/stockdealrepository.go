@@ -77,8 +77,10 @@ func (r *StockDealRepository) DeleteStockDeal(id int64) error {
 
 func (r *StockDealRepository) GetStockDealByID(id int64) (*models.StockDeal, error) {
 
-	q := `SELECT stock_instrument_id, strategy_id, currency, position, time_frame, enter_datetime, enter_point, stop_loss, 
-	quantity, exit_datetime, exit_point, risk_ratio, variability, user_id FROM stock_deals where id=$1`
+	q := `SELECT stock_instrument_id, strategy_id, pattern_id, currency, 
+	position, time_frame, enter_datetime, enter_point, stop_loss, 
+	quantity, exit_datetime, exit_point, risk_ratio, variability, 
+	user_id FROM stock_deals where id=$1`
 
 	res, err := r.db.Query(q, id)
 	if err != nil {
@@ -105,17 +107,22 @@ func (r *StockDealRepository) GetStockDealByID(id int64) (*models.StockDeal, err
 
 }
 
-func (r *StockDealRepository) GetAll(tp *models.TableParams) error {
-	//Добавить user_id
+func (r *StockDealRepository) GetAll(tp *models.TableParams, id int64) error {
+
 	q := `
-	SELECT sd.id 
+	SELECT sd.id, sd.stock_instrument_id, sd.strategy_id, sd.pattern_id, sd.currency, 
+	sd.position, sd.time_frame, sd.enter_datetime, sd.enter_point, sd.stop_loss, 
+	sd.quantity, sd.exit_datetime, sd.exit_point, sd.risk_ratio, sd.variability, 
+	sd.user_id 
 	FROM stock_deals AS sd
-	LIMIT $1 
-	OFFSET $2;
+	WHERE sd.user_id=$1
+	LIMIT $2 
+	OFFSET $3;
 	`
 
 	rows, err := r.db.Query(
 		q,
+		id,
 		tp.Pagination.ItemsPerPage,
 		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
 	)
@@ -125,14 +132,24 @@ func (r *StockDealRepository) GetAll(tp *models.TableParams) error {
 
 	source := []models.StockDeal{}
 
+	count := 0
+
 	for rows.Next() {
+		count++
 		var sd models.StockDeal
-		err = rows.Scan(&sd.ID)
+		err = rows.Scan(&sd.ID, &sd.Stock.ID, &sd.Strategy.ID, &sd.Pattern.ID,
+			&sd.Currency, &sd.Position, &sd.TimeFrame, &sd.EnterDateTime,
+			&sd.EnterPoint, &sd.StopLoss, &sd.Quantity, &sd.ExitDateTime,
+			&sd.ExitPoint, &sd.RiskRatio, &sd.Variability, &sd.UserID)
 		if err != nil {
 			return err
 		}
 
 		source = append(source, sd)
+	}
+
+	if count == 0 {
+		return nil
 	}
 
 	tp.Source = source

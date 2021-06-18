@@ -208,7 +208,10 @@ func (r *StockInstrumentRepository) GetAll(tp *models.TableParams) error {
 
 	source := []models.StockInstrument{}
 
+	count := 0
+
 	for rows.Next() {
+		count++
 		var si models.StockInstrument
 		err = rows.Scan(&si.ID, &si.Title, &si.Ticker, &si.Type, &si.Isin, &si.CreatedAt)
 		if err != nil {
@@ -216,6 +219,10 @@ func (r *StockInstrumentRepository) GetAll(tp *models.TableParams) error {
 		}
 
 		source = append(source, si)
+	}
+
+	if count == 0 {
+		return nil
 	}
 
 	tp.Source = source

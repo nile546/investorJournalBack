@@ -84,9 +84,7 @@ func (r *CryptoDealRepository) GetCryptoDealByID(id int64) (*models.CryptoDeal, 
 		return nil, err
 	}
 
-	deal := &models.CryptoDeal{
-		ID: id,
-	}
+	deal := &models.CryptoDeal{}
 
 	for res.Next() {
 
@@ -104,17 +102,21 @@ func (r *CryptoDealRepository) GetCryptoDealByID(id int64) (*models.CryptoDeal, 
 
 }
 
-func (r *CryptoDealRepository) GetAll(tp *models.TableParams) error {
+func (r *CryptoDealRepository) GetAll(tp *models.TableParams, id int64) error {
 
 	q := `
-	SELECT sd.id 
-	FROM crypto_deals AS sd
-	LIMIT $1 
-	OFFSET $2;
+	SELECT cd.id, cd.crypto_instrument_id, cd.currency, cd.strategy_id,
+	cd.pattern_id, cd.position, cd.time_frame, cd.enter_date_time, cd.enter_point, 
+	cd.stop_loss, cd.quantity, cd.exit_datetime, cd.exit_point, cd.risk_ratio, cd.user_id
+	FROM crypto_deals AS cd
+	WHERE cd.user_id=$1
+	LIMIT $2 
+	OFFSET $3;
 	`
 
 	rows, err := r.db.Query(
 		q,
+		id,
 		tp.Pagination.ItemsPerPage,
 		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
 	)
@@ -122,16 +124,26 @@ func (r *CryptoDealRepository) GetAll(tp *models.TableParams) error {
 		return err
 	}
 
+	count := 0
+
 	source := []models.CryptoDeal{}
 
 	for rows.Next() {
-		var sd models.CryptoDeal
-		err = rows.Scan(&sd.ID)
+		count++
+		var cd models.CryptoDeal
+		err = rows.Scan(&cd.ID, &cd.Crypto.ID, &cd.Strategy.ID, &cd.Pattern,
+			&cd.Currency, &cd.Position, &cd.TimeFrame, &cd.EnterDateTime,
+			&cd.EnterPoint, &cd.StopLoss, &cd.Quantity, &cd.ExitDateTime,
+			&cd.ExitPoint, &cd.RiskRatio, &cd.UserID)
 		if err != nil {
 			return err
 		}
 
-		source = append(source, sd)
+		source = append(source, cd)
+	}
+
+	if count == 0 {
+		return nil
 	}
 
 	tp.Source = source
