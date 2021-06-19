@@ -26,13 +26,13 @@ const (
 	stockInstrumentsRoute = "/stock-instruments"
 
 	// crypto
-	cryptoDealsRoute = "/crypto"
+	cryptoDealsRoute = "/crypto-deals"
 
 	// crypto instruments
 	cryptoInstrumentsRoute = "/crypto-instruments"
 
 	// deposit
-	depositDealsRoute = "/deposit"
+	depositDealsRoute = "/deposit-deals"
 
 	// crypto instruments
 	bankInstrumentsRoute = "/bank-instruments"
