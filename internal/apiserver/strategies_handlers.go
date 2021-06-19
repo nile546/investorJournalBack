@@ -75,7 +75,7 @@ func (s *server) updateStockStrategy(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, nil)
 }
 
-func (s *server) getAllStrategy(w http.ResponseWriter, r *http.Request) {
+func (s *server) getAllStrategies(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
 		TableParams models.TableParams `json:"tableParams"`

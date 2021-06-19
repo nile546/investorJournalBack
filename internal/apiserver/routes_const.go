@@ -40,6 +40,12 @@ const (
 	// currencies
 	currencyRoute = "/currency"
 
+	// strategies
+	strategiesRoute = "/strategies"
+
+	// patterns
+	patternsRoute = "/patterns"
+
 	// common
 	getAllRoute          = "/getAll"
 	getRoute             = "/get"

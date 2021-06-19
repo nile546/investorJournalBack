@@ -77,7 +77,7 @@ func (s *server) updatePattern(w http.ResponseWriter, r *http.Request) {
 	s.respond(w, nil)
 }
 
-func (s *server) getAllPattern(w http.ResponseWriter, r *http.Request) {
+func (s *server) getAllPatterns(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
 		TableParams models.TableParams `json:"tableParams"`

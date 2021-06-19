@@ -158,6 +158,12 @@ func (s *server) ConfugureRouter() {
 	bankInstruments.HandleFunc(getPopularInstrument, s.getPopularBankInstrument).Methods(http.MethodPost)
 	bankInstruments.HandleFunc(getRoute, s.getBankInstrumentByID).Methods(http.MethodPost)
 
+	strategies := api.PathPrefix(strategiesRoute).Subrouter()
+	strategies.HandleFunc(getAllRoute, s.getAllStrategies).Methods(http.MethodPost)
+
+	patterns := api.PathPrefix(patternsRoute).Subrouter()
+	patterns.HandleFunc(getAllRoute, s.getAllPatterns).Methods(http.MethodPost)
+
 	currency := api.PathPrefix(currencyRoute).Subrouter()
 	currency.HandleFunc(getRoute, s.getCurrenciesRatio).Methods(http.MethodPost)
 
