@@ -27,8 +27,9 @@ func (r *CryptoDealRepository) CreateCryptoDeal(cd *models.CryptoDeal, userId in
 		quantity, 
 		exit_datetime, 
 		exit_point,
-		user_id)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
+		user_id
+	)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`
 
 	res, err := r.db.Exec(
 		q,
@@ -44,7 +45,6 @@ func (r *CryptoDealRepository) CreateCryptoDeal(cd *models.CryptoDeal, userId in
 		cd.Quantity,
 		cd.ExitDateTime,
 		cd.ExitPoint,
-		cd.RiskRatio,
 		userId,
 	)
 	if err != nil {

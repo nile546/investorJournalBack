@@ -35,12 +35,15 @@ func (s *server) getAllCryptoDeals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, cd := range *source {
-		cd.RiskRatio = s.riskRatio(&cd.EnterPoint, cd.ExitPoint, cd.StopLoss, cd.Position)
-		cd.Result = s.result(&cd.EnterPoint, cd.ExitPoint, &cd.Quantity, cd.Position)
+	if source != nil {
+		for _, cd := range *source {
+			cd.RiskRatio = s.riskRatio(&cd.EnterPoint, cd.ExitPoint, cd.StopLoss, cd.Position)
+			cd.Result = s.result(&cd.EnterPoint, cd.ExitPoint, &cd.Quantity, cd.Position)
+		}
+
+		req.TableParams.Source = source
 	}
 
-	req.TableParams.Source = source
 	s.respond(w, req.TableParams)
 
 }
