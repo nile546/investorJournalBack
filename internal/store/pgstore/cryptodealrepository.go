@@ -173,7 +173,9 @@ func (r *CryptoDealRepository) GetCryptoDealByID(id int64) (*models.CryptoDeal, 
 
 }
 
-func (r *CryptoDealRepository) GetAll(tp *models.TableParams, id int64) error {
+func (r *CryptoDealRepository) GetAll(tp *models.TableParams, userId int64) (*[]*models.CryptoDeal, error) {
+
+	source := &[]*models.CryptoDeal{}
 
 	q := `
 	SELECT 
@@ -184,14 +186,24 @@ func (r *CryptoDealRepository) GetAll(tp *models.TableParams, id int64) error {
 	cd.pattern_id,
 	cd.position,
 	cd.time_frame,
-	cd.enter_date_time,
+	cd.enter_datetime,
 	cd.enter_point, 
 	cd.stop_loss,
 	cd.quantity,
 	cd.exit_datetime,
 	cd.exit_point,
-	cd.user_id
+
+	cr.title,
+	cr.ticker,
+
+	s.name,
+
+	p.name
+
 	FROM crypto_deals AS cd
+	LEFT JOIN crypto_instruments AS cr ON cd.crypto_instrument_id = cr.id
+	LEFT JOIN strategies AS s ON cd.strategy_id = s.id
+	LEFT JOIN patterns AS p ON cd.pattern_id = p.id
 	WHERE cd.user_id = $1
 	LIMIT $2 
 	OFFSET $3;
@@ -199,26 +211,23 @@ func (r *CryptoDealRepository) GetAll(tp *models.TableParams, id int64) error {
 
 	rows, err := r.db.Query(
 		q,
-		id,
+		userId,
 		tp.Pagination.ItemsPerPage,
 		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
-	count := 0
 
 	crypto := &models.CryptoInstrument{}
 	strategy := &models.Strategy{}
 	pattern := &models.Pattern{}
 
-	source := []models.CryptoDeal{}
+	count := 0
 
 	for rows.Next() {
 		count++
-		cd := models.CryptoDeal{
-			ID:       id,
+		cd := &models.CryptoDeal{
 			Crypto:   *crypto,
 			Strategy: strategy,
 			Pattern:  pattern,
@@ -227,7 +236,7 @@ func (r *CryptoDealRepository) GetAll(tp *models.TableParams, id int64) error {
 			&cd.ID,
 			&cd.Crypto.ID,
 			&cd.Strategy.ID,
-			&cd.Pattern,
+			&cd.Pattern.ID,
 			&cd.Currency,
 			&cd.Position,
 			&cd.TimeFrame,
@@ -237,26 +246,32 @@ func (r *CryptoDealRepository) GetAll(tp *models.TableParams, id int64) error {
 			&cd.Quantity,
 			&cd.ExitDateTime,
 			&cd.ExitPoint,
+
+			&cd.Crypto.Title,
+			&cd.Crypto.Ticker,
+
+			&cd.Strategy.Name,
+
+			&cd.Pattern.Name,
 		)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		source = append(source, cd)
+		*source = append(*source, cd)
 	}
 
 	if count == 0 {
-		return nil
+		return nil, nil
 	}
-
-	tp.Source = source
 
 	q = `SELECT COUNT(id)
 	FROM crypto_deals
+	WHERE user_id = $1
 	`
 	var itemsCount int
-	if err = r.db.QueryRow(q).Scan(&itemsCount); err != nil {
-		return err
+	if err = r.db.QueryRow(q, userId).Scan(&itemsCount); err != nil {
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -266,6 +281,5 @@ func (r *CryptoDealRepository) GetAll(tp *models.TableParams, id int64) error {
 		tp.Pagination.PageCount = int(math.Ceil(float64(itemsCount) / float64(tp.Pagination.ItemsPerPage)))
 	}
 
-	return nil
-
+	return source, nil
 }

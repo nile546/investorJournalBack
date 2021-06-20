@@ -28,12 +28,19 @@ func (s *server) getAllCryptoDeals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.repository.CryptoDeal().GetAll(&req.TableParams, s.session.userId); err != nil {
+	source, err := s.repository.CryptoDeal().GetAll(&req.TableParams, s.session.userId)
+	if err != nil {
 		s.logger.Errorf("Error get all crypto deals, with error %+v", err)
 		s.error(w, err.Error())
 		return
 	}
 
+	for _, cd := range *source {
+		cd.RiskRatio = s.riskRatio(&cd.EnterPoint, cd.ExitPoint, cd.StopLoss, cd.Position)
+		cd.Result = s.result(&cd.EnterPoint, cd.ExitPoint, &cd.Quantity, cd.Position)
+	}
+
+	req.TableParams.Source = source
 	s.respond(w, req.TableParams)
 
 }

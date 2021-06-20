@@ -7,7 +7,7 @@ import "time"
 type CryptoDeal struct {
 	ID              int64            `json:"id"`
 	Crypto          CryptoInstrument `json:"crypto"`
-	Currency        *Currencies      `json:"currency"`
+	Currency        *Currencies      `json:"currency,omitempty"`
 	Strategy        *Strategy        `json:"strategy"`
 	Pattern         *Pattern         `json:"pattern"`
 	Position        *Positions       `json:"position"`
@@ -18,9 +18,9 @@ type CryptoDeal struct {
 	Quantity        int              `json:"quantity"`
 	ExitDateTime    *time.Time       `json:"exitDatetime"`
 	ExitPoint       *int64           `json:"exitPoint"`
-	RiskRatio       float32          `json:"riskRatio"`
-	Result          *int64           `json:"result"`
-	ResultInPercent float64          `json:"resultInPercent"`
-	StartDeposit    int64            `json:"startDeposit"`
-	EndDeposit      int64            `json:"endDeposit"`
+	RiskRatio       *float64         `json:"riskRatio"`
+	Result          *int64           `json:"result,omitempty"`
+	ResultInPercent float64          `json:"resultInPercent,omitempty"`
+	StartDeposit    int64            `json:"startDeposit,omitempty"`
+	EndDeposit      int64            `json:"endDeposit,omitempty"`
 }
