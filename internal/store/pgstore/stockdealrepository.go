@@ -176,7 +176,9 @@ func (r *StockDealRepository) GetStockDealByID(id int64) (*models.StockDeal, err
 
 }
 
-func (r *StockDealRepository) GetAll(tp *models.TableParams, userId int64) error {
+func (r *StockDealRepository) GetAll(tp *models.TableParams, userId int64) (*[]*models.StockDeal, error) {
+
+	source := &[]*models.StockDeal{}
 
 	q := `
 	SELECT 
@@ -218,20 +220,18 @@ func (r *StockDealRepository) GetAll(tp *models.TableParams, userId int64) error
 		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	stock := &models.StockInstrument{}
 	strategy := &models.Strategy{}
 	pattern := &models.Pattern{}
 
-	source := []models.StockDeal{}
-
 	count := 0
 
 	for rows.Next() {
 		count++
-		sd := models.StockDeal{
+		sd := &models.StockDeal{
 			Stock:    *stock,
 			Strategy: strategy,
 			Pattern:  pattern,
@@ -260,17 +260,15 @@ func (r *StockDealRepository) GetAll(tp *models.TableParams, userId int64) error
 			&sd.Pattern.Name,
 		)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		source = append(source, sd)
+		*source = append(*source, sd)
 	}
 
 	if count == 0 {
-		return nil
+		return nil, nil
 	}
-
-	tp.Source = source
 
 	q = `SELECT COUNT(id)
 	FROM stock_deals
@@ -278,7 +276,7 @@ func (r *StockDealRepository) GetAll(tp *models.TableParams, userId int64) error
 	`
 	var itemsCount int
 	if err = r.db.QueryRow(q, userId).Scan(&itemsCount); err != nil {
-		return err
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -288,7 +286,7 @@ func (r *StockDealRepository) GetAll(tp *models.TableParams, userId int64) error
 		tp.Pagination.PageCount = int(math.Ceil(float64(itemsCount) / float64(tp.Pagination.ItemsPerPage)))
 	}
 
-	return nil
+	return source, nil
 }
 
 func (r *StockDealRepository) GetStockDealsIDByISIN(ISIN string) int64 {

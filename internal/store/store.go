@@ -67,7 +67,7 @@ type StockDealRepository interface {
 	UpdateStockDeal(*models.StockDeal, int64) error
 	DeleteStockDeal(int64) error
 	GetStockDealByID(int64) (*models.StockDeal, error)
-	GetAll(*models.TableParams, int64) error
+	GetAll(*models.TableParams, int64) (*[]*models.StockDeal, error)
 	GetStockDealsIDByISIN(string) int64
 	CreateOpenStockDeal(*models.StockDeal, int64) (int64, error)
 	UpdateQuantityStockDeal(int64, int) error

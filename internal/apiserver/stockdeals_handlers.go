@@ -28,14 +28,19 @@ func (s *server) getAllStockDeals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.repository.StockDeal().GetAll(&req.TableParams, s.session.userId); err != nil {
+	source, err := s.repository.StockDeal().GetAll(&req.TableParams, s.session.userId)
+	if err != nil {
 		s.logger.Errorf("Error get all stock deals, with error %+v", err)
 		s.error(w, err.Error())
 		return
 	}
 
-	s.respond(w, req.TableParams)
+	for _, sd := range *source {
+		sd.RiskRatio = s.riskRatio(&sd.EnterPoint, sd.ExitPoint, sd.StopLoss, sd.Position)
+	}
 
+	req.TableParams.Source = source
+	s.respond(w, req.TableParams)
 }
 
 func (s *server) createStockDeal(w http.ResponseWriter, r *http.Request) {
