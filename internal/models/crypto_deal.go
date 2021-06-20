@@ -23,5 +23,4 @@ type CryptoDeal struct {
 	ResultInPercent float64          `json:"resultInPercent"`
 	StartDeposit    int64            `json:"startDeposit"`
 	EndDeposit      int64            `json:"endDeposit"`
-	UserID          int64            `json:"userId"`
 }

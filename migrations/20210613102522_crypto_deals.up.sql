@@ -12,7 +12,6 @@ CREATE TABLE crypto_deals(
     quantity INT,
     exit_datetime TIMESTAMP,
     exit_point BIGINT,
-    risk_ratio FLOAT,
     user_id BIGINT REFERENCES users (id)
 )
 

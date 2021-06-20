@@ -28,7 +28,6 @@ func (r *StockDealRepository) CreateStockDeal(stockDeal *models.StockDeal, userI
 		quantity, 
 		exit_datetime, 
 		exit_point, 
-		risk_ratio, 
 		user_id
 	)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
@@ -47,7 +46,6 @@ func (r *StockDealRepository) CreateStockDeal(stockDeal *models.StockDeal, userI
 		stockDeal.Quantity,
 		stockDeal.ExitDateTime,
 		stockDeal.ExitPoint,
-		stockDeal.RiskRatio,
 		userId,
 	)
 	if err != nil {
@@ -79,7 +77,6 @@ func (r *StockDealRepository) UpdateStockDeal(stockDeal *models.StockDeal, userI
 		quantity,
 		exit_datetime,
 		exit_point,
-		risk_ratio
 	)=($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 	WHERE id=$14`
 
@@ -97,7 +94,6 @@ func (r *StockDealRepository) UpdateStockDeal(stockDeal *models.StockDeal, userI
 		stockDeal.Quantity,
 		stockDeal.ExitDateTime,
 		stockDeal.ExitPoint,
-		stockDeal.RiskRatio,
 		stockDeal.ID,
 	)
 	if err != nil {
@@ -144,7 +140,6 @@ func (r *StockDealRepository) GetStockDealByID(id int64) (*models.StockDeal, err
 	quantity,
 	exit_datetime,
 	exit_point,
-	risk_ratio,
 	variability, 
 	FROM stock_deals where id=$1`
 	stock := &models.StockInstrument{}
@@ -171,7 +166,6 @@ func (r *StockDealRepository) GetStockDealByID(id int64) (*models.StockDeal, err
 		&deal.Quantity,
 		&deal.ExitDateTime,
 		&deal.ExitPoint,
-		&deal.RiskRatio,
 		&deal.Variability,
 	)
 	if err != nil {
@@ -199,7 +193,6 @@ func (r *StockDealRepository) GetAll(tp *models.TableParams, userId int64) error
     sd.quantity,
     sd.exit_datetime,
     sd.exit_point,
-    sd.risk_ratio,
     sd.variability,
 
 	st.title,
@@ -257,7 +250,6 @@ func (r *StockDealRepository) GetAll(tp *models.TableParams, userId int64) error
 			&sd.Quantity,
 			&sd.ExitDateTime,
 			&sd.ExitPoint,
-			&sd.RiskRatio,
 			&sd.Variability,
 
 			&sd.Stock.Title,

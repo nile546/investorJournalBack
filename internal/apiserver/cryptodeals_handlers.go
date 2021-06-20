@@ -2,7 +2,6 @@ package apiserver
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation"
@@ -41,7 +40,7 @@ func (s *server) getAllCryptoDeals(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) createCryptoDeal(w http.ResponseWriter, r *http.Request) {
 	type request struct {
-		Deal models.CryptoDeal `json:"cryptoDeal"`
+		CryptoDeal models.CryptoDeal `json:"cryptoDeal"`
 	}
 
 	req := &request{}
@@ -53,16 +52,13 @@ func (s *server) createCryptoDeal(w http.ResponseWriter, r *http.Request) {
 
 	if err := validation.ValidateStruct(
 		req,
-		validation.Field(&req.Deal.Crypto, validation.Required),
-		validation.Field(&req.Deal.EnterDateTime, validation.Required),
-		validation.Field(&req.Deal.EnterPoint, validation.Required),
-		validation.Field(&req.Deal.UserID, validation.Required),
+		validation.Field(&req.CryptoDeal, validation.Required),
 	); err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err := s.repository.CryptoDeal().CreateCryptoDeal(&req.Deal)
+	err := s.repository.CryptoDeal().CreateCryptoDeal(&req.CryptoDeal, s.session.userId)
 	if err != nil {
 		s.logger.Errorf("Error create сrypto deal, with error %+v", err)
 		s.error(w, err.Error())
@@ -74,7 +70,7 @@ func (s *server) createCryptoDeal(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) updateCryptoDeal(w http.ResponseWriter, r *http.Request) {
 	type request struct {
-		Deal models.CryptoDeal `json:"cryptoDeal"`
+		CryptoDeal models.CryptoDeal `json:"cryptoDeal"`
 	}
 
 	req := &request{}
@@ -84,24 +80,15 @@ func (s *server) updateCryptoDeal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Deal.UserID != s.session.userId {
-		s.logger.Errorf("Error update crypto deal, with error %+v", errors.New("id user initiator does not match with session user id"))
-		s.error(w, "Id user initiator does not match with session user id")
-	}
-
 	if err := validation.ValidateStruct(
 		req,
-		validation.Field(&req.Deal.Crypto, validation.Required),
-		validation.Field(&req.Deal.EnterDateTime, validation.Required),
-		validation.Field(&req.Deal.EnterPoint, validation.Required),
-		validation.Field(&req.Deal.UserID, validation.Required),
-		validation.Field(&req.Deal.ID, validation.Required),
+		validation.Field(&req.CryptoDeal, validation.Required),
 	); err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err := s.repository.CryptoDeal().UpdateCryptoDeal(&req.Deal)
+	err := s.repository.CryptoDeal().UpdateCryptoDeal(&req.CryptoDeal, s.session.userId)
 	if err != nil {
 		s.logger.Errorf("Error update crypto deal, with error %+v", err)
 		s.error(w, err.Error())
