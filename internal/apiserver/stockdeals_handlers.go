@@ -2,7 +2,6 @@ package apiserver
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation"
@@ -41,7 +40,7 @@ func (s *server) getAllStockDeals(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) createStockDeal(w http.ResponseWriter, r *http.Request) {
 	type request struct {
-		Deal models.StockDeal `json:"stockDeal"`
+		StockDeal models.StockDeal `json:"stockDeal"`
 	}
 
 	req := &request{}
@@ -53,16 +52,13 @@ func (s *server) createStockDeal(w http.ResponseWriter, r *http.Request) {
 
 	if err := validation.ValidateStruct(
 		req,
-		validation.Field(&req.Deal.Stock, validation.Required),
-		validation.Field(&req.Deal.EnterDateTime, validation.Required),
-		validation.Field(&req.Deal.EnterPoint, validation.Required),
-		validation.Field(&req.Deal.UserID, validation.Required),
+		validation.Field(&req.StockDeal, validation.Required),
 	); err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err := s.repository.StockDeal().CreateStockDeal(&req.Deal)
+	err := s.repository.StockDeal().CreateStockDeal(&req.StockDeal, s.session.userId)
 	if err != nil {
 		s.logger.Errorf("Error create stock deal, with error %+v", err)
 		s.error(w, err.Error())
@@ -75,7 +71,7 @@ func (s *server) createStockDeal(w http.ResponseWriter, r *http.Request) {
 func (s *server) updateStockDeal(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		Deal models.StockDeal `json:"stockDeal"`
+		StockDeal models.StockDeal `json:"stockDeal"`
 	}
 
 	req := &request{}
@@ -85,25 +81,15 @@ func (s *server) updateStockDeal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Deal.UserID != s.session.userId {
-		s.logger.Errorf("Error update stock deal, with error %+v", errors.New("id user initiator does not match session user id"))
-		s.error(w, "Id user initiator does not match session user id")
-		return
-	}
-
 	if err := validation.ValidateStruct(
 		req,
-		validation.Field(&req.Deal.ID, validation.Required),
-		validation.Field(&req.Deal.Stock, validation.Required),
-		validation.Field(&req.Deal.EnterDateTime, validation.Required),
-		validation.Field(&req.Deal.EnterPoint, validation.Required),
-		validation.Field(&req.Deal.UserID, validation.Required),
+		validation.Field(&req.StockDeal, validation.Required),
 	); err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err := s.repository.StockDeal().UpdateStockDeal(&req.Deal)
+	err := s.repository.StockDeal().UpdateStockDeal(&req.StockDeal, s.session.userId)
 	if err != nil {
 		s.logger.Errorf("Error update stock deal, with error %+v", err)
 		s.error(w, err.Error())

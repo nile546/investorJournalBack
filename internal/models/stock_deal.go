@@ -5,7 +5,7 @@ import "time"
 type StockDeal struct {
 	ID              int64           `json:"id"`
 	Stock           StockInstrument `json:"stock"`
-	Currency        *Currencies     `json:"currency"`
+	Currency        *Currencies     `json:"currency,omitempty"`
 	Strategy        *Strategy       `json:"strategy"`
 	Pattern         *Pattern        `json:"pattern"`
 	Position        *Positions      `json:"position"`
@@ -16,11 +16,10 @@ type StockDeal struct {
 	Quantity        int             `json:"quantity"`
 	ExitDateTime    *time.Time      `json:"exitDatetime"`
 	ExitPoint       *int64          `json:"exitPoint"`
-	RiskRatio       *float32        `json:"riskRatio"`
-	Result          *int64          `json:"result"`
-	ResultInPercent float64         `json:"resultInPercent"`
-	StartDeposit    int64           `json:"startDeposit"`
-	EndDeposit      int64           `json:"endDeposit"`
-	UserID          int64           `json:"userId"`
-	Variability     bool            `json:"variability"`
+	RiskRatio       *float32        `json:"riskRatio,omitempty"`
+	Result          *int64          `json:"result,omitempty"`
+	ResultInPercent float64         `json:"resultInPercent,omitempty"`
+	StartDeposit    int64           `json:"startDeposit,omitempty"`
+	EndDeposit      int64           `json:"endDeposit,omitempty"`
+	Variability     bool            `json:"variability,omitempty"`
 }

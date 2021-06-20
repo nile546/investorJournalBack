@@ -110,11 +110,10 @@ func (s *server) insertTinkoffStockDeals(token string) error {
 					EnterDateTime: operation.DateTime,
 					EnterPoint:    operation.Price,
 					Quantity:      operation.Quantity,
-					UserID:        s.session.userId,
 					Variability:   false,
 				}
 
-				idStockDeal, err := s.repository.StockDeal().CreateOpenStockDeal(stockDeal)
+				idStockDeal, err := s.repository.StockDeal().CreateOpenStockDeal(stockDeal, s.session.userId)
 				if err != nil {
 					s.logger.Errorf("Error create stock deal from operation id:%d, with error: %+v", i, err)
 					continue

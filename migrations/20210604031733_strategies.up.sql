@@ -10,7 +10,7 @@ CREATE TABLE strategies (
 INSERT INTO strategies 
 (name, instrument_type)
 VALUES 
-('Высокочастотатный трейдинг', 1), 
+('высокочастотный трейдинг', 1), 
 ('Скальпинг', 1), 
 ('Дейтрейдинг', 1), 
 ('Свинг трейдинг', 1), 
