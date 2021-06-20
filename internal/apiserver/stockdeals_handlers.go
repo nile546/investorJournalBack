@@ -37,6 +37,7 @@ func (s *server) getAllStockDeals(w http.ResponseWriter, r *http.Request) {
 
 	for _, sd := range *source {
 		sd.RiskRatio = s.riskRatio(&sd.EnterPoint, sd.ExitPoint, sd.StopLoss, sd.Position)
+		sd.Result = s.result(&sd.EnterPoint, sd.ExitPoint, &sd.Quantity, sd.Position)
 	}
 
 	req.TableParams.Source = source
