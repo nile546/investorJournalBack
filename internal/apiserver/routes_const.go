@@ -38,7 +38,7 @@ const (
 	bankInstrumentsRoute = "/bank-instruments"
 
 	// currencies
-	currencyRoute = "/currency"
+	currencyRatesRoute = "/currency-rates"
 
 	// strategies
 	strategiesRoute = "/strategies"

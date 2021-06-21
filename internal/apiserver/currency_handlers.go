@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func (s *server) getCurrenciesRatio(w http.ResponseWriter, r *http.Request) {
+func (s *server) getCurrenciesRates(w http.ResponseWriter, r *http.Request) {
 
 	c, err := s.currencyGrab.GrabCbr().GrabUsdEur()
 	if err != nil {

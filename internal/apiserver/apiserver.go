@@ -164,8 +164,8 @@ func (s *server) ConfugureRouter() {
 	patterns := api.PathPrefix(patternsRoute).Subrouter()
 	patterns.HandleFunc(getAllRoute, s.getAllPatterns).Methods(http.MethodPost)
 
-	currency := api.PathPrefix(currencyRoute).Subrouter()
-	currency.HandleFunc(getRoute, s.getCurrenciesRatio).Methods(http.MethodPost)
+	currencyRates := api.PathPrefix(currencyRatesRoute).Subrouter()
+	currencyRates.HandleFunc(getAllRoute, s.getCurrenciesRates).Methods(http.MethodPost)
 
 	spa := spaHandler{staticPath: "web", indexPath: "index.html"}
 
