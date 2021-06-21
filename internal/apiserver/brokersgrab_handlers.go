@@ -25,6 +25,7 @@ func (s *server) getAllStockDealFromBrokers(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		s.logger.Errorf("Error insert Tinkoff stock deals, with error: %+v", err)
 		s.error(w, "Request not processed, please try again later, "+err.Error())
+		return
 	}
 
 	s.respond(w, nil)
@@ -41,6 +42,7 @@ func (s *server) getTinkoffStockDeals(token string) error {
 	err = s.repository.TinkoffToken().InsertTinkoffToken(token, s.session.userId)
 	if err != nil {
 		s.logger.Errorf("Error update auto grab stock deal, with error: %+v", err)
+		return err
 	}
 	return nil
 
