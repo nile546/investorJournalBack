@@ -11,7 +11,7 @@ import (
 func (s *server) getAllStockDealFromBrokers(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		TinkoffToken string `json:"tinkoff_token"`
+		TinkoffToken string `json:"token"`
 	}
 
 	req := &request{}
