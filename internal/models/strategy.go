@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Strategy struct {
-	ID             int64           `json:"id"`
+	ID             *int64          `json:"id"`
 	Name           string          `json:"name"`
 	Description    *string         `json:"description"`
 	UserID         *int64          `json:"userId"`
