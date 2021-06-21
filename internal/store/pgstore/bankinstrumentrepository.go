@@ -74,7 +74,7 @@ func (b *BankInstrumentRepository) GetAllBankInstruments() (*[]models.BankInstru
 	}
 
 	if count == 0 {
-		return nil, nil
+		return banks_instruments, nil
 	}
 
 	return banks_instruments, nil

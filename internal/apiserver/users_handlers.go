@@ -247,7 +247,7 @@ func (s *server) signin(w http.ResponseWriter, r *http.Request) {
 			s.logger.Errorf("Error Tinkoff token not found, with error: %+v", err)
 		}
 
-		err = s.getTinkoffStockDeals(token, u.AutoGrabDeals)
+		err = s.getTinkoffStockDeals(token)
 		if err != nil {
 			s.logger.Errorf("Error insert Tinkoff stock deals, with error: %+v", err)
 		}

@@ -11,8 +11,7 @@ import (
 func (s *server) getAllStockDealFromBrokers(w http.ResponseWriter, r *http.Request) {
 
 	type request struct {
-		TinkoffToken  string `json:"tinkoff_token"`
-		AutoGrabDeals bool   `json:"auto_grab_deals"`
+		TinkoffToken string `json:"tinkoff_token"`
 	}
 
 	req := &request{}
@@ -22,7 +21,7 @@ func (s *server) getAllStockDealFromBrokers(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err := s.getTinkoffStockDeals(req.TinkoffToken, req.AutoGrabDeals)
+	err := s.getTinkoffStockDeals(req.TinkoffToken)
 	if err != nil {
 		s.logger.Errorf("Error insert Tinkoff stock deals, with error: %+v", err)
 		s.error(w, "Request not processed, please try again later, "+err.Error())
@@ -32,41 +31,19 @@ func (s *server) getAllStockDealFromBrokers(w http.ResponseWriter, r *http.Reque
 
 }
 
-func (s *server) getTinkoffStockDeals(token string, autoGrabDeals bool) error {
+func (s *server) getTinkoffStockDeals(token string) error {
 
-	if !autoGrabDeals {
-		err := s.insertTinkoffStockDeals(token)
-		if err != nil {
-			return err
-		}
-
-		err = s.repository.TinkoffToken().InsertTinkoffToken(token, s.session.userId)
-		if err != nil {
-			s.logger.Errorf("Error update auto grab stock deal, with error: %+v", err)
-		}
-		return nil
+	err := s.insertTinkoffStockDeals(token)
+	if err != nil {
+		return err
 	}
 
-	err := s.repository.User().UpdateAutoGrab(s.session.userId, true)
+	err = s.repository.TinkoffToken().InsertTinkoffToken(token, s.session.userId)
 	if err != nil {
 		s.logger.Errorf("Error update auto grab stock deal, with error: %+v", err)
 	}
-
-	go func() error {
-		for {
-			err = s.insertTinkoffStockDeals(token)
-			if err != nil {
-				s.logger.Errorf("Error insert Tinkoff stock deals, with error: %+v", err)
-				break
-			}
-			time.Sleep(time.Second * 30)
-		}
-		if err != nil {
-			return err
-		}
-		return nil
-	}()
 	return nil
+
 }
 
 func (s *server) insertTinkoffStockDeals(token string) error {
@@ -191,8 +168,4 @@ func (s *server) insertTinkoffStockDeals(token string) error {
 		}
 	}
 	return nil
-}
-
-func (s *server) offAutoGrabDeals() {
-
 }

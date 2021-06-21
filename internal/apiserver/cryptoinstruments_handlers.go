@@ -22,7 +22,9 @@ func (s *server) updateCryptoInstruments(cryptoUrl string, cryptoKey string) {
 		return
 	}
 
-	err = s.repository.CryptoInstrument().InsertCryptoInstruments(getNewCryptoInstruments(*newCryptos, *oldCryptos))
+	cryptos := getNewCryptoInstruments(*newCryptos, *oldCryptos)
+
+	err = s.repository.CryptoInstrument().InsertCryptoInstruments(cryptos)
 	if err != nil {
 		s.logger.Errorf("Error fill crypto_instruments: %+v", err)
 		return

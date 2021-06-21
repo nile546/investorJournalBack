@@ -74,7 +74,7 @@ func (c *CryptoInstrumentRepository) GetAllCryptoInstruments() (*[]models.Crypto
 	}
 
 	if count == 0 {
-		return nil, nil
+		return crypto_instruments, nil
 	}
 
 	return crypto_instruments, nil
