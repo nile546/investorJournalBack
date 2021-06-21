@@ -2,7 +2,7 @@ package apiserver
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation"
@@ -29,10 +29,21 @@ func (s *server) getAllDepositDeals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.repository.DepositDeal().GetAll(&req.TableParams, s.session.userId); err != nil {
+	source, err := s.repository.DepositDeal().GetAll(&req.TableParams, s.session.userId)
+	if err != nil {
 		s.logger.Errorf("Error get all deposit deal, with error %+v", err)
 		s.error(w, err.Error())
 		return
+	}
+
+	if source != nil {
+		for _, dd := range *source {
+			fmt.Println(dd)
+			// dd.RiskRatio = s.riskRatio(&dd.EnterPoint, dd.ExitPoint, dd.StopLoss, dd.Position)
+			// dd.Result = s.result(&dd.EnterPoint, dd.ExitPoint, &dd.Quantity, dd.Position)
+		}
+
+		req.TableParams.Source = source
 	}
 
 	s.respond(w, req.TableParams)
@@ -53,17 +64,13 @@ func (s *server) createDepositDeal(w http.ResponseWriter, r *http.Request) {
 
 	if err := validation.ValidateStruct(
 		req,
-		validation.Field(&req.Deal.Bank, validation.Required),
-		validation.Field(&req.Deal.EnterDateTime, validation.Required),
-		validation.Field(&req.Deal.StartDeposit, validation.Required),
-		validation.Field(&req.Deal.Percent, validation.Required),
-		validation.Field(&req.Deal.UserID, validation.Required),
+		validation.Field(&req.Deal, validation.Required),
 	); err != nil {
 		s.error(w, err.Error())
 		return
 	}
 
-	err := s.repository.DepositDeal().CreateDepositDeal(&req.Deal)
+	err := s.repository.DepositDeal().CreateDepositDeal(&req.Deal, s.session.userId)
 	if err != nil {
 		s.logger.Errorf("Error create deposit deal, with error %+v", err)
 		s.error(w, err.Error())
@@ -85,19 +92,14 @@ func (s *server) updateDepositDeal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Deal.UserID != s.session.userId {
-		s.logger.Errorf("Error update deposit deal, with error %+v", errors.New("id user initiator does not match session user id"))
-		s.error(w, "Id user initiator does not match session user id")
-	}
+	// if req.Deal.UserID != s.session.userId {
+	// 	s.logger.Errorf("Error update deposit deal, with error %+v", errors.New("id user initiator does not match session user id"))
+	// 	s.error(w, "Id user initiator does not match session user id")
+	// }
 
 	if err := validation.ValidateStruct(
 		req,
-		validation.Field(&req.Deal.ID, validation.Required),
-		validation.Field(&req.Deal.EnterDateTime, validation.Required),
-		validation.Field(&req.Deal.Bank, validation.Required),
-		validation.Field(&req.Deal.StartDeposit, validation.Required),
-		validation.Field(&req.Deal.Percent, validation.Required),
-		validation.Field(&req.Deal.UserID, validation.Required),
+		validation.Field(&req.Deal, validation.Required),
 	); err != nil {
 		s.error(w, err.Error())
 		return

@@ -11,7 +11,7 @@ type DepositDealRepository struct {
 	db *sql.DB
 }
 
-func (r *DepositDealRepository) CreateDepositDeal(deal *models.DepositDeal) error {
+func (r *DepositDealRepository) CreateDepositDeal(deal *models.DepositDeal, userId int64) error {
 
 	q := `INSERT INTO deposit_deals
 	(bank_instrument_id, currency, enter_datetime, percent, 
@@ -21,7 +21,7 @@ func (r *DepositDealRepository) CreateDepositDeal(deal *models.DepositDeal) erro
 	res, err := r.db.Exec(q, deal.Bank.ID, deal.Currency,
 		deal.EnterDateTime, deal.Percent, deal.ExitDateTime,
 		deal.StartDeposit, deal.EndDeposit, deal.Result,
-		deal.UserID)
+		userId)
 	if err != nil {
 		return err
 	}
@@ -37,13 +37,13 @@ func (r *DepositDealRepository) CreateDepositDeal(deal *models.DepositDeal) erro
 func (r *DepositDealRepository) UpdateDepositDeal(deal *models.DepositDeal) error {
 
 	q := `UPDATE deposit_deals SET (bank_instrument_id, currency, enter_datetime, percent, 
-		exit_datetime, start_deposit, end_deposit, result, user_id)=($1, $2, $3, $4, $5, $6,
+		exit_datetime, start_deposit, end_deposit, result)=($1, $2, $3, $4, $5, $6,
 		$7, $8, $9, $10) WHERE id=$11`
 
 	res, err := r.db.Exec(q, deal.Bank.ID, deal.Currency,
 		deal.EnterDateTime, deal.Percent, deal.ExitDateTime,
 		deal.StartDeposit, deal.EndDeposit, deal.Result,
-		deal.UserID, deal.ID)
+		deal.ID)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func (r *DepositDealRepository) DeleteDepositDeal(id int64) error {
 func (r *DepositDealRepository) GetDepositDealByID(id int64) (*models.DepositDeal, error) {
 
 	q := `SELECT bank_instrument_id, currency, enter_datetime, percent, 
-	exit_datetime, start_deposit, end_deposit, result, user_id FROM deposit_deals where id=$1`
+	exit_datetime, start_deposit, end_deposit, result FROM deposit_deals where id=$1`
 
 	bank := &models.BankInstrument{}
 
@@ -94,7 +94,6 @@ func (r *DepositDealRepository) GetDepositDealByID(id int64) (*models.DepositDea
 		&deal.StartDeposit,
 		&deal.EndDeposit,
 		&deal.Result,
-		&deal.UserID,
 	)
 	if err != nil {
 		return nil, err
@@ -104,28 +103,37 @@ func (r *DepositDealRepository) GetDepositDealByID(id int64) (*models.DepositDea
 
 }
 
-func (r *DepositDealRepository) GetAll(tp *models.TableParams, id int64) error {
+func (r *DepositDealRepository) GetAll(tp *models.TableParams, userId int64) (*[]*models.DepositDeal, error) {
+
+	source := &[]*models.DepositDeal{}
 
 	q := `
-	SELECT dd.id, dd.bank_instrument_id, dd.currency, dd.enter_datetime, dd.percent, 
-	dd.exit_datetime, dd.start_deposit, dd.end_deposit, dd.reult, dd.user_id 
+	SELECT 
+	dd.id, 
+	dd.bank_instrument_id, 
+	dd.currency, 
+	dd.enter_datetime, 
+	dd.percent, 
+	dd.exit_datetime,
+
+	bi.title
+
 	FROM deposit_deals AS dd
-	WHERE dd.user_id=$1
+	LEFT JOIN banks_instruments AS bi ON dd.bank_instrument_id = bi.id
+	WHERE dd.user_id = $1
 	LIMIT $2 
 	OFFSET $3;
 	`
 
 	rows, err := r.db.Query(
 		q,
-		id,
+		userId,
 		tp.Pagination.ItemsPerPage,
 		tp.Pagination.PageNumber*tp.Pagination.ItemsPerPage,
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
-	source := []models.DepositDeal{}
 
 	bank := &models.BankInstrument{}
 
@@ -133,32 +141,36 @@ func (r *DepositDealRepository) GetAll(tp *models.TableParams, id int64) error {
 
 	for rows.Next() {
 		count++
-		dd := models.DepositDeal{
+		dd := &models.DepositDeal{
 			Bank: *bank,
 		}
-		err = rows.Scan(&dd.ID, dd.Bank.ID, dd.Currency,
-			dd.EnterDateTime, dd.Percent, dd.ExitDateTime,
-			dd.StartDeposit, dd.EndDeposit, dd.Result,
-			dd.UserID)
+		err = rows.Scan(
+			&dd.ID,
+			dd.Bank.ID,
+			dd.Currency,
+			dd.EnterDateTime,
+			dd.Percent,
+			dd.ExitDateTime,
+			dd.Bank.Title,
+		)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		source = append(source, dd)
+		*source = append(*source, dd)
 	}
 
 	if count == 0 {
-		return nil
+		return nil, nil
 	}
-
-	tp.Source = source
 
 	q = `SELECT COUNT(id)
 	FROM deposit_deals
+	WHERE user_id = $1
 	`
 	var itemsCount int
-	if err = r.db.QueryRow(q).Scan(&itemsCount); err != nil {
-		return err
+	if err = r.db.QueryRow(q, userId).Scan(&itemsCount); err != nil {
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -168,5 +180,5 @@ func (r *DepositDealRepository) GetAll(tp *models.TableParams, id int64) error {
 		tp.Pagination.PageCount = int(math.Ceil(float64(itemsCount) / float64(tp.Pagination.ItemsPerPage)))
 	}
 
-	return nil
+	return source, nil
 }

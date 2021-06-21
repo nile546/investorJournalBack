@@ -8,9 +8,8 @@ type DepositDeal struct {
 	Currency      *Currencies    `json:"currency"`
 	EnterDateTime time.Time      `json:"enterDatetime"`
 	Percent       float64        `json:"percent"`
-	ExitDateTime  time.Time      `json:"exitDatetime"`
-	StartDeposit  int64          `json:"startDeposit"`
-	EndDeposit    int64          `json:"endDeposit"`
-	Result        *int64         `json:"result"`
-	UserID        int64          `json:"userId"`
+	ExitDateTime  *time.Time     `json:"exitDatetime,omitempty"`
+	StartDeposit  *int64         `json:"startDeposit,omitempty"`
+	EndDeposit    *int64         `json:"endDeposit,omitempty"`
+	Result        *int64         `json:"result,omitempty"`
 }

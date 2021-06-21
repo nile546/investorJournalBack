@@ -109,9 +109,9 @@ type CryptoDealRepository interface {
 }
 
 type DepositDealRepository interface {
-	CreateDepositDeal(*models.DepositDeal) error
+	CreateDepositDeal(*models.DepositDeal, int64) error
 	UpdateDepositDeal(*models.DepositDeal) error
 	DeleteDepositDeal(int64) error
 	GetDepositDealByID(int64) (*models.DepositDeal, error)
-	GetAll(*models.TableParams, int64) error
+	GetAll(*models.TableParams, int64) (*[]*models.DepositDeal, error)
 }
