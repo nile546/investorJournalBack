@@ -41,7 +41,7 @@ func (s *server) getAllStockDeals(w http.ResponseWriter, r *http.Request) {
 			sd.Result = s.result(&sd.EnterPoint, sd.ExitPoint, &sd.Quantity, sd.Position)
 		}
 
-		req.TableParams.Source = source
+		req.TableParams.Source = &source
 	}
 
 	s.respond(w, req.TableParams)

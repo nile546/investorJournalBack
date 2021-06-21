@@ -2,7 +2,7 @@ package models
 
 type TableParams struct {
 	Pagination Pagination  `json:"pagination"`
-	Source     interface{} `json:"source,omitemply"`
+	Source     interface{} `json:"source"`
 	SearchText string      `json:"searchText,omitempty"`
 }
 
