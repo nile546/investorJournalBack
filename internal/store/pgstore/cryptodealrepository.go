@@ -35,8 +35,8 @@ func (r *CryptoDealRepository) CreateCryptoDeal(cd *models.CryptoDeal, userId in
 		q,
 		cd.Crypto.ID,
 		cd.Currency,
-		cd.Strategy.ID,
-		cd.Pattern.ID,
+		cd.Strategy.GetID(),
+		cd.Pattern.GetID(),
 		cd.Position,
 		cd.TimeFrame,
 		cd.EnterDateTime,
@@ -219,24 +219,28 @@ func (r *CryptoDealRepository) GetAll(tp *models.TableParams, userId int64) (*[]
 		return nil, err
 	}
 
-	crypto := &models.CryptoInstrument{}
-	strategy := &models.Strategy{}
-	pattern := &models.Pattern{}
-
 	count := 0
 
 	for rows.Next() {
 		count++
+
+		crypto := &models.CryptoInstrument{}
+
+		var strategyID *int64
+		var strategyName *string
+
+		var patternID *int64
+		var patternName *string
+
 		cd := &models.CryptoDeal{
-			Crypto:   *crypto,
-			Strategy: strategy,
-			Pattern:  pattern,
+			Crypto: *crypto,
 		}
+
 		err = rows.Scan(
 			&cd.ID,
 			&cd.Crypto.ID,
-			&cd.Strategy.ID,
-			&cd.Pattern.ID,
+			&strategyID,
+			&patternID,
 			&cd.Currency,
 			&cd.Position,
 			&cd.TimeFrame,
@@ -250,12 +254,26 @@ func (r *CryptoDealRepository) GetAll(tp *models.TableParams, userId int64) (*[]
 			&cd.Crypto.Title,
 			&cd.Crypto.Ticker,
 
-			&cd.Strategy.Name,
+			&strategyName,
 
-			&cd.Pattern.Name,
+			&patternName,
 		)
 		if err != nil {
 			return nil, err
+		}
+
+		if strategyID != nil {
+			cd.Strategy = &models.Strategy{
+				ID:   *strategyID,
+				Name: strategyName,
+			}
+		}
+
+		if patternID != nil {
+			cd.Pattern = &models.Pattern{
+				ID:   *patternID,
+				Name: patternName,
+			}
 		}
 
 		*source = append(*source, cd)

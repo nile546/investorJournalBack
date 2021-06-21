@@ -84,8 +84,8 @@ func (r *StockDealRepository) UpdateStockDeal(stockDeal *models.StockDeal, userI
 		q,
 		stockDeal.Stock.ID,
 		stockDeal.Currency,
-		stockDeal.Strategy.ID,
-		stockDeal.Pattern.ID,
+		stockDeal.Strategy.GetID(),
+		stockDeal.Pattern.GetID(),
 		stockDeal.Position,
 		stockDeal.TimeFrame,
 		stockDeal.EnterDateTime,
@@ -223,24 +223,28 @@ func (r *StockDealRepository) GetAll(tp *models.TableParams, userId int64) (*[]*
 		return nil, err
 	}
 
-	stock := &models.StockInstrument{}
-	strategy := &models.Strategy{}
-	pattern := &models.Pattern{}
-
 	count := 0
 
 	for rows.Next() {
 		count++
+
+		stock := &models.StockInstrument{}
+
+		var strategyID *int64
+		var strategyName *string
+
+		var patternID *int64
+		var patternName *string
+
 		sd := &models.StockDeal{
-			Stock:    *stock,
-			Strategy: strategy,
-			Pattern:  pattern,
+			Stock: *stock,
 		}
+
 		err = rows.Scan(
 			&sd.ID,
 			&sd.Stock.ID,
-			&sd.Strategy.ID,
-			&sd.Pattern.ID,
+			&strategyID,
+			&patternID,
 			&sd.Currency,
 			&sd.Position,
 			&sd.TimeFrame,
@@ -255,12 +259,26 @@ func (r *StockDealRepository) GetAll(tp *models.TableParams, userId int64) (*[]*
 			&sd.Stock.Title,
 			&sd.Stock.Ticker,
 
-			&sd.Strategy.Name,
+			&strategyName,
 
-			&sd.Pattern.Name,
+			&patternName,
 		)
 		if err != nil {
 			return nil, err
+		}
+
+		if strategyID != nil {
+			sd.Strategy = &models.Strategy{
+				ID:   *strategyID,
+				Name: strategyName,
+			}
+		}
+
+		if patternID != nil {
+			sd.Pattern = &models.Pattern{
+				ID:   *patternID,
+				Name: patternName,
+			}
 		}
 
 		*source = append(*source, sd)
