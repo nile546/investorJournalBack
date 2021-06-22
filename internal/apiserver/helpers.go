@@ -12,10 +12,18 @@ func (s *server) riskRatio(enterPoint *int64, exitPoint *int64, stopLoss *int64,
 	var res float64
 
 	if *position == models.Long {
-		res = float64(*exitPoint-*enterPoint) / float64(*enterPoint-*stopLoss)
+		if float64(*enterPoint-*stopLoss) != 0 {
+			res = float64(*exitPoint-*enterPoint) / float64(*enterPoint-*stopLoss)
+			return &res
+		}
+		res = 0
 
 	} else {
-		res = float64(*enterPoint-*exitPoint) / float64(*stopLoss-*enterPoint)
+		if float64(*stopLoss-*enterPoint) != 0 {
+			res = float64(*enterPoint-*exitPoint) / float64(*stopLoss-*enterPoint)
+			return &res
+		}
+		res = 0
 	}
 
 	return &res
