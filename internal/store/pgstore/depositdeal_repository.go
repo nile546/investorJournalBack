@@ -14,14 +14,31 @@ type DepositDealRepository struct {
 func (r *DepositDealRepository) CreateDepositDeal(deal *models.DepositDeal, userId int64) error {
 
 	q := `INSERT INTO deposit_deals
-	(bank_instrument_id, currency, enter_datetime, percent, 
-	exit_datetime, start_deposit, end_deposit, result, user_id)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
+	(
+		bank_instrument_id,
+		currency, 
+		enter_datetime, 
+		percent, 
+		exit_datetime, 
+		start_deposit, 
+		end_deposit, 
+		result, 
+		user_id
+	)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 
-	res, err := r.db.Exec(q, deal.Bank.ID, deal.Currency,
-		deal.EnterDateTime, deal.Percent, deal.ExitDateTime,
-		deal.StartDeposit, deal.EndDeposit, deal.Result,
-		userId)
+	res, err := r.db.Exec(
+		q,
+		deal.Bank.ID,
+		deal.Currency,
+		deal.EnterDateTime,
+		deal.Percent,
+		deal.ExitDateTime,
+		deal.StartDeposit,
+		deal.EndDeposit,
+		deal.Result,
+		userId,
+	)
 	if err != nil {
 		return err
 	}
@@ -135,15 +152,17 @@ func (r *DepositDealRepository) GetAll(tp *models.TableParams, userId int64) (*[
 		return nil, err
 	}
 
-	bank := &models.BankInstrument{}
-
 	count := 0
 
 	for rows.Next() {
 		count++
+
+		bank := &models.BankInstrument{}
+
 		dd := &models.DepositDeal{
 			Bank: *bank,
 		}
+
 		err = rows.Scan(
 			&dd.ID,
 			dd.Bank.ID,
